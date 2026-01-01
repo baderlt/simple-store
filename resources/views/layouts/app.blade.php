@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title', settings('store_name', 'Parapharmacy'))</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script src="//unpkg.com/alpinejs" defer></script>
+    @php
+        $logoPath = settings('logo');
+    @endphp
+    @if($logoPath && file_exists(public_path('storage/'.$logoPath)))
+        <link rel="icon" type="image/x-icon" href="{{ asset('storage/' . $logoPath) }}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('storage/' . $logoPath) }}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('storage/' . $logoPath) }}">
+        <link rel="apple-touch-icon" href="{{ asset('storage/' . $logoPath) }}">
+        <meta name="msapplication-TileImage" content="{{ asset('storage/' . $logoPath) }}">
+    @else
+        <link rel="icon" type="image/x-icon" href="{{ asset('img/favicon.ico') }}">
+        <link rel="apple-touch-icon" href="{{ asset('img/apple-touch-icon.png') }}">
+    @endif
+
+    <style>
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        }
+        .hover-lift {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .nav-link {
+            position: relative;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #22c55e;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        /* Add these styles for cart drawer */
+        .transform {
+            transition-property: transform;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 300ms;
+        }
+        
+        .fa-spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes ping {
+            75%, 100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+        
+        .animate-ping {
+            animation: ping 0.5s cubic-bezier(0, 0, 0.2, 1);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        [data-action]:hover {
+            transform: scale(1.1);
+            transition: transform 0.2s;
+        }
+        
+        /* Mobile header fixes */
+        @media (max-width: 1023px) {
+            .header-container {
+                flex-wrap: wrap;
+                padding-top: 0.5rem;
+                padding-bottom: 0.5rem;
+            }
+            .logo-container {
+                order: 1;
+                width: 40%;
+            }
+            .mobile-buttons {
+                order: 2;
+                width: 60%;
+                justify-content: flex-end;
+            }
+            .search-container-mobile {
+                order: 3;
+                width: 100%;
+                margin-top: 0.5rem;
+            }
+            .desktop-nav {
+                display: none !important;
+            }
+            .mobile-search-visible {
+                display: block !important;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .search-container-mobile {
+                display: none !important;
+            }
+        }
+        
+        /* Search suggestions dropdown */
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            margin-top: 0.25rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .search-suggestion-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        
+        .search-suggestion-item:hover {
+            background-color: #f9fafb;
+        }
+        
+        .search-suggestion-item:last-child {
+            border-bottom: none;
+        }
+        
+        .search-suggestion-name {
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .search-suggestion-category {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+        
+        .search-suggestion-price {
+            font-weight: 600;
+            color: #059669;
+            margin-top: 0.25rem;
+        }
+        
+        .search-suggestion-highlight {
+            background-color: #dcfce7;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+        
+        .search-loading {
+            padding: 1rem;
+            text-align: center;
+            color: #6b7280;
+        }
+        
+        /* Search button animations */
+        .search-btn:hover {
+            transform: scale(1.05);
+            transition: transform 0.2s;
+        }
+        
+        /* Smooth transitions */
+        .transition-all {
+            transition-property: all;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 300ms;
+        }
+        
+        /* Improve mobile touch targets */
+        @media (max-width: 640px) {
+            button, a {
+                min-height: 20px;
+                min-width: 20px;
+            }
+            
+            input, select, textarea {
+                font-size: 16px; /* Prevents iOS zoom on focus */
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+     {{-- Top Bar --}}
+   {{--  <div class="gradient-bg text-white text-sm py-2">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <span><i class="fas fa-phone-alt mr-2"></i> {{ settings('phone', '+212 XXX-XXXXXX') }}</span>
+                    <span><i class="fas fa-envelope mr-2"></i> {{ settings('email', 'contact@parapharmacie.ma') }}</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    @auth
+                        <span class="hidden md:inline">Bonjour, {{ Auth::user()->name }}</span>
+                    @endauth
+                    <div class="flex space-x-2">
+                        <a href="{{ settings('facebook_url', '#') }}" target="_blank" class="hover:text-gray-200">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="{{ settings('instagram_url', '#') }}" target="_blank" class="hover:text-gray-200">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> --}}
+
+    {{-- Header --}}
+    <header class="bg-white shadow-sm sticky top-0 z-40 border-b">
+        <div class="container mx-auto px-4">
+            {{-- First Row: Logo + Action Buttons --}}
+            <div class="header-container flex items-center justify-between pt-2 lg:pt-4">
+                @php
+                    $logoPath = settings('logo');
+                    $storeName = settings('store_name', 'Parapharmacy');
+                @endphp
+                
+                {{-- Logo --}}
+                <div class="logo-container">
+                    <a href="{{ route('home') }}" class="flex items-center space-x-2 hover-lift">
+                        @if($logoPath && file_exists(public_path('storage/'.$logoPath)))
+                            <img src="{{ asset('storage/'.$logoPath) }}" alt="{{ $storeName }}" 
+                            loading="lazy"
+                                 class="h-10 lg:h-16 w-auto object-contain transition-transform duration-300 hover:scale-105">
+                        @else 
+                            <div class="flex items-center space-x-2">
+                                <div class="bg-green-600 text-white p-1 lg:p-2 rounded-lg">
+                                    <i class="fas fa-prescription-bottle-alt text-lg lg:text-2xl"></i>
+                                </div>
+                                <span class="text-lg lg:text-2xl font-bold text-gray-800 hidden sm:block">{{ $storeName }}</span>
+                            </div>
+                        @endif 
+                    </a>
+                </div>
+                
+                {{-- Desktop Search Bar --}}
+                <div class="hidden lg:flex flex-1 mx-8 max-w-2xl relative">
+                    <form action="{{ route('products.index') }}" method="GET" class="w-full" id="desktop-search-form">
+                        <div class="relative">
+                            <input type="text" 
+                                   name="search" 
+                                   id="desktop-search-input"
+                                   placeholder="Rechercher des produits..." 
+                                   class="w-full px-4 py-2 pl-12 pr-10 text-gray-700 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                                   value="{{ request('search') }}"
+                                   autocomplete="off">
+                            <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <button type="submit" 
+                                    class="absolute right-2 top-1/2 transform -translate-y-1/2 text-green-600 hover:text-green-700 transition-colors">
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </form>
+                    {{-- Desktop Search Suggestions --}}
+                    <div id="desktop-search-suggestions" class="search-suggestions hidden"></div>
+                </div>
+
+                {{-- Action Buttons --}}
+                <div class="mobile-buttons flex items-center space-x-3 lg:space-x-6">
+                    {{-- Mobile Search Button (Icon only) --}}
+                    <button type="button" id="mobile-search-toggle" 
+                            class="lg:hidden text-gray-600 hover:text-green-600 p-2 rounded-full hover:bg-gray-100 transition-colors">
+                        <i class="fas fa-search text-xl"></i>
+                    </button>
+                    
+                    <!-- Cart Icon -->
+                    <button type="button" id="cart-drawer-trigger" class="relative group focus:outline-none">
+                        <div class="bg-green-50 p-2 rounded-full group-hover:bg-green-100 transition-colors">
+                            <i class="fas fa-shopping-cart text-lg lg:text-xl text-green-600"></i>
+                            <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-sm">
+                                @if(session('cart'))
+                                    {{ array_sum(array_column(session('cart'), 'quantity')) }}
+                                @else
+                                    0
+                                @endif
+                            </span>
+                        </div>
+                    </button>
+                    
+                    @auth
+                        <div x-data="{ open: false }" 
+                             x-on:click.outside="open = false"
+                             class="relative">
+                            <button x-on:click="open = !open" 
+                                    class="flex items-center space-x-2 text-gray-700 hover:text-green-600 focus:outline-none">
+                                <div class="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <i class="fas fa-chevron-down text-xs transition-transform duration-200 hidden lg:block" 
+                                   :class="{'rotate-180': open}"></i>
+                            </button>
+                            
+                            <div x-show="open" 
+                                 x-transition:enter="transition ease-out duration-200"
+                                 x-transition:enter-start="opacity-0 -translate-y-2"
+                                 x-transition:enter-end="opacity-100 translate-y-0"
+                                 x-transition:leave="transition ease-in duration-150"
+                                 x-transition:leave-start="opacity-100 translate-y-0"
+                                 x-transition:leave-end="opacity-0 -translate-y-2"
+                                 class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-50 border border-gray-100">
+                                
+                                @if(Auth::user()->is_admin)
+                                    <a href="{{ route('admin.dashboard') }}" 
+                                       class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors duration-200 group border-b border-gray-100">
+                                        <div class="w-8 h-8 bg-green-100 text-green-600 rounded-full flex items-center justify-center mr-3">
+                                            <i class="fas fa-tachometer-alt text-sm"></i>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium">Dashboard Admin</div>
+                                            <div class="text-xs text-gray-500">Gestion du site</div>
+                                        </div>
+                                    </a>
+                                @endif
+                                
+                                <form method="POST" action="{{ route('logout') }}" class="mt-1">
+                                    @csrf
+                                    <button type="submit" 
+                                            class="flex items-center w-full px-4 py-3 text-left text-red-600 hover:bg-red-50 transition-colors duration-200 group">
+                                        <div class="w-8 h-8 bg-red-100 text-red-600 rounded-full flex items-center justify-center mr-3">
+                                            <i class="fas fa-sign-out-alt text-sm"></i>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium">Déconnexion</div>
+                                            <div class="text-xs text-gray-500">Se déconnecter</div>
+                                        </div>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    @else
+                        <div class="hidden lg:flex items-center space-x-4">
+                            <a href="{{ route('login') }}" class="px-4 py-2 text-green-600 hover:text-green-700 font-medium">
+                                <i class="fas fa-sign-in-alt mr-2"></i>Connexion
+                            </a>
+                            <a href="{{ route('register') }}" class="gradient-bg text-white px-4 py-2 rounded-lg hover:shadow-lg transition-shadow font-medium">
+                                <i class="fas fa-user-plus mr-2"></i>Inscription
+                            </a>
+                        </div>
+                    @endauth
+                    
+                    {{-- Mobile Menu Button --}}
+                    <button id="mobileMenuButton" class="lg:hidden text-gray-700">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            {{-- Mobile Search Bar (Always visible when toggled) --}}
+            <div id="mobile-search-container" class="search-container-mobile hidden relative">
+                <form action="{{ route('products.index') }}" method="GET" class="w-full" id="mobile-search-form">
+                    <div class="relative">
+                        <input type="text" 
+                               name="search" 
+                               id="mobile-search-input"
+                               placeholder="Rechercher des produits..." 
+                               class="w-full px-4 py-2 pl-12 pr-10 text-gray-700 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                               value="{{ request('search') }}"
+                               autocomplete="off">
+                        <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <button type="submit" 
+                                class="absolute right-2 top-1/2 transform -translate-y-1/2 text-green-600 hover:text-green-700 transition-colors">
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </form>
+                {{-- Mobile Search Suggestions --}}
+                <div id="mobile-search-suggestions" class="search-suggestions hidden"></div>
+            </div>
+
+            {{-- Desktop Navigation --}}
+            <nav class="desktop-nav -mt-1 hidden lg:flex items-center justify-center space-x-8 ">
+                <a href="{{ route('home') }}" class="nav-link pt-0 text-gray-700 hover:text-green-600 font-medium">
+                    <i class="fas fa-home mr-2"></i>Accueil
+                </a>
+                <a href="{{ route('products.index') }}" class="nav-link text-gray-700 hover:text-green-600 font-medium">
+                    <i class="fas fa-pills mr-2"></i>Produits
+                </a>
+                <a href="{{ route('categories.index') }}" class="nav-link text-gray-700 hover:text-green-600 font-medium">
+                    <i class="fas fa-th-large mr-2"></i>Catégories
+                </a>
+                <a href="{{ route('promotions.index') }}" 
+                   class="nav-link flex items-center gap-2 text-red-600 font-bold hover:text-red-700 
+                          px-3 py-2 rounded-lg bg-red-50 hover:bg-red-100 transition-all duration-200">
+                    <div class="relative">
+                        <i class="fas fa-tags"></i>
+                        <div class="absolute -inset-2 bg-red-200 rounded-full opacity-0 
+                                    group-hover:opacity-30 transition-opacity duration-300"></div>
+                    </div>
+                    <span>Promotions</span>
+                    <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse ml-1"></div>
+                </a>
+                @auth
+                    <a href="{{ route('orders.index') }}" class="nav-link text-gray-700 hover:text-green-600 font-medium">
+                        <i class="fas fa-clipboard-list mr-2"></i>Mes Commandes
+                    </a>
+                @endauth
+            </nav>
+
+            {{-- Mobile Menu --}}
+            <div id="mobileMenu" class="lg:hidden hidden bg-white border-t mt-2 py-4">
+                <div class="flex flex-col space-y-4">
+                    <a href="{{ route('home') }}" class="flex items-center text-gray-700 hover:text-green-600 p-2 rounded-lg hover:bg-gray-50">
+                        <i class="fas fa-home mr-3"></i>Accueil
+                    </a>
+                    <a href="{{ route('products.index') }}" class="flex items-center text-gray-700 hover:text-green-600 p-2 rounded-lg hover:bg-gray-50">
+                        <i class="fas fa-pills mr-3"></i>Produits
+                    </a>
+                    <a href="{{ route('categories.index') }}" class="flex items-center text-gray-700 hover:text-green-600 p-2 rounded-lg hover:bg-gray-50">
+                        <i class="fas fa-th-large mr-3"></i>Catégories
+                    </a>
+                    <a href="{{ route('promotions.index') }}" 
+                       class="flex items-center text-red-600 font-bold hover:text-red-700 p-2 rounded-lg bg-red-50 hover:bg-red-100 transition-all duration-200">
+                        <i class="fas fa-tags mr-3"></i>
+                        <span>Promotions</span>
+                        <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse ml-1"></div>
+                    </a>
+                    @auth
+                        <a href="{{ route('orders.index') }}" class="flex items-center text-gray-700 hover:text-green-600 p-2 rounded-lg hover:bg-gray-50">
+                            <i class="fas fa-clipboard-list mr-3"></i>Mes Commandes
+                        </a>
+                        @if(Auth::user()->is_admin)
+                            <a href="{{ route('admin.dashboard') }}" class="flex items-center text-gray-700 hover:text-green-600 p-2 rounded-lg hover:bg-gray-50">
+                                <i class="fas fa-tachometer-alt mr-3"></i>Dashboard Admin
+                            </a>
+                        @endif
+                        <form method="POST" action="{{ route('logout') }}" class="mt-2 pt-2 border-t">
+                            @csrf
+                            <button type="submit" 
+                                    class="flex items-center w-full text-left text-red-600 hover:text-red-700 p-2 rounded-lg hover:bg-red-50">
+                                <i class="fas fa-sign-out-alt mr-3"></i>
+                                <span>Déconnexion</span>
+                            </button>
+                        </form>
+                    @else
+                        <div class="flex space-x-4 pt-2 border-t">
+                            <a href="{{ route('login') }}" class="flex-1 text-center px-4 py-2 text-green-600 hover:text-green-700 font-medium border border-green-600 rounded-lg">
+                                Connexion
+                            </a>
+                            <a href="{{ route('register') }}" class="flex-1 text-center gradient-bg text-white px-4 py-2 rounded-lg hover:shadow-lg transition-shadow font-medium">
+                                Inscription
+                            </a>
+                        </div>
+                    @endauth
+                </div>
+            </div>
+        </div>
+    </header>
+
+    {{-- Content --}}
+    <main class="flex-grow">
+        @yield('content')
+    </main>
+
+    {{-- Footer --}}
+    <footer class="bg-gradient-to-br from-gray-900 to-gray-800 text-white ">
+        <div class="container mx-auto px-4 py-12">
+            <div class="grid md:grid-cols-4 gap-8">
+                {{-- Company Info --}}
+                <div class="space-y-4">
+                    <div class="flex items-center space-x-3">
+                        @if($logoPath && file_exists(public_path('storage/'.$logoPath)))
+                            <img src="{{ asset('storage/'.$logoPath) }}" alt="{{ $storeName }}" 
+                                 class="h-12 w-auto object-contain"
+                                 loading="lazy">
+                        @else
+                            <div class="bg-green-600 text-white p-2 rounded-lg">
+                                <i class="fas fa-prescription-bottle-alt text-2xl"></i>
+                            </div>
+                        @endif
+                        <span class="text-2xl font-bold">{{ $storeName }}</span>
+                    </div>
+                    <p class="text-gray-300">Votre partenaire santé de confiance depuis 2024.</p>
+                    <div class="flex space-x-4 pt-2">
+                        <a href="{{ settings('facebook_url', '#') }}" target="_blank" 
+                           class="bg-gray-800 hover:bg-green-600 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="{{ settings('instagram_url', '#') }}" target="_blank" 
+                           class="bg-gray-800 hover:bg-green-600 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="{{ settings('twitter_url', '#') }}" target="_blank" 
+                           class="bg-gray-800 hover:bg-green-600 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                    </div>
+                </div>
+
+                {{-- Quick Links --}}
+                <div>
+                    <h3 class="text-xl font-bold mb-6 text-green-400">Navigation</h3>
+                    <ul class="space-y-3">
+                        <li><a href="{{ route('home') }}" class="text-gray-300 hover:text-green-400 transition-colors flex items-center">
+                            <i class="fas fa-chevron-right text-xs mr-2"></i>Accueil
+                        </a></li>
+                        <li><a href="{{ route('products.index') }}" class="text-gray-300 hover:text-green-400 transition-colors flex items-center">
+                            <i class="fas fa-chevron-right text-xs mr-2"></i>Produits
+                        </a></li>
+                        <li><a href="{{ route('categories.index') }}" class="text-gray-300 hover:text-green-400 transition-colors flex items-center">
+                            <i class="fas fa-chevron-right text-xs mr-2"></i>Catégories
+                        </a></li>
+                        <li><a href="{{ route('about') }}" class="text-gray-300 hover:text-green-400 transition-colors flex items-center">
+                            <i class="fas fa-chevron-right text-xs mr-2"></i>À propos
+                        </a></li>
+                    </ul>
+                </div>
+
+                {{-- Contact --}}
+                <div>
+                    <h3 class="text-xl font-bold mb-6 text-green-400">Contact</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt text-green-400 mt-1 mr-3"></i>
+                            <span class="text-gray-300">{{ settings('address', 'Adresse par défaut') }}</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone text-green-400 mr-3"></i>
+                            <span class="text-gray-300">{{ settings('phone', '+212 XXX-XXXXXX') }}</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope text-green-400 mr-3"></i>
+                            <span class="text-gray-300">{{ settings('email', 'contact@parapharmacie.ma') }}</span>
+                        </li>
+                    </ul>
+                </div>
+
+                {{-- Hours & Payment --}}
+                <div>
+                    <h3 class="text-xl font-bold mb-6 text-green-400">Horaires</h3>
+                    <p class="text-gray-300 mb-6">{{ settings('working_hours', 'Lun-Sam: 9h-20h') }}</p>
+                </div>
+            </div>
+
+            {{-- Bottom Bar --}}
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center">
+                <p class="text-gray-400">
+                    &copy; {{ date('Y') }} {{ $storeName }}. Tous droits réservés. 
+                    <span class="mx-2">|</span>
+                    <a href="#" class="hover:text-green-400">Politique de confidentialité</a>
+                    <span class="mx-2">|</span>
+                    <a href="#" class="hover:text-green-400">Conditions générales</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    {{-- Back to Top Button --}}
+    <button id="backToTop" class="fixed bottom-8 right-8 bg-green-600 text-white p-3 rounded-full shadow-lg hover:bg-green-700 transition-all opacity-0 transform translate-y-10 z-40">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    {{-- Cart Drawer --}}
+    <div id="cart-drawer" class="fixed inset-0 z-50 overflow-hidden hidden">
+        <!-- Backdrop -->
+        <div id="cart-drawer-backdrop" class="absolute inset-0 bg-black bg-opacity-50 transition-opacity"></div>
+        
+        <!-- Drawer Panel -->
+        <div class="absolute inset-y-0 right-0 flex max-w-full">
+            <div class="relative w-screen max-w-md">
+                <!-- Panel Content -->
+                <div class="h-full flex flex-col bg-white shadow-xl transform transition-transform duration-300 ease-in-out translate-x-full">
+                    <!-- Header -->
+                    <div class="flex items-center justify-between px-6 py-4 border-b">
+                        <h2 class="text-lg font-semibold text-gray-900">
+                            <i class="fas fa-shopping-cart mr-2 text-emerald-600"></i>
+                            Mon Panier
+                        </h2>
+                        <button type="button" id="close-cart-drawer" class="text-gray-400 hover:text-gray-500 focus:outline-none">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Cart Content -->
+                    <div class="flex-1 overflow-y-auto">
+                        <div id="cart-drawer-content" class="px-6 py-4" style="display: block">
+                            <!-- Loading State -->
+                            <div id="cart-loading" class="hidden py-8">
+                                <div class="flex justify-center">
+                                    <i class="fas fa-spinner fa-spin text-3xl text-emerald-600"></i>
+                                </div>
+                                <p class="text-center text-gray-500 mt-4">Chargement du panier...</p>
+                            </div>
+                            
+                            <!-- Empty Cart -->
+                            <div id="cart-empty" class="hidden py-8 text-center">
+                                <div class="text-gray-400 mb-4">
+                                    <i class="fas fa-shopping-cart text-5xl"></i>
+                                </div>
+                                <h3 class="text-lg font-medium text-gray-900 mb-2">Votre panier est vide</h3>
+                                <p class="text-gray-500 mb-6">Ajoutez des produits pour commencer vos achats</p>
+                                <button type="button" id="close-cart-empty" class="inline-flex items-center px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors">
+                                    <i class="fas fa-store mr-2"></i>
+                                    Voir les produits
+                                </button>
+                            </div>
+                            
+                            <!-- Cart Items -->
+                            <div id="cart-items" class="space-y-4">
+                                <!-- Items will be loaded here via AJAX -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Footer -->
+                    <div class="border-t border-gray-200 px-6 py-4">
+                        <!-- Summary -->
+                        <div id="cart-summary" class="mb-4 hidden">
+                            <div class="flex justify-between mb-2">
+                                <span class="text-gray-600">Sous-total:</span>
+                                <span id="cart-subtotal" class="font-semibold">0.00 DH</span>
+                            </div>
+                            <div class="flex justify-between mb-4">
+                                <span class="text-gray-600">Total:</span>
+                                <span id="cart-total" class="text-xl font-bold text-emerald-600">0.00 DH</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Actions -->
+                        <div class="flex space-x-3">
+                            <a href="{{ route('cart.index') }}" class="flex-1 text-center bg-gray-100 text-gray-700 hover:bg-gray-200 py-3 rounded-lg font-medium transition-colors">
+                                <i class="fas fa-shopping-bag mr-2"></i>
+                                Voir le panier
+                            </a>
+                            <a href="{{ route('checkout.index') }}" id="checkout-btn" class="flex-1 text-center bg-emerald-600 text-white hover:bg-emerald-700 py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                <i class="fas fa-lock mr-2"></i>
+                                Commander
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Search elements
+        const mobileSearchContainer = document.getElementById('mobile-search-container');
+        const mobileSearchToggle = document.getElementById('mobile-search-toggle');
+        const mobileSearchInput = document.getElementById('mobile-search-input');
+        const desktopSearchInput = document.getElementById('desktop-search-input');
+        const mobileSearchSuggestions = document.getElementById('mobile-search-suggestions');
+        const desktopSearchSuggestions = document.getElementById('desktop-search-suggestions');
+        
+        // Debounce function for search
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+        
+        // Function to highlight search term in text
+        function highlightText(text, searchTerm) {
+            if (!searchTerm) return text;
+            const regex = new RegExp(`(${searchTerm})`, 'gi');
+            return text.replace(regex, '<span class="search-suggestion-highlight">$1</span>');
+        }
+        
+        // Function to fetch search suggestions
+        async function fetchSearchSuggestions(searchTerm, searchType) {
+            if (searchTerm.length < 2) {
+                return [];
+            }
+            
+            try {
+                const response = await fetch(`{{ route('products.search.suggestions') }}?q=${encodeURIComponent(searchTerm)}`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    }
+                });
+                
+                if (response.ok) {
+                    return await response.json();
+                }
+                return [];
+            } catch (error) {
+                console.error('Error fetching suggestions:', error);
+                return [];
+            }
+        }
+        
+        // Function to display search suggestions
+        function displaySearchSuggestions(suggestions, searchTerm, searchType) {
+            const suggestionsContainer = searchType === 'mobile' ? mobileSearchSuggestions : desktopSearchSuggestions;
+            
+            if (suggestions.length === 0) {
+                suggestionsContainer.innerHTML = `
+                    <div class="search-suggestion-item">
+                        <div class="text-gray-500 text-center">Aucun produit trouvé</div>
+                    </div>
+                `;
+                suggestionsContainer.classList.remove('hidden');
+                return;
+            }
+            const baseProductRoute = '{{ route("products.show", ":slug") }}';
+            let html = '';
+            suggestions.forEach(product => {
+                const highlightedName = highlightText(product.name, searchTerm);
+                const price = product.has_discount ? product.final_price : product.price;
+                
+                html += `
+              <a href="${baseProductRoute.replace(':slug', product.slug)}" 
+                    class="search-suggestion-item block">
+                        <div class="search-suggestion-name">${highlightedName}</div>
+                        ${product.category_name ? `
+                            <span class="search-suggestion-category">
+                                <i class="fas fa-tag text-xs mr-1"></i>${product.category_name}
+                            </sapn>
+                        ` : ''}
+                        <span class="ml-4 search-suggestion-price">${price} DH</span>
+                    </a>
+                `;
+            });
+            
+            // Add "View all results" link
+            html += `
+                <a href="{{ route('products.index') }}?search=${encodeURIComponent(searchTerm)}" 
+                   class="search-suggestion-item block text-center font-medium text-green-600 hover:text-green-700 border-t">
+                    <i class="fas fa-search mr-2"></i>
+                    Voir tous les résultats
+                </a>
+            `;
+            
+            suggestionsContainer.innerHTML = html;
+            suggestionsContainer.classList.remove('hidden');
+        }
+        
+        // Function to handle search input
+        const handleSearchInput = debounce(async function(event, searchType) {
+            const searchTerm = event.target.value.trim();
+            const suggestionsContainer = searchType === 'mobile' ? mobileSearchSuggestions : desktopSearchSuggestions;
+            
+            if (searchTerm.length < 2) {
+                suggestionsContainer.classList.add('hidden');
+                return;
+            }
+            
+            // Show loading
+            suggestionsContainer.innerHTML = `
+                <div class="search-loading">
+                    <i class="fas fa-spinner fa-spin mr-2"></i>
+                    Recherche...
+                </div>
+            `;
+            suggestionsContainer.classList.remove('hidden');
+            
+            // Fetch suggestions
+            const suggestions = await fetchSearchSuggestions(searchTerm, searchType);
+            displaySearchSuggestions(suggestions, searchTerm, searchType);
+        }, 300);
+        
+        // Event listeners for search inputs
+        if (mobileSearchInput) {
+            mobileSearchInput.addEventListener('input', (e) => handleSearchInput(e, 'mobile'));
+            mobileSearchInput.addEventListener('focus', (e) => {
+                if (mobileSearchInput.value.trim().length >= 2) {
+                    handleSearchInput(e, 'mobile');
+                }
+            });
+        }
+        
+        if (desktopSearchInput) {
+            desktopSearchInput.addEventListener('input', (e) => handleSearchInput(e, 'desktop'));
+            desktopSearchInput.addEventListener('focus', (e) => {
+                if (desktopSearchInput.value.trim().length >= 2) {
+                    handleSearchInput(e, 'desktop');
+                }
+            });
+        }
+        
+        // Hide suggestions when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.search-container-mobile') && !event.target.closest('#mobile-search-toggle')) {
+                mobileSearchSuggestions.classList.add('hidden');
+            }
+            if (!event.target.closest('.desktop-nav') && !event.target.closest('#desktop-search-input')) {
+                desktopSearchSuggestions.classList.add('hidden');
+            }
+        });
+        
+        // Hide suggestions on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                mobileSearchSuggestions.classList.add('hidden');
+                desktopSearchSuggestions.classList.add('hidden');
+            }
+        });
+        
+        // Toggle mobile search
+        if (mobileSearchToggle) {
+            mobileSearchToggle.addEventListener('click', function() {
+                mobileSearchContainer.classList.toggle('hidden');
+                if (!mobileSearchContainer.classList.contains('hidden')) {
+                    // Focus on input when search is shown
+                    setTimeout(() => {
+                        if (mobileSearchInput) {
+                            mobileSearchInput.focus();
+                            // Show suggestions if there's text
+                            if (mobileSearchInput.value.trim().length >= 2) {
+                                handleSearchInput({ target: mobileSearchInput }, 'mobile');
+                            }
+                        }
+                    }, 100);
+                } else {
+                    mobileSearchSuggestions.classList.add('hidden');
+                }
+            });
+        }
+        
+        // Cart drawer elements
+        const cartDrawer = document.getElementById('cart-drawer');
+        const cartDrawerTrigger = document.getElementById('cart-drawer-trigger');
+        const closeCartDrawer = document.getElementById('close-cart-drawer');
+        const cartDrawerBackdrop = document.getElementById('cart-drawer-backdrop');
+        const closeCartEmptyBtn = document.getElementById('close-cart-empty');
+        
+        // Cart drawer functions
+        function openCartDrawer() {
+            cartDrawer.classList.remove('hidden');
+            setTimeout(() => {
+                cartDrawer.querySelector('.transform').classList.remove('translate-x-full');
+                loadCartContent();
+            }, 10);
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeCartDrawerFunc() {
+            cartDrawer.querySelector('.transform').classList.add('translate-x-full');
+            setTimeout(() => {
+                cartDrawer.classList.add('hidden');
+            }, 300);
+            document.body.style.overflow = '';
+        }
+        
+        // Event listeners for drawer
+        if (cartDrawerTrigger) {
+            cartDrawerTrigger.addEventListener('click', openCartDrawer);
+        }
+        
+        if (closeCartDrawer) {
+            closeCartDrawer.addEventListener('click', closeCartDrawerFunc);
+        }
+        
+        if (cartDrawerBackdrop) {
+            cartDrawerBackdrop.addEventListener('click', closeCartDrawerFunc);
+        }
+        
+        if (closeCartEmptyBtn) {
+            closeCartEmptyBtn.addEventListener('click', closeCartDrawerFunc);
+        }
+        
+        // Close drawer with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && !cartDrawer.classList.contains('hidden')) {
+                closeCartDrawerFunc();
+            }
+        });
+        
+        // Function to load cart content
+        async function loadCartContent() {
+            try {
+                const loading = document.getElementById('cart-loading');
+                const empty = document.getElementById('cart-empty');
+                const items = document.getElementById('cart-items');
+                const summary = document.getElementById('cart-summary');
+                const checkoutBtn = document.getElementById('checkout-btn');
+                
+                // Show loading
+                loading.classList.remove('hidden');
+                empty.classList.add('hidden');
+                items.classList.add('hidden');
+                summary.classList.add('hidden');
+                checkoutBtn.classList.add('disabled');
+                
+                const response = await fetch('{{ route("cart.ajax.get") }}', {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data.items && data.items.length > 0) {
+                        // Show items
+                        renderCartItems(data.items);
+                        updateCartSummary(data);
+                        
+                        empty.classList.add('hidden');
+                        items.classList.remove('hidden');
+                        summary.classList.remove('hidden');
+                        checkoutBtn.classList.remove('disabled');
+                    } else {
+                        // Show empty cart
+                        empty.classList.remove('hidden');
+                        items.classList.add('hidden');
+                        summary.classList.add('hidden');
+                        checkoutBtn.classList.add('disabled');
+                    }
+                } else {
+                    throw new Error('Failed to load cart');
+                }
+            } catch (error) {
+                console.error('Error loading cart:', error);
+            } finally {
+                document.getElementById('cart-loading').classList.add('hidden');
+            }
+        }
+        
+        // Function to render cart items
+        function renderCartItems(items) {
+            const itemsContainer = document.getElementById('cart-items');
+            itemsContainer.innerHTML = '';
+            
+            if (!items || items.length === 0) {
+                itemsContainer.innerHTML = '<p class="text-center text-gray-500 py-4">Aucun article dans le panier</p>';
+                return;
+            }
+            
+            const baseRoute = '{{ route("products.show", ":slug") }}';
+            
+            items.forEach(item => {
+                const itemTotal = item.has_discount ? 
+                    (item.final_price * item.quantity) : 
+                    (item.price * item.quantity);
+                
+                const productUrl = baseRoute.replace(':slug', item.slug);
+                
+                const itemElement = `
+                    <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg" data-item-id="${item.id}">
+                        <!-- Product Image -->
+                        <div class="flex-shrink-0">
+                            <div class="w-16 h-16 bg-gray-200 rounded-lg overflow-hidden">
+                                ${item.image ? 
+                                    `<img src="/storage/${item.image}" alt="${item.name}" loading="lazy" class="w-full h-full object-cover">` : 
+                                    `<div class="w-full h-full flex items-center justify-center text-gray-400"><i class="fas fa-image"></i></div>`
+                                }
+                            </div>
+                        </div>
+                        
+                        <!-- Product Info -->
+                        <div class="flex-1">
+                            <h4 class="font-medium text-gray-900 text-sm line-clamp-1">
+                                <a href="${productUrl}" class="hover:text-emerald-600">
+                                    ${item.name}
+                                </a>
+                            </h4>
+                            
+                            <!-- Price -->
+                            <div class="flex items-center justify-between mt-2">
+                                <div>
+                                    ${item.has_discount ? 
+                                        `<div class="text-sm">
+                                            <span class="font-bold text-emerald-600">${item.final_price.toFixed(2)} DH</span>
+                                            <span class="text-gray-400 line-through text-xs ml-2">${item.price.toFixed(2)} DH</span>
+                                            <div class="text-xs text-rose-600 mt-0.5">Total: ${itemTotal.toFixed(2)} DH</div>
+                                        </div>` :
+                                        `<div>
+                                            <span class="font-bold text-gray-900">${item.price.toFixed(2)} DH</span>
+                                            <div class="text-xs text-gray-600 mt-0.5">Total: ${itemTotal.toFixed(2)} DH</div>
+                                        </div>`
+                                    }
+                                </div>
+                                
+                                <!-- Quantity Controls -->
+                                <div class="flex items-center space-x-2">
+                                    <button type="button" 
+                                            data-action="decrease" 
+                                            data-product-id="${item.id}"
+                                            class="w-4 h-4 lg:w-6 lg:h-6 flex items-center justify-center bg-gray-200 rounded hover:bg-gray-300 transition-colors">
+                                        <i class="fas fa-minus text-xs"></i>
+                                    </button>
+                                    
+                                    <span class="quantity-display w-4 lg:w-8 text-center font-medium">${item.quantity}</span>
+                                    
+                                    <button type="button" 
+                                            data-action="increase" 
+                                            data-product-id="${item.id}"
+                                            class="w-4 h-4 lg:w-6 lg:h-6 flex items-center justify-center bg-gray-200 rounded hover:bg-gray-300 transition-colors">
+                                        <i class="fas fa-plus text-xs"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Remove Button -->
+                        <button type="button" 
+                                data-product-id="${item.id}"
+                                class="remove-from-cart-btn text-red-400 hover:text-red-600 transition-colors">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                
+                itemsContainer.innerHTML += itemElement;
+            });
+            
+            // Add event listeners to new buttons
+            attachCartItemEvents();
+        }
+        
+        // Function to update cart summary
+        function updateCartSummary(data) {
+            document.getElementById('cart-subtotal').textContent = data.total.toFixed(2) + ' DH';
+            document.getElementById('cart-total').textContent = data.total.toFixed(2) + ' DH';
+        }
+        
+        // Attach events to cart item buttons
+        function attachCartItemEvents() {
+            document.querySelectorAll('[data-action="increase"], [data-action="decrease"]').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    const productId = this.getAttribute('data-product-id');
+                    const action = this.getAttribute('data-action');
+                    const quantityDisplay = this.closest('[data-item-id]').querySelector('.quantity-display');
+                    let currentQuantity = parseInt(quantityDisplay.textContent);
+                    
+                    if (action === 'increase') {
+                        currentQuantity++;
+                    } else if (action === 'decrease' && currentQuantity > 1) {
+                        currentQuantity--;
+                    } else {
+                        return;
+                    }
+                    
+                    this.disabled = true;
+                    const originalHTML = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin text-xs"></i>';
+                    
+                    await updateCartItemQuantity(productId, currentQuantity);
+                    
+                    this.disabled = false;
+                    this.innerHTML = originalHTML;
+                });
+            });
+            
+            document.querySelectorAll('.remove-from-cart-btn').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    const productId = this.getAttribute('data-product-id');
+                    
+                    this.disabled = true;
+                    const originalHTML = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                    
+                    await removeFromCart(productId);
+                });
+            });
+        }
+        
+        // Function to update cart item quantity
+        async function updateCartItemQuantity(productId, quantity) {
+            try {
+                const formData = new FormData();
+                formData.append('_token', '{{ csrf_token() }}');
+                formData.append('quantity', quantity);
+                formData.append('_method', 'PUT');
+
+                const response = await fetch('{{ route("cart.ajax.update", ":id") }}'.replace(':id', productId), {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    updateCartCount(data.cart_count);
+                    
+                    const quantityDisplay = document.querySelector(`[data-item-id="${productId}"] .quantity-display`);
+                    if (quantityDisplay) {
+                        quantityDisplay.textContent = data.quantity;
+                    }
+                    
+                    updateCartSummary({
+                        total: parseFloat(data.cart_total.replace(',', '')) || 0
+                    });
+                    
+                } else {
+                    loadCartContent();
+                }
+            } catch (error) {
+                console.error('Error updating quantity:', error);
+            }
+        }
+        
+        // Function to remove item from cart
+        async function removeFromCart(productId) {
+            try {
+                const formData = new FormData();
+                formData.append('_token', '{{ csrf_token() }}');
+                formData.append('_method', 'DELETE');
+
+                const response = await fetch('{{ route("cart.ajax.remove", ":id") }}'.replace(':id', productId), {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    updateCartCount(data.cart_count);
+                    
+                    const itemElement = document.querySelector(`[data-item-id="${productId}"]`);
+                    if (itemElement) {
+                        itemElement.remove();
+                    }
+                    
+                    updateCartSummary({
+                        total: parseFloat(data.cart_total.replace(',', '')) || 0
+                    });
+                    
+                    if (data.items_count === 0) {
+                        document.getElementById('cart-empty').classList.remove('hidden');
+                        document.getElementById('cart-items').classList.add('hidden');
+                        document.getElementById('cart-summary').classList.add('hidden');
+                        document.getElementById('checkout-btn').classList.add('disabled');
+                    }
+                    
+                } 
+            } catch (error) {
+                console.error('Error removing item:', error);
+            }
+        }
+        
+        // Function to update cart count in navigation
+        function updateCartCount(count) {
+            const cartCountElement = document.getElementById('cart-count');
+            if (cartCountElement) {
+                cartCountElement.textContent = count;
+                
+                cartCountElement.classList.add('animate-ping');
+                setTimeout(() => {
+                    cartCountElement.classList.remove('animate-ping');
+                }, 500);
+            }
+        }
+                
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.add-to-cart-btn')) {
+                const button = e.target.closest('.add-to-cart-btn');
+                e.preventDefault();
+                
+                if (button.disabled) return;
+                
+                const productId = button.getAttribute('data-product-id');
+                const productName = button.getAttribute('data-product-name');
+                
+                addToCart(productId, productName, button);
+            }
+        });    
+        
+        // Function to handle add to cart
+        async function addToCart(productId, productName, button) {
+            const originalContent = button.innerHTML;
+            
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            button.disabled = true;
+            
+            try {
+                const formData = new FormData();
+                formData.append('_token', '{{ csrf_token() }}');
+                
+                const response = await fetch('{{ route("cart.add", ":id") }}'.replace(':id', productId), {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    },
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    updateCartCount(data.cart_count);
+                    
+                    button.classList.add('bg-green-500', 'from-green-500', 'to-green-600');
+                    button.innerHTML = '<i class="fas fa-check"></i>';
+                    
+                    setTimeout(() => {
+                        openCartDrawer();
+                    }, 500);
+                    
+                    setTimeout(() => {
+                        button.classList.remove('bg-green-500', 'from-green-500', 'to-green-600');
+                        button.innerHTML = originalContent;
+                        button.disabled = false;
+                    }, 1500);
+                    
+                } else {
+                    button.innerHTML = originalContent;
+                    button.disabled = false;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                button.innerHTML = originalContent;
+                button.disabled = false;
+            }
+        }
+        
+        // Mobile Menu Toggle
+        document.getElementById('mobileMenuButton').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('hidden');
+            this.querySelector('i').classList.toggle('fa-bars');
+            this.querySelector('i').classList.toggle('fa-times');
+            
+            // Hide search suggestions when menu opens
+            mobileSearchSuggestions.classList.add('hidden');
+        });
+
+        // Back to Top Button
+        const backToTopButton = document.getElementById('backToTop');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.classList.remove('opacity-0', 'translate-y-10');
+                backToTopButton.classList.add('opacity-100', 'translate-y-0');
+            } else {
+                backToTopButton.classList.remove('opacity-100', 'translate-y-0');
+                backToTopButton.classList.add('opacity-0', 'translate-y-10');
+            }
+        });
+
+        backToTopButton.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Auto-hide messages after 5 seconds
+        setTimeout(() => {
+            const messages = document.querySelectorAll('[class*="messages"]');
+            messages.forEach(message => {
+                message.style.transition = 'opacity 0.5s';
+                message.style.opacity = '0';
+                setTimeout(() => message.remove(), 500);
+            });
+        }, 5000);
+    });
+    </script>
+<style>
+/* Button loading states */
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Quantity button animations */
+[data-action]:hover {
+    transform: scale(1.1);
+    transition: transform 0.2s;
+}
+
+/* Spinner animation */
+.fa-spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+</style>
+
+</body>
+</html>
