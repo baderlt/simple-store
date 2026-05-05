@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" prefix="og: https://ogp.me/ns#">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() === "ar" ? "rtl" : "ltr" }}" prefix="og: https://ogp.me/ns#">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -72,8 +72,14 @@
         * {
             font-family: 'Poppins', sans-serif;
         }
+
+        :root {
+            --primary-color: {{ settings('primary_color', '#22c55e') }};
+            --secondary-color: {{ settings('secondary_color', '#16a34a') }};
+        }
+
         .gradient-bg {
-            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
         }
         .hover-lift {
             transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -92,7 +98,7 @@
             left: 0;
             width: 0;
             height: 2px;
-            background: #22c55e;
+            background: var(--primary-color);
             transition: width 0.3s ease;
         }
         .nav-link:hover::after {
@@ -215,7 +221,7 @@
         
         .search-suggestion-price {
             font-weight: 600;
-            color: #059669;
+            color: var(--primary-color);
             margin-top: 0.25rem;
         }
         
@@ -469,7 +475,7 @@
                         <div class="absolute -inset-2 bg-red-200 rounded-full opacity-0 
                                     group-hover:opacity-30 transition-opacity duration-300"></div>
                     </div>
-                    <span>Promotions</span>
+                    <span>{{ __('messages.promotions') }}</span>
                     <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse ml-1"></div>
                 </a>
                 @auth
@@ -494,7 +500,7 @@
                     <a href="{{ route('promotions.index') }}" 
                        class="flex items-center text-red-600 font-bold hover:text-red-700 p-2 rounded-lg bg-red-50 hover:bg-red-100 transition-all duration-200">
                         <i class="fas fa-tags mr-3"></i>
-                        <span>Promotions</span>
+                        <span>{{ __('messages.promotions') }}</span>
                         <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse ml-1"></div>
                     </a>
                     @auth
@@ -1351,6 +1357,13 @@ button:disabled {
     to { transform: rotate(360deg); }
 }
 </style>
+
+
+    <div class="fixed bottom-4 left-4 z-50 bg-white border rounded-lg shadow px-3 py-2 text-sm">
+        <span class="mr-2 font-semibold">{{ __('messages.language') }}:</span>
+        <a href="{{ route('lang.switch', 'fr') }}" class="text-blue-600 mr-2">FR</a>
+        <a href="{{ route('lang.switch', 'ar') }}" class="text-blue-600">AR</a>
+    </div>
 
 </body>
 </html>
