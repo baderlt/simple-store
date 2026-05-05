@@ -5,8 +5,8 @@
 
 @section('content')
     <div class="mb-6">
-        <form method="GET" action="{{ route('admin.orders.index') }}" class="flex space-x-4">
-            <select name="status" class="px-4 py-2 border rounded-lg" onchange="this.form.submit()">
+        <form method="GET" action="{{ route('admin.orders.index') }}">
+            <select name="status" class="w-full sm:w-auto px-4 py-2 border rounded-lg" onchange="this.form.submit()">
                 <option value="">Tous les statuts</option>
                 <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>En attente</option>
                 <option value="preparing" {{ request('status') == 'preparing' ? 'selected' : '' }}>En préparation</option>
@@ -17,7 +17,8 @@
         </form>
     </div>
 
-    <div class="bg-white rounded-lg shadow overflow-hidden">
+    <!-- Desktop Table (hidden on mobile) -->
+    <div class="bg-white rounded-lg shadow overflow-hidden hidden md:block">
         <table class="w-full">
             <thead class="bg-gray-50">
                 <tr>
@@ -82,6 +83,76 @@
                 @endforeach
             </tbody>
         </table>
+    </div>
+
+    <!-- Mobile Card Layout (hidden on desktop) -->
+    <div class="md:hidden space-y-4">
+        @foreach($orders as $order)
+            <div class="bg-white rounded-lg shadow p-4">
+                <div class="flex justify-between items-start mb-3">
+                    <div>
+                        <div class="font-mono font-semibold text-sm text-gray-900">
+                            #{{ $order->order_number }}
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1">
+                            {{ $order->created_at->format('d/m/Y H:i') }}
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="font-semibold text-green-600 text-sm">
+                            {{ number_format($order->total, 2) }} DH
+                        </span>
+                        <div class="mt-1">
+                            @php
+                                $statusColors = [
+                                    'pending' => 'bg-yellow-100 text-yellow-800',
+                                    'preparing' => 'bg-blue-100 text-blue-800',
+                                    'out_for_delivery' => 'bg-purple-100 text-purple-800',
+                                    'delivered' => 'bg-green-100 text-green-800',
+                                    'cancelled' => 'bg-red-100 text-red-800',
+                                ];
+                                $statusLabels = [
+                                    'pending' => 'En attente',
+                                    'preparing' => 'En préparation',
+                                    'out_for_delivery' => 'En livraison',
+                                    'delivered' => 'Livré',
+                                    'cancelled' => 'Annulé',
+                                ];
+                            @endphp
+                            <span class="px-2 py-1 rounded text-xs font-semibold {{ $statusColors[$order->status] ?? 'bg-gray-100 text-gray-800' }}">
+                                {{ $statusLabels[$order->status] ?? $order->status }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-2 text-sm">
+                    <div class="flex items-center">
+                        <i class="fas fa-user text-gray-400 w-5"></i>
+                        <span class="ml-2">{{ $order->customer_name }}</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-phone text-gray-400 w-5"></i>
+                        <span class="ml-2">{{ $order->customer_phone }}</span>
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-3 mt-4 pt-4 border-t">
+                    <a href="{{ route('admin.orders.show', $order) }}" 
+                       class="text-blue-600 hover:text-blue-800 flex items-center text-sm"
+                       title="Voir détails">
+                        <i class="fas fa-eye mr-1"></i>
+                        <span>Détails</span>
+                    </a>
+                    <a href="{{ route('admin.orders.invoice', $order) }}" 
+                       class="text-green-600 hover:text-green-800 flex items-center text-sm"
+                       target="_blank" title="Imprimer facture">
+                        <i class="fas fa-file-invoice mr-1"></i>
+                        <span>Facture</span>
+                    </a>
+                </div>
+            </div>
+        @endforeach
     </div>
 
     <div class="mt-6">
