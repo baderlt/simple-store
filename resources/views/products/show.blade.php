@@ -4,55 +4,102 @@
 
 @section('content')
 <div class="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-    <!-- Breadcrumb -->
     <div class="container mx-auto px-4 py-8">
         <div class="grid lg:grid-cols-2 gap-8 lg:gap-12">
             <!-- Product Gallery -->
-            <div class="space-y-4">
-                <!-- Main Image -->
-                <div class="relative overflow-hidden rounded-2xl bg-white shadow-lg border border-gray-100">
-                    <img id="mainImage" 
-                         loading="lazy"
-                         src="{{ $product->primaryImage ? asset('storage/' . $product->primaryImage->image_path) : 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop' }}" 
-                         alt="{{ $product->name }}" 
-                         class="w-full h-[500px] object-cover transition-all duration-500">
-                    
-                    <!-- Discount Badge -->
-                    @if($product->hasDiscount())
-                        <div class="absolute top-4 left-4 z-10">
-                            <div class="relative">
-                                <span class="bg-gradient-to-r from-rose-500 to-pink-600 text-white px-6 py-3 rounded-xl font-bold text-lg shadow-2xl">
-                                    -{{ $product->activeDiscount->discount_percentage }}%
-                                </span>
-                                <div class="absolute -inset-1 bg-gradient-to-r from-rose-500 to-pink-600 rounded-xl blur opacity-30 -z-10"></div>
+            <div class="space-y-6">
+                <!-- Main Image Container -->
+                <div class="relative group">
+                    <div class="relative overflow-hidden rounded-2xl bg-white shadow-2xl border border-gray-100">
+                        <img id="mainImage" 
+                             loading="lazy"
+                             src="{{ $product->primaryImage ? asset('storage/' . $product->primaryImage->image_path) : 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop' }}" 
+                             alt="{{ $product->name }}" 
+                             class="w-full h-[500px] object-cover transition-all duration-500 group-hover:scale-[1.02]">
+                        
+                        <!-- Zoom Overlay -->
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <button type="button" onclick="openImageModal()" 
+                                    class="absolute bottom-6 right-6 bg-white/90 backdrop-blur-sm w-12 h-12 rounded-full flex items-center justify-center text-gray-700 hover:bg-white hover:text-emerald-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-110">
+                                <i class="fas fa-expand-arrows-alt"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Discount Badge -->
+                        @if($product->hasDiscount())
+                            <div class="absolute top-6 left-6 z-10">
+                                <div class="relative">
+                                    <span class="bg-gradient-to-r from-rose-500 to-pink-600 text-white px-5 py-2.5 rounded-xl font-bold text-base shadow-2xl">
+                                        -{{ $product->activeDiscount->discount_percentage }}%
+                                    </span>
+                                    <div class="absolute -inset-1 bg-gradient-to-r from-rose-500 to-pink-600 rounded-xl blur opacity-30 -z-10"></div>
+                                </div>
                             </div>
-                        </div>
-                    @endif
-                    
-                    <!-- Stock Warning -->
-                    @if($product->isLowStock() && $product->stock_quantity > 0)
-                        <div class="absolute top-4 right-4">
-                            <span class="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-lg">
-                                <i class="fas fa-exclamation-triangle mr-2"></i>
-                                Seulement {{ $product->stock_quantity }} restant(s)
-                            </span>
-                        </div>
-                    @endif
+                        @endif
+                        
+                        <!-- Stock Warning -->
+                        @if($product->isLowStock() && $product->stock_quantity > 0)
+                            <div class="absolute top-6 right-6">
+                                <span class="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-lg backdrop-blur-sm">
+                                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                                    {{ $product->stock_quantity }} restant(s)
+                                </span>
+                            </div>
+                        @endif
+                    </div>
                 </div>
 
-                <!-- Thumbnails -->
+                <!-- Thumbnails Grid -->
                 @if($product->images->count() > 1)
-                    <div class="grid grid-cols-4 gap-3">
-                        @foreach($product->images as $image)
-                            <button type="button" onclick="changeMainImage('{{ asset('storage/' . $image->image_path) }}')" 
-                                    class="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-emerald-500 transition-all duration-300">
-                                <img src="{{ asset('storage/' . $image->image_path) }}" 
-                                     alt="{{ $product->name }}" 
-                                     loading="lazy"
-                                     class="w-full h-24 object-cover group-hover:scale-110 transition-transform duration-300">
-                                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"></div>
+                    <div class="relative">
+                        @if($product->images->count() > 4)
+                            <!-- Navigation Arrows -->
+                            <button type="button" onclick="scrollThumbnails(-1)" 
+                                    class="absolute left-0 top-1/2 transform -translate-y-1/2 -ml-6 w-10 h-10 bg-white rounded-full shadow-lg border border-gray-200 flex items-center justify-center text-gray-600 hover:text-emerald-600 hover:border-emerald-300 z-10 transition-all duration-200 hover:shadow-xl">
+                                <i class="fas fa-chevron-left"></i>
                             </button>
-                        @endforeach
+                            <button type="button" onclick="scrollThumbnails(1)" 
+                                    class="absolute right-0 top-1/2 transform -translate-y-1/2 -mr-6 w-10 h-10 bg-white rounded-full shadow-lg border border-gray-200 flex items-center justify-center text-gray-600 hover:text-emerald-600 hover:border-emerald-300 z-10 transition-all duration-200 hover:shadow-xl">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        @endif
+
+                        <!-- Thumbnails Container -->
+                        <div id="thumbnailsContainer" class="flex overflow-x-auto space-x-3 pb-2 scrollbar-hide snap-x snap-mandatory">
+                            @foreach($product->images as $index => $image)
+                                <button type="button" 
+                                        onclick="changeMainImage('{{ asset('storage/' . $image->image_path) }}', {{ $index + 1 }})" 
+                                        class="group relative flex-shrink-0 snap-center">
+                                    <div class="relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-emerald-500 transition-all duration-200 w-20 h-20 lg:w-28 lg:h-28">
+                                        <img src="{{ asset('storage/' . $image->image_path) }}" 
+                                             alt="{{ $product->name }} - Image {{ $index + 1 }}" 
+                                             loading="lazy"
+                                             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                        
+                                        <!-- Active Indicator -->
+                                        @if($loop->first)
+                                            <div class="absolute inset-0 border-2 border-emerald-500 rounded-xl pointer-events-none"></div>
+                                            <div class="absolute top-2 right-2 w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center">
+                                                <i class="fas fa-check text-white text-xs"></i>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
+                <!-- Image Counter (Discreet) -->
+                @if($product->images->count() > 1)
+                    <div class="text-center">
+                        <div class="inline-flex items-center space-x-2 bg-gray-50 px-4 py-2 rounded-full">
+                            <i class="fas fa-image text-gray-400 text-sm"></i>
+                            <span class="text-sm text-gray-600 font-medium">
+                                Image <span class="text-emerald-600" id="currentImageIndex">1</span> / {{ $product->images->count() }}
+                            </span>
+                        </div>
                     </div>
                 @endif
             </div>
@@ -67,7 +114,6 @@
                         {{ $product->category->name }}
                     </a>
                     
-                    <!-- SKU -->
                     @if($product->sku)
                         <span class="text-gray-500 text-sm">
                             <i class="fas fa-hashtag mr-1"></i> Réf: {{ $product->sku }}
@@ -79,45 +125,38 @@
                 <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 leading-tight">{{ $product->name }}</h1>
 
                 <!-- Rating & Reviews -->
-                @php
-                    $avis = rand(50, 223);
-                    $star = rand(2, 9);
-                    $add = rand(30, 100);
-                @endphp
-
-                <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-6">
                     <div class="flex items-center">
-                        <div class="flex text-amber-400 text-sm">
+                        <div class="flex text-amber-400">
                             @for($i = 1; $i <= 5; $i++)
                                 <i class="fas fa-star"></i>
                             @endfor
                         </div>
-                        <span class="ml-2 text-gray-600">
-                            4.{{$star}} ({{ $avis }} avis)
+                        <span class="ml-2 text-gray-600 font-medium">
+                            4.{{ rand(2, 9) }} ({{ rand(50, 223) }} avis)
                         </span>
                     </div>
-
-                    <div class="text-sm text-gray-500">
+                    <div class="text-gray-500">
                         <i class="fas fa-shopping-cart mr-1"></i>
-                        {{ $avis + $add }} vendus
+                        {{ rand(80, 300) }} vendus
                     </div>
                 </div>
 
                 <!-- Price Section -->
-                <div class="py-4 border-y border-gray-200">
+                <div class="py-6 border-y border-gray-200">
                     @if($product->hasDiscount())
-                        <div class="flex items-baseline space-x-4 mb-2">
+                        <div class="flex items-baseline space-x-4 mb-3">
                             <span class="text-5xl font-bold text-gray-900">{{ number_format($product->final_price, 2) }} DH</span>
                             <span class="text-2xl text-gray-400 line-through">{{ number_format($product->price, 2) }} DH</span>
                         </div>
                         <div class="flex items-center space-x-3">
-                            <span class="bg-rose-50 text-rose-700 px-3 py-1 rounded-lg font-bold">
+                            <span class="bg-rose-50 text-rose-700 px-3 py-1.5 rounded-lg font-bold text-sm">
                                 Économisez {{ number_format($product->price - $product->final_price, 2) }} DH
                             </span>
                             @if($product->activeDiscount->end_date)
                                 <span class="text-sm text-gray-600">
                                     <i class="fas fa-clock mr-1"></i>
-                                    Offre expire le {{ $product->activeDiscount->end_date->format('d/m/Y') }}
+                                    Jusqu'au {{ $product->activeDiscount->end_date->format('d/m/Y') }}
                                 </span>
                             @endif
                         </div>
@@ -127,8 +166,8 @@
                 </div>
 
                 <!-- Stock Status -->
-                <div class="p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl">
-                    <div class="flex items-center justify-between">
+                <div class="p-5 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200">
+                    <div class="flex items-center justify-between mb-3">
                         <div class="flex items-center space-x-3">
                             @if($product->stock_quantity > 0)
                                 <div class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
@@ -139,18 +178,21 @@
                             @endif
                         </div>
                         @if($product->stock_quantity > 0)
-                            <span class="text-sm text-gray-600">
+                            <span class="text-sm text-gray-600 font-medium">
                                 {{ $product->stock_quantity }} unités disponibles
                             </span>
                         @endif
                     </div>
                     
-                    <!-- Stock Progress Bar -->
                     @if($product->stock_quantity > 0)
-                        <div class="mt-3">
-                            <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div class="space-y-2">
+                            <div class="h-1.5 bg-gray-200 rounded-full overflow-hidden">
                                 <div class="h-full bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full" 
                                      style="width: {{ min(($product->stock_quantity / 100) * 100, 100) }}%"></div>
+                            </div>
+                            <div class="flex justify-between text-xs text-gray-500">
+                                <span>Stock limité</span>
+                                <span>Disponible</span>
                             </div>
                         </div>
                     @endif
@@ -158,9 +200,9 @@
 
                 <!-- Quantity Selector -->
                 @if($product->stock_quantity > 0)
-                    <div class="space-y-4">
+                    <div class="space-y-6">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Quantité</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">Quantité</label>
                             <div class="flex items-center space-x-3">
                                 <button type="button" onclick="updateQuantity(-1)" 
                                         class="w-12 h-12 border border-gray-300 rounded-lg hover:border-emerald-500 hover:bg-emerald-50 transition-colors flex items-center justify-center">
@@ -181,34 +223,32 @@
 
                         <!-- Action Buttons -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <input type="hidden" name="quantity" id="formQuantity" value="1">
+                            <button type="button" 
+                                    data-product-id="{{ $product->id }}"
+                                    data-product-name="{{ $product->name }}"
+                                    data-product-stock="{{ $product->stock_quantity }}"
+                                    class="add-to-cart-btn w-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white py-4 rounded-xl font-bold text-lg hover:from-emerald-600 hover:to-teal-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group">
+                                <i class="fas fa-shopping-cart mr-3 group-hover:rotate-12 transition-transform"></i>
+                                Ajouter au panier
+                            </button>
 
-                    <input type="hidden" name="quantity" id="formQuantity" value="1">
-                    <button type="button" 
-                    data-product-id="{{ $product->id }}"
-                    data-product-name="{{ $product->name }}"
-                    data-product-stock="{{ $product->stock_quantity }}"
-                    class="add-to-cart-btn w-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white py-4 rounded-xl font-bold text-lg hover:from-emerald-600 hover:to-teal-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group">
-                   <i class="fas fa-shopping-cart mr-3 group-hover:rotate-12 transition-transform"></i>
-                                    Ajouter au panier
-            </button>
-
-
-       <form action="{{ route('checkout.direct', $product->id) }}" method="GET" id="buyNowForm">
-    <input type="hidden" name="quantity" id="buyNowQuantity" value="1">
-    <button type="submit" 
-            class="w-full bg-gradient-to-r from-gray-900 to-black text-white py-4 rounded-xl font-bold text-lg hover:from-gray-800 hover:to-gray-900 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group">
-        <i class="fas fa-bolt mr-3 group-hover:scale-125 transition-transform"></i>
-        Commander maintenant
-    </button>
-</form>
+                            <form action="{{ route('checkout.direct', $product->id) }}" method="GET" id="buyNowForm">
+                                <input type="hidden" name="quantity" id="buyNowQuantity" value="1">
+                                <button type="submit" 
+                                        class="w-full bg-gradient-to-r from-gray-900 to-black text-white py-4 rounded-xl font-bold text-lg hover:from-gray-800 hover:to-gray-900 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group">
+                                    <i class="fas fa-bolt mr-3 group-hover:scale-125 transition-transform"></i>
+                                    Commander maintenant
+                                </button>
+                            </form>
                         </div>
 
-                        <!-- Quick Actions -->
-                        <div class="flex items-center justify-center space-x-6 pt-4">
+                        <!-- Share Button -->
+                        <div class="flex justify-center pt-4">
                             <button type="button" onclick="shareProduct()" 
-                                    class="flex items-center text-gray-600 hover:text-emerald-600 transition-colors">
-                                <i class="fas fa-share-alt text-xl mr-2"></i>
-                                <span class="text-sm">Partager</span>
+                                    class="inline-flex items-center text-gray-600 hover:text-emerald-600 transition-colors">
+                                <i class="fas fa-share-alt text-lg mr-2"></i>
+                                <span class="text-sm font-medium">Partager ce produit</span>
                             </button>
                         </div>
                     </div>
@@ -226,28 +266,27 @@
 
                 <!-- Features & Guarantees -->
                 <div class="grid grid-cols-2 gap-4 pt-6">
-                    <div class="flex items-center space-x-3">
+                    <div class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
                         <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
                             <i class="fas fa-shipping-fast text-blue-600"></i>
                         </div>
-                        @if (settings('free_delivery_threshold'))
+                        @if(settings('free_delivery_threshold'))
                         <div>
                             <p class="font-medium text-gray-900">Livraison gratuite</p>
                             <p class="text-sm text-gray-500">À partir de {{settings('free_delivery_threshold')}} DH</p>
                         </div>
-                            
                         @endif
                     </div>
-                    <div class="flex items-center space-x-3">
+                    <div class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
                         <div class="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center">
                             <i class="fas fa-shield-alt text-green-600"></i>
                         </div>
                         <div>
                             <p class="font-medium text-gray-900">Garantie</p>
-                            <p class="text-sm text-gray-500">1 ans</p>
+                            <p class="text-sm text-gray-500">1 an</p>
                         </div>
                     </div>
-                    <div class="flex items-center space-x-3">
+                    <div class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
                         <div class="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center">
                             <i class="fas fa-undo-alt text-purple-600"></i>
                         </div>
@@ -256,7 +295,7 @@
                             <p class="text-sm text-gray-500">15 jours</p>
                         </div>
                     </div>
-                    <div class="flex items-center space-x-3">
+                    <div class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
                         <div class="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center">
                             <i class="fas fa-headset text-orange-600"></i>
                         </div>
@@ -289,11 +328,11 @@
             <!-- Tab Content -->
             <div id="tab-content" style="display: block" class="py-8">
                 <!-- Description Tab -->
-                <div id="description-content"  class="space-y-6">
+                <div id="description-content" class="space-y-6">
                     <p class="text-gray-700 leading-relaxed text-lg">{{ $product->description }}</p>
                     
                     <!-- Features List -->
-                    <div class="grid md:grid-cols-2 gap-4">
+                    <div class="grid md:grid-cols-2 gap-6">
                         <div class="space-y-3">
                             <h4 class="font-bold text-gray-900">Caractéristiques principales</h4>
                             <ul class="space-y-2">
@@ -383,8 +422,8 @@
             <section class="mt-16">
                 <div class="flex items-center justify-between mb-8">
                     <div>
-                        <h2 class="text-3xl font-bold text-gray-900">Vous aimerez aussi</h2>
-                        <p class="text-gray-600 mt-2">Découvrez des produits similaires</p>
+                        <h2 class="text-3xl font-bold text-gray-900">Produits similaires</h2>
+                        <p class="text-gray-600 mt-2">Vous pourriez également aimer</p>
                     </div>
                     <a href="{{ route('products.index', ['category' => $product->category_id]) }}" 
                        class="text-emerald-600 hover:text-emerald-700 font-medium inline-flex items-center">
@@ -409,15 +448,13 @@
                                 <div class="flex items-center justify-between">
                                     <span class="text-lg font-bold text-gray-900">{{ number_format($related->final_price, 2) }} DH</span>
                                     @if($related->stock_quantity > 0)
-     
                                            <button type="button" 
-                    data-product-id="{{ $related->id }}"
-                    data-product-name="{{ $related->name }}"
-                    data-product-stock="{{ $related->stock_quantity }}"
-                    class="add-to-cart-btn w-8 h-8 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-colors">
+                                                    data-product-id="{{ $related->id }}"
+                                                    data-product-name="{{ $related->name }}"
+                                                    data-product-stock="{{ $related->stock_quantity }}"
+                                                    class="add-to-cart-btn w-8 h-8 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-colors">
                                                 <i class="fas fa-plus text-xs"></i>
                                             </button>
-                                  
                                     @endif
                                 </div>
                             </div>
@@ -428,11 +465,234 @@
         @endif
     </div>
 </div>
+
+<!-- Image Modal for Fullscreen View -->
+<div id="imageModal" class="hidden fixed inset-0 bg-black bg-opacity-95 z-50 flex items-center justify-center p-4">
+    <div class="relative w-full max-w-6xl h-full flex items-center justify-center">
+        <!-- Close Button -->
+        <button type="button" onclick="closeImageModal()" 
+                class="absolute top-6 right-6 w-10 h-10 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors z-20">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <!-- Navigation Arrows -->
+        <button type="button" onclick="navigateModalImage(-1)" 
+                class="absolute left-6 w-10 h-10 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors z-20">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <button type="button" onclick="navigateModalImage(1)" 
+                class="absolute right-6 w-10 h-10 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors z-20">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+        
+        <!-- Main Modal Image -->
+        <img id="modalImage" class="max-w-full max-h-full object-contain" alt="">
+        
+        <!-- Image Counter -->
+        <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-black/50 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm">
+            <span id="modalImageInfo">1 / {{ $product->images->count() }}</span>
+        </div>
+        
+        <!-- Thumbnails in Modal -->
+        @if($product->images->count() > 1)
+            <div class="absolute bottom-20 left-1/2 transform -translate-x-1/2 flex space-x-2 overflow-x-auto max-w-full p-2">
+                @foreach($product->images as $index => $image)
+                    <button type="button" 
+                            onclick="changeModalImage('{{ asset('storage/' . $image->image_path) }}', {{ $index + 1 }})" 
+                            class="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 border-transparent hover:border-white transition-colors">
+                        <img src="{{ asset('storage/' . $image->image_path) }}" 
+                             alt="Thumbnail {{ $index + 1 }}" 
+                             class="w-full h-full object-cover">
+                    </button>
+                @endforeach
+            </div>
+        @endif
+    </div>
+</div>
+
 <script src="{{asset("js/product.js")}}"></script>
+<script>
+// Gallery functionality
+let currentImageIndex = 1;
+const totalImages = {{ $product->images->count() }};
+const images = [
+    @foreach($product->images as $image)
+        '{{ asset('storage/' . $image->image_path) }}',
+    @endforeach
+];
+
+// Change main image
+function changeMainImage(src, index) {
+    const mainImage = document.getElementById('mainImage');
+    const currentIndex = document.getElementById('currentImageIndex');
+    
+    // Add fade out effect
+    mainImage.style.opacity = '0';
+    
+    setTimeout(() => {
+        mainImage.src = src;
+        mainImage.style.opacity = '1';
+        currentImageIndex = index;
+        currentIndex.textContent = index;
+        
+        // Update active thumbnail
+        updateActiveThumbnail(index);
+    }, 200);
+}
+
+// Update active thumbnail indicator
+function updateActiveThumbnail(index) {
+    // Remove all active indicators
+    document.querySelectorAll('#thumbnailsContainer button').forEach(btn => {
+        btn.querySelector('.relative').classList.remove('border-emerald-500');
+        const checkIcon = btn.querySelector('.bg-emerald-500');
+        if (checkIcon) {
+            checkIcon.remove();
+        }
+    });
+    
+    // Add active indicator to current thumbnail
+    const currentThumbnail = document.querySelector(`#thumbnailsContainer button:nth-child(${index})`);
+    if (currentThumbnail) {
+        const thumbnailDiv = currentThumbnail.querySelector('.relative');
+        thumbnailDiv.classList.add('border-emerald-500');
+        
+        const checkIcon = document.createElement('div');
+        checkIcon.className = 'absolute top-2 right-2 w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center';
+        checkIcon.innerHTML = '<i class="fas fa-check text-white text-xs"></i>';
+        thumbnailDiv.appendChild(checkIcon);
+    }
+}
+
+// Scroll thumbnails
+function scrollThumbnails(direction) {
+    const container = document.getElementById('thumbnailsContainer');
+    const scrollAmount = 120; // width of thumbnail + gap
+    container.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+}
+
+// Image modal functions
+function openImageModal() {
+    const modal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+    const modalImageInfo = document.getElementById('modalImageInfo');
+    
+    modalImage.src = images[currentImageIndex - 1];
+    modalImageInfo.textContent = `${currentImageIndex} / ${totalImages}`;
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeImageModal() {
+    const modal = document.getElementById('imageModal');
+    modal.classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+function navigateModalImage(direction) {
+    let newIndex = currentImageIndex + direction;
+    if (newIndex < 1) newIndex = totalImages;
+    if (newIndex > totalImages) newIndex = 1;
+    
+    const modalImage = document.getElementById('modalImage');
+    const modalImageInfo = document.getElementById('modalImageInfo');
+    
+    modalImage.style.opacity = '0';
+    setTimeout(() => {
+        modalImage.src = images[newIndex - 1];
+        modalImage.style.opacity = '1';
+        currentImageIndex = newIndex;
+        modalImageInfo.textContent = `${newIndex} / ${totalImages}`;
+        updateActiveThumbnail(newIndex);
+    }, 200);
+}
+
+function changeModalImage(src, index) {
+    const modalImage = document.getElementById('modalImage');
+    const modalImageInfo = document.getElementById('modalImageInfo');
+    
+    modalImage.style.opacity = '0';
+    setTimeout(() => {
+        modalImage.src = src;
+        modalImage.style.opacity = '1';
+        currentImageIndex = index;
+        modalImageInfo.textContent = `${index} / ${totalImages}`;
+        updateActiveThumbnail(index);
+    }, 200);
+}
+
+// Keyboard navigation for modal
+document.addEventListener('keydown', (e) => {
+    const modal = document.getElementById('imageModal');
+    if (!modal.classList.contains('hidden')) {
+        if (e.key === 'Escape') {
+            closeImageModal();
+        } else if (e.key === 'ArrowLeft') {
+            navigateModalImage(-1);
+        } else if (e.key === 'ArrowRight') {
+            navigateModalImage(1);
+        }
+    }
+});
+
+// Tab switching function
+function switchTab(tabName) {
+    // Update active tab
+    document.querySelectorAll('[id^="tab-"]').forEach(tab => {
+        tab.classList.remove('border-emerald-500', 'text-emerald-600');
+        tab.classList.add('border-transparent', 'text-gray-500');
+    });
+    
+    const activeTab = document.getElementById(`tab-${tabName}`);
+    activeTab.classList.add('border-emerald-500', 'text-emerald-600');
+    activeTab.classList.remove('border-transparent', 'text-gray-500');
+    
+    // Show active content
+    document.querySelectorAll('[id$="-content"]').forEach(content => {
+        content.classList.add('hidden');
+    });
+    
+    const activeContent = document.getElementById(`${tabName}-content`);
+    activeContent.classList.remove('hidden');
+}
+
+// Quantity update
+function updateQuantity(change) {
+    const input = document.getElementById('quantity');
+    const formQuantity = document.getElementById('formQuantity');
+    const buyNowQuantity = document.getElementById('buyNowQuantity');
+    
+    let newValue = parseInt(input.value) + change;
+    newValue = Math.max(1, Math.min(newValue, {{ $product->stock_quantity }}));
+    
+    input.value = newValue;
+    formQuantity.value = newValue;
+    buyNowQuantity.value = newValue;
+}
+
+// Share product
+function shareProduct() {
+    if (navigator.share) {
+        navigator.share({
+            title: '{{ $product->name }}',
+            text: 'Découvrez ce produit sur notre site !',
+            url: window.location.href
+        });
+    } else {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            alert('Lien copié dans le presse-papier !');
+        });
+    }
+}
+
+// Initialize active thumbnail
+updateActiveThumbnail(1);
+</script>
+
 <style>
     /* Smooth image transition */
     #mainImage {
-        transition: opacity 0.3s ease-in-out;
+        transition: opacity 0.3s ease-in-out, transform 0.5s ease;
     }
     
     /* Custom input number styling */
@@ -456,6 +716,56 @@
     .group:hover .group-hover\:rotate-12 {
         transform: rotate(12deg);
     }
+    
+    /* Hide scrollbar for thumbnails */
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+    
+    /* Modal animations */
+    #imageModal {
+        animation: fadeInModal 0.3s ease-out;
+    }
+    
+    @keyframes fadeInModal {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    /* Image modal image animation */
+    #modalImage {
+        transition: opacity 0.3s ease-in-out;
+    }
+    
+    /* Thumbnail snap scrolling */
+    .snap-x {
+        scroll-snap-type: x mandatory;
+    }
+    
+    .snap-center {
+        scroll-snap-align: center;
+    }
+    
+    /* Line clamp for product titles */
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    /* Subtle hover effects */
+    .hover-lift {
+        transition: transform 0.2s ease;
+    }
+    
+    .hover-lift:hover {
+        transform: translateY(-2px);
+    }
 </style>
-
 @endsection

@@ -1,15 +1,59 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" prefix="og: https://ogp.me/ns#">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    {{-- SEO Meta Tags --}}
+    <title>@yield('title', settings('store_name', 'Parapharmacy')) - {{ settings('store_slogan', 'Votre santé, notre priorité') }}</title>
+    <meta name="description" content="@yield('description', settings('store_description', 'Votre parapharmacie en ligne au Maroc. Large choix de produits de santé, beauté et bien-être. Livraison rapide partout au Maroc.'))">
+    <meta name="keywords" content="@yield('keywords', 'parapharmacie Maroc, produits santé, médicaments, beauté, bien-être, pharmacie en ligne, livraison Maroc')">
+    <meta name="author" content="{{ settings('store_name', 'Parapharmacy') }}">
+    
+    {{-- Canonical --}}
+    <link rel="canonical" href="{{ url()->current() }}">
+    
+    {{-- Open Graph --}}
+    <meta property="og:locale" content="fr_FR">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="@yield('title', settings('store_name', 'Parapharmacy'))">
+    <meta property="og:description" content="@yield('description', settings('store_description', 'Votre parapharmacie en ligne au Maroc'))">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:site_name" content="{{ settings('store_name', 'Parapharmacy') }}">
+    @php
+        $ogImage = $ogImage ?? (settings('logo') ? asset('storage/' . settings('logo')) : asset('img/default-og.jpg'));
+    @endphp
+    <meta property="og:image" content="{{ $ogImage }}">
+    <meta property="og:image:secure_url" content="{{ $ogImage }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="{{ settings('store_name', 'Parapharmacy') }}">
+    
+    {{-- Twitter Card --}}
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@yield('title', settings('store_name', 'Parapharmacy'))">
+    <meta name="twitter:description" content="@yield('description', settings('store_description', 'Votre parapharmacie en ligne au Maroc'))">
+    <meta name="twitter:image" content="{{ $ogImage }}">
+    
+    {{-- Robots --}}
+    <meta name="robots" content="@yield('robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1')">
+    
+    {{-- CSRF Token --}}
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', settings('store_name', 'Parapharmacy'))</title>
+    
+    {{-- Performance Optimizations --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    
+    {{-- Styles and Scripts --}}
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="//unpkg.com/alpinejs" defer></script>
+    
+    {{-- Favicon --}}
     @php
         $logoPath = settings('logo');
     @endphp
@@ -23,7 +67,7 @@
         <link rel="icon" type="image/x-icon" href="{{ asset('img/favicon.ico') }}">
         <link rel="apple-touch-icon" href="{{ asset('img/apple-touch-icon.png') }}">
     @endif
-
+        
     <style>
         * {
             font-family: 'Poppins', sans-serif;
@@ -256,6 +300,7 @@
                             <img src="{{ asset('storage/'.$logoPath) }}" alt="{{ $storeName }}" 
                             loading="lazy"
                                  class="h-10 lg:h-16 w-auto object-contain transition-transform duration-300 hover:scale-105">
+                                     {{-- <span class="text-lg font-bold text-gray-800 lg:hidden">{{ $storeName }}</span> --}}
                         @else 
                             <div class="flex items-center space-x-2">
                                 <div class="bg-green-600 text-white p-1 lg:p-2 rounded-lg">
@@ -486,6 +531,7 @@
 
     {{-- Content --}}
     <main class="flex-grow">
+        
         @yield('content')
     </main>
 
@@ -517,10 +563,6 @@
                            class="bg-gray-800 hover:bg-green-600 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
                             <i class="fab fa-instagram"></i>
                         </a>
-                        <a href="{{ settings('twitter_url', '#') }}" target="_blank" 
-                           class="bg-gray-800 hover:bg-green-600 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
-                            <i class="fab fa-twitter"></i>
-                        </a>
                     </div>
                 </div>
 
@@ -536,9 +578,6 @@
                         </a></li>
                         <li><a href="{{ route('categories.index') }}" class="text-gray-300 hover:text-green-400 transition-colors flex items-center">
                             <i class="fas fa-chevron-right text-xs mr-2"></i>Catégories
-                        </a></li>
-                        <li><a href="{{ route('about') }}" class="text-gray-300 hover:text-green-400 transition-colors flex items-center">
-                            <i class="fas fa-chevron-right text-xs mr-2"></i>À propos
                         </a></li>
                     </ul>
                 </div>

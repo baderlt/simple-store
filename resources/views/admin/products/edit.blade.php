@@ -336,12 +336,12 @@
                                 </a>
                                 
                                 <!-- Action buttons WITHOUT forms -->
-                                {{-- <button type="button" 
-                                        onclick="setAsPrimary('{{ $image->id }}')"
+                                <button type="button" 
+                                        onclick="setAsPrimary(event,'{{ $image->id }}')"
                                         class="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 {{ $image->is_primary ? 'hidden' : '' }}"
                                         title="Définir comme principale">
                                     <i class="fas fa-star"></i>
-                                </button> --}}
+                                </button>
                                 
                                 <button type="button" 
                                         onclick="deleteImage( event,'{{ $image->id }}')"
@@ -718,52 +718,132 @@ document.getElementById('is_featured')?.addEventListener('change', function() {
     }
 });
 
-// Handle image actions (outside the form)
-function setAsPrimary(imageId) {
+function setAsPrimary(event, imageId) {
+    event.preventDefault();
+    
     if (confirm('Définir cette image comme principale ?')) {
+        // Show loading state
+        const button = event.target.closest('button');
+        const originalHTML = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        button.disabled = true;
+        
+        // Get CSRF token from meta tag
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+        
+        // Make the request
         fetch(`/admin/products/images/${imageId}/set-primary`, {
             method: 'POST',
             headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Content-Type': 'application/json'
-            }
+                'X-CSRF-TOKEN': csrfToken || '{{ csrf_token() }}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({})
         })
         .then(response => {
-            if (response.ok) {
-                location.reload();
+            // Check if response is JSON
+            const contentType = response.headers.get("content-type");
+            if (contentType && contentType.includes("application/json")) {
+                return response.json();
             } else {
-                alert('Une erreur est survenue');
+                // If not JSON, get the text to see what's wrong
+                return response.text().then(text => {
+                    throw new Error(`Expected JSON but got: ${text.substring(0, 100)}`);
+                });
+            }
+        })
+        .then(data => {
+            if (data.success) {
+                // Success - reload the page
+                showNotification(data.message || 'Image principale mise à jour avec succès', 'success');
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                throw new Error(data.message || 'Erreur inconnue');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Une erreur est survenue');
+            showNotification('Erreur: ' + error.message, 'error');
+            // Restore button
+            button.innerHTML = originalHTML;
+            button.disabled = false;
         });
     }
 }
 
-function deleteImage(event,imageId) {
-     event.preventDefault();
+function deleteImage(event, imageId) {
+    event.preventDefault();
+    
     if (confirm('Êtes-vous sûr de vouloir supprimer cette image ?')) {
+        // Show loading state
+        const button = event.target.closest('button');
+        const originalHTML = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        button.disabled = true;
+        
+        // Get CSRF token
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+        
         fetch(`/admin/products/${imageId}/images`, {
             method: 'POST',
             headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Content-Type': 'application/json'
+                'X-CSRF-TOKEN': csrfToken || '{{ csrf_token() }}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
             }
         })
         .then(response => {
-            if (response.ok) {
-                location.reload();
+            const contentType = response.headers.get("content-type");
+            if (contentType && contentType.includes("application/json")) {
+                return response.json();
             } else {
-                alert('Une erreur est survenue');
+                return response.text().then(text => {
+                    throw new Error(`Expected JSON but got: ${text.substring(0, 100)}`);
+                });
+            }
+        })
+        .then(data => {
+            if (data.success) {
+                showNotification(data.message || 'Image supprimée avec succès', 'success');
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                throw new Error(data.message || 'Erreur inconnue');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Une erreur est survenue');
+            showNotification('Erreur: ' + error.message, 'error');
+            // Restore button
+            button.innerHTML = originalHTML;
+            button.disabled = false;
         });
     }
+}
+
+// Helper function to show notifications
+function showNotification(message, type = 'success') {
+    // Remove existing notifications
+    const existing = document.getElementById('ajax-notification');
+    if (existing) existing.remove();
+    
+    // Create notification
+    const notification = document.createElement('div');
+    notification.id = 'ajax-notification';
+    notification.className = `fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg flex items-center ${
+        type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+    }`;
+    notification.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} mr-2"></i>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 3 seconds
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
 }
 // Confirmation avant suppression d'image existante
 document.querySelectorAll('form[onsubmit*="confirm"]').forEach(form => {
