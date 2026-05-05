@@ -66,7 +66,7 @@
                         {{ settings('hero_title_prefix', 'Your') }} <span class="text-yellow-300">{{ settings('hero_title_emphasis', 'Store') }}</span> {{ settings('hero_title_suffix', 'Your Priority') }}
                     </h1>
                     <p class="text-xl md:text-2xl mb-10 text-white/90 max-w-2xl mx-auto">
-                        {{ settings('hero_subtitle', 'Premium products, expert support, and personalized service for every business niche.') }}
+                        {{ settings('hero_subtitle', __('messages.hero_subtitle_default')) }}
                     </p>
                     <div class="flex flex-col sm:flex-row gap-4 justify-center">
                         <a href="{{ route('products.index') }}" 
