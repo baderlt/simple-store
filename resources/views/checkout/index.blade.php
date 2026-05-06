@@ -213,7 +213,7 @@
                         </div>
                         
                         <!-- Submit Button -->
-                        <div class="mt-8 md:mt-8 mobile-checkout-submit md:static fixed bottom-0 left-0 right-0 z-50 bg-white p-3 md:p-0 border-t md:border-t-0 shadow-2xl md:shadow-none">
+                        <div id="mobileCheckoutSubmit" class="mt-8 md:mt-8 mobile-checkout-submit md:static fixed bottom-0 left-0 right-0 z-50 bg-white p-3 md:p-0 border-t md:border-t-0 shadow-2xl md:shadow-none transform translate-y-full opacity-0 pointer-events-none md:translate-y-0 md:opacity-100 md:pointer-events-auto transition-all duration-300">
                             <button type="submit" 
                                     id="submitButton"
                                     class="w-full bg-green-600 text-white font-bold py-4 px-6 rounded-lg hover:bg-green-700 transition-all shadow-lg hover:shadow-xl flex items-center justify-center group disabled:opacity-70 disabled:cursor-not-allowed">
@@ -276,6 +276,24 @@
         e.target.value = value;
     });
     
+    // Show the fixed mobile submit button only after the customer scrolls down.
+    function updateMobileCheckoutSubmit() {
+        const submitBar = document.getElementById('mobileCheckoutSubmit');
+
+        if (!submitBar || window.innerWidth >= 768) {
+            return;
+        }
+
+        const shouldShow = window.scrollY > 220;
+        submitBar.classList.toggle('translate-y-full', !shouldShow);
+        submitBar.classList.toggle('opacity-0', !shouldShow);
+        submitBar.classList.toggle('pointer-events-none', !shouldShow);
+    }
+
+    window.addEventListener('scroll', updateMobileCheckoutSubmit, { passive: true });
+    window.addEventListener('resize', updateMobileCheckoutSubmit);
+    document.addEventListener('DOMContentLoaded', updateMobileCheckoutSubmit);
+
     // Form submission handling
     document.getElementById('checkoutForm').addEventListener('submit', function(e) {
         // Prevent multiple submissions

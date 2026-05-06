@@ -152,6 +152,18 @@
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
         }
 
+        .to-green-500,
+        .to-green-600,
+        .to-green-700,
+        .to-emerald-500,
+        .to-emerald-600,
+        .to-emerald-700 {
+            --tw-gradient-to: var(--secondary-color) var(--tw-gradient-to-position) !important;
+        }
+.gradient-bg {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        }
+
         .from-green-400,
         .from-green-500,
         .from-green-600,
@@ -466,6 +478,18 @@
                             </span>
                         </div>
                     </button>
+
+                    {{-- Language Switcher (desktop/tablet) --}}
+                    <div class="hidden sm:flex items-center rounded-full border border-gray-200 bg-gray-50 p-1 text-xs font-semibold">
+                        <a href="{{ route('lang.switch', 'fr') }}"
+                           class="px-2.5 py-1 rounded-full transition-colors {{ app()->getLocale() === 'fr' ? 'bg-green-600 text-white shadow-sm' : 'text-gray-600 hover:text-green-600' }}">
+                            FR
+                        </a>
+                        <a href="{{ route('lang.switch', 'ar') }}"
+                           class="px-2.5 py-1 rounded-full transition-colors {{ app()->getLocale() === 'ar' ? 'bg-green-600 text-white shadow-sm' : 'text-gray-600 hover:text-green-600' }}">
+                            AR
+                        </a>
+                    </div>
                     
                     @auth
                         <div x-data="{ open: false }" 
@@ -606,6 +630,25 @@
                         <span>{{ __('messages.promotions') }}</span>
                         <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse ml-1"></div>
                     </a>
+
+                    {{-- Language Switcher (mobile menu) --}}
+                    <div class="border-t pt-3">
+                        <div class="flex items-center justify-between gap-3 p-2 rounded-lg bg-gray-50">
+                            <span class="text-sm font-semibold text-gray-700 flex items-center">
+                                <i class="fas fa-globe mr-2 text-green-600"></i>{{ __('messages.language') }}
+                            </span>
+                            <div class="flex rounded-full border border-gray-200 bg-white p-1 text-xs font-semibold">
+                                <a href="{{ route('lang.switch', 'fr') }}"
+                                   class="px-3 py-1 rounded-full transition-colors {{ app()->getLocale() === 'fr' ? 'bg-green-600 text-white shadow-sm' : 'text-gray-600 hover:text-green-600' }}">
+                                    FR
+                                </a>
+                                <a href="{{ route('lang.switch', 'ar') }}"
+                                   class="px-3 py-1 rounded-full transition-colors {{ app()->getLocale() === 'ar' ? 'bg-green-600 text-white shadow-sm' : 'text-gray-600 hover:text-green-600' }}">
+                                    AR
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                     @auth
                         <a href="{{ route('orders.index') }}" class="flex items-center text-gray-700 hover:text-green-600 p-2 rounded-lg hover:bg-gray-50">
                             <i class="fas fa-clipboard-list mr-3"></i>{{ __('messages.my_orders') }}
