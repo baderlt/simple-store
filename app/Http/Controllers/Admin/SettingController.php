@@ -46,6 +46,12 @@ class SettingController extends Controller
             
             // Logo
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048',
+            'primary_color' => 'nullable|string|max:20',
+            'secondary_color' => 'nullable|string|max:20',
+            'hero_title_prefix' => 'nullable|string|max:255',
+            'hero_title_emphasis' => 'nullable|string|max:255',
+            'hero_title_suffix' => 'nullable|string|max:255',
+            'hero_subtitle' => 'nullable|string|max:500',
         ], [
             'latitude.required' => 'La latitude est requise pour la localisation.',
             'latitude.between' => 'La latitude doit être comprise entre -90 et 90.',
@@ -98,6 +104,12 @@ class SettingController extends Controller
             'delivery_time' => 'text',
             'free_delivery_threshold' => 'number',
             'logo' => 'image',
+            'primary_color' => 'text',
+            'secondary_color' => 'text',
+            'hero_title_prefix' => 'text',
+            'hero_title_emphasis' => 'text',
+            'hero_title_suffix' => 'text',
+            'hero_subtitle' => 'textarea',
         ];
 
         // Handle logo upload
@@ -119,7 +131,8 @@ class SettingController extends Controller
             }
 
             // Handle empty values for optional fields
-            if (empty($value) && in_array($key, ['whatsapp', 'delivery_zone', 'delivery_time', 'free_delivery_threshold'])) {
+            if (empty($value) && in_array($key, ['whatsapp', 'delivery_zone', 'delivery_time', 'free_delivery_threshold',
+            'primary_color', 'secondary_color', 'hero_title_prefix', 'hero_title_emphasis', 'hero_title_suffix', 'hero_subtitle'])) {
                 $value = null;
             }
 
@@ -212,7 +225,8 @@ return back()->with('success', 'Le logo a été supprimé avec succès.');
         $validKeys = [
             'store_name', 'phone', 'email', 'whatsapp', 'address', 'working_hours',
             'delivery_fee', 'latitude', 'longitude', 'delivery_zone', 'delivery_time',
-            'free_delivery_threshold'
+            'free_delivery_threshold',
+            'primary_color', 'secondary_color', 'hero_title_prefix', 'hero_title_emphasis', 'hero_title_suffix', 'hero_subtitle'
         ];
 
         if (!in_array($key, $validKeys)) {
