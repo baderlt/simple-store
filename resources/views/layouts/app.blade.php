@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() === "ar" ? "rtl" : "ltr" }}" prefix="og: https://ogp.me/ns#">
+<html lang="{{ app()->getLocale() }}" dir="ltr" prefix="og: https://ogp.me/ns#">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -76,6 +76,62 @@
         :root {
             --primary-color: {{ settings('primary_color', '#22c55e') }};
             --secondary-color: {{ settings('secondary_color', '#16a34a') }};
+        }
+
+        
+        /* Dynamic brand color overrides for common Tailwind green utility classes */
+        .text-green-400,
+        .text-green-500,
+        .text-green-600,
+        .text-green-700,
+        .hover\:text-green-600:hover,
+        .hover\:text-green-700:hover {
+            color: var(--primary-color) !important;
+        }
+
+        .bg-green-500,
+        .bg-green-600,
+        .hover\:bg-green-500:hover,
+        .hover\:bg-green-600:hover {
+            background-color: var(--primary-color) !important;
+        }
+
+        .bg-green-50,
+        .bg-green-100,
+        .hover\:bg-green-50:hover,
+        .hover\:bg-green-100:hover {
+            background-color: color-mix(in srgb, var(--primary-color) 12%, white) !important;
+        }
+
+        .border-green-500,
+        .border-green-600,
+        .focus\:ring-green-500:focus,
+        .focus\:border-green-500:focus {
+            border-color: var(--primary-color) !important;
+            --tw-ring-color: var(--primary-color) !important;
+        }
+
+        .from-green-400,
+        .from-green-500,
+        .from-green-600,
+        .from-emerald-400,
+        .from-emerald-500,
+        .from-emerald-600 {
+            --tw-gradient-from: var(--primary-color) var(--tw-gradient-from-position) !important;
+            --tw-gradient-to: color-mix(in srgb, var(--primary-color) 0%, transparent) var(--tw-gradient-to-position) !important;
+            --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+        }
+
+        .to-green-500,
+        .to-green-600,
+        .to-green-700,
+        .to-emerald-500,
+        .to-emerald-600,
+        .to-emerald-700 {
+            --tw-gradient-to: var(--secondary-color) var(--tw-gradient-to-position) !important;
+        }
+.gradient-bg {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
         }
 
         .gradient-bg {
