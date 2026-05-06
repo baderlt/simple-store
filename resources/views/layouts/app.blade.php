@@ -133,6 +133,16 @@
 .gradient-bg {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
         }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);}
+        /* Dynamic brand color overrides for common Tailwind green utility classes */
+        /* .text-green-600,.text-green-700,.text-green-400,.hover\:text-green-600:hover,.hover\:text-green-700:hover{color:var(--primary-color)!important;}
+        .bg-green-600,.bg-green-100,.hover\:bg-green-600:hover,.hover\:bg-green-50:hover{background-color:color-mix(in srgb,var(--primary-color) 16%, white)!important;}
+        .border-green-600,.border-green-500,.focus\:ring-green-500:focus{border-color:var(--primary-color)!important;}
+.gradient-bg {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+} */
         .hover-lift {
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
