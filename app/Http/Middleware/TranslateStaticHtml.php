@@ -31,10 +31,21 @@ class TranslateStaticHtml
 
     private function isHtmlResponse(Response $response): bool
     {
+        if (! $response->isSuccessful() || ! method_exists($response, 'getContent')) {
+            return false;
+        }
+
         $contentType = (string) $response->headers->get('Content-Type');
 
-        return $response->isSuccessful()
-            && method_exists($response, 'getContent')
-            && str_contains($contentType, 'text/html');
+        if (str_contains($contentType, 'text/html')) {
+            return true;
+        }
+
+        if ($contentType !== '') {
+            return false;
+        }
+
+        return str_contains(ltrim((string) $response->getContent()), '<!DOCTYPE html')
+            || str_contains(ltrim((string) $response->getContent()), '<html');
     }
 }

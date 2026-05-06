@@ -34,17 +34,35 @@
             }
 
             .text-green-500,
+            .text-emerald-500,
+            .text-teal-500,
             .text-green-600,
+            .text-emerald-600,
+            .text-teal-600,
             .text-green-700,
             .hover\:text-green-600:hover,
-            .hover\:text-green-700:hover {
+            .hover\:text-green-700:hover,
+            .hover\:text-emerald-600:hover,
+            .hover\:text-teal-600:hover {
                 color: var(--primary-color) !important;
             }
 
             .bg-green-500,
+            .bg-emerald-500,
+            .bg-teal-500,
             .bg-green-600,
+            .bg-green-700,
+            .bg-emerald-600,
+            .bg-emerald-700,
+            .bg-teal-600,
+            .bg-teal-700,
             .hover\:bg-green-500:hover,
-            .hover\:bg-green-600:hover {
+            .hover\:bg-green-600:hover,
+            .hover\:bg-green-700:hover,
+            .hover\:bg-emerald-600:hover,
+            .hover\:bg-emerald-700:hover,
+            .hover\:bg-teal-600:hover,
+            .hover\:bg-teal-700:hover {
                 background-color: var(--primary-color) !important;
             }
 
