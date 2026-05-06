@@ -85,6 +85,7 @@
         .border-green-600,.border-green-500,.focus\:ring-green-500:focus{border-color:var(--primary-color)!important;}
 .gradient-bg {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+}
         .hover-lift {
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
