@@ -354,7 +354,7 @@
                     data-product-id="{{ $product->id }}"
                     data-product-name="{{ $product->name }}"
                     data-product-stock="{{ $product->stock_quantity }}"
-                    class="add-to-cart-btn w-9 h-9 md:w-12 md:h-12 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl hover:from-emerald-600 hover:to-teal-700 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center group/btn">
+                    class="add-to-cart-btn w-9 h-9 md:w-12 md:h-12 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center group/btn">
                 <i class="fas fa-shopping-cart group-hover/btn:scale-110 transition-transform"></i>
             </button>
         @else
