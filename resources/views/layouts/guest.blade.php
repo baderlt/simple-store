@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="ltr">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -24,8 +24,54 @@
                 font-family: 'Poppins', sans-serif;
             }
             
+            :root {
+                --primary-color: {{ settings('primary_color', '#22c55e') }};
+                --secondary-color: {{ settings('secondary_color', '#16a34a') }};
+            }
+
             .gradient-bg {
-                background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+                background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            }
+
+            .text-green-500,
+            .text-emerald-500,
+            .text-teal-500,
+            .text-green-600,
+            .text-emerald-600,
+            .text-teal-600,
+            .text-green-700,
+            .hover\:text-green-600:hover,
+            .hover\:text-green-700:hover,
+            .hover\:text-emerald-600:hover,
+            .hover\:text-teal-600:hover {
+                color: var(--primary-color) !important;
+            }
+
+            .bg-green-500,
+            .bg-emerald-500,
+            .bg-teal-500,
+            .bg-green-600,
+            .bg-green-700,
+            .bg-emerald-600,
+            .bg-emerald-700,
+            .bg-teal-600,
+            .bg-teal-700,
+            .hover\:bg-green-500:hover,
+            .hover\:bg-green-600:hover,
+            .hover\:bg-green-700:hover,
+            .hover\:bg-emerald-600:hover,
+            .hover\:bg-emerald-700:hover,
+            .hover\:bg-teal-600:hover,
+            .hover\:bg-teal-700:hover {
+                background-color: var(--primary-color) !important;
+            }
+
+            .border-green-500,
+            .border-green-600,
+            .focus\:ring-green-500:focus,
+            .focus\:border-green-500:focus {
+                border-color: var(--primary-color) !important;
+                --tw-ring-color: var(--primary-color) !important;
             }
             
             .hover-lift {

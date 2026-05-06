@@ -213,10 +213,10 @@
                         </div>
                         
                         <!-- Submit Button -->
-                        <div class="mt-8">
+                        <div class="mt-8 md:mt-8 mobile-checkout-submit md:static fixed bottom-0 left-0 right-0 z-50 bg-white p-3 md:p-0 border-t md:border-t-0 shadow-2xl md:shadow-none">
                             <button type="submit" 
                                     id="submitButton"
-                                    class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold py-4 px-6 rounded-lg hover:from-emerald-700 hover:to-teal-700 transition-all shadow-lg hover:shadow-xl flex items-center justify-center group disabled:opacity-70 disabled:cursor-not-allowed">
+                                    class="w-full bg-green-600 text-white font-bold py-4 px-6 rounded-lg hover:bg-green-700 transition-all shadow-lg hover:shadow-xl flex items-center justify-center group disabled:opacity-70 disabled:cursor-not-allowed">
                                 <span id="buttonText">
                                     @if($isDirect ?? false)
                                         <i class="fas fa-bolt mr-3 group-hover:rotate-12 transition-transform"></i>
@@ -327,4 +327,12 @@
     }
 </style>
 
+<style>
+    /* mobile checkout fixed padding */
+    @media (max-width: 767px) {
+        body {
+            padding-bottom: 92px;
+        }
+    }
+</style>
 @endsection

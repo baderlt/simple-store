@@ -228,7 +228,7 @@
                                     data-product-id="{{ $product->id }}"
                                     data-product-name="{{ $product->name }}"
                                     data-product-stock="{{ $product->stock_quantity }}"
-                                    class="add-to-cart-btn w-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white py-4 rounded-xl font-bold text-lg hover:from-emerald-600 hover:to-teal-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group">
+                                    class="add-to-cart-btn w-full bg-green-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-green-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group">
                                 <i class="fas fa-shopping-cart mr-3 group-hover:rotate-12 transition-transform"></i>
                                 Ajouter au panier
                             </button>
@@ -236,11 +236,34 @@
                             <form action="{{ route('checkout.direct', $product->id) }}" method="GET" id="buyNowForm">
                                 <input type="hidden" name="quantity" id="buyNowQuantity" value="1">
                                 <button type="submit" 
-                                        class="w-full bg-gradient-to-r from-gray-900 to-black text-white py-4 rounded-xl font-bold text-lg hover:from-gray-800 hover:to-gray-900 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group">
+                                        class="w-full bg-gray-900 text-white py-4 rounded-xl font-bold text-lg hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group">
                                     <i class="fas fa-bolt mr-3 group-hover:scale-125 transition-transform"></i>
                                     Commander maintenant
                                 </button>
                             </form>
+                        </div>
+
+                        <!-- Mobile fixed buy actions -->
+                        <div class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-2xl p-3 mobile-product-actions">
+                            <div class="grid grid-cols-2 gap-3">
+                                <button type="button"
+                                        data-product-id="{{ $product->id }}"
+                                        data-product-name="{{ $product->name }}"
+                                        data-product-stock="{{ $product->stock_quantity }}"
+                                        class="add-to-cart-btn bg-green-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-green-700 transition-all duration-300 shadow flex items-center justify-center">
+                                    <i class="fas fa-shopping-cart mr-2"></i>
+                                    Ajouter au panier
+                                </button>
+
+                                <form action="{{ route('checkout.direct', $product->id) }}" method="GET" id="fixedBuyNowForm">
+                                    <input type="hidden" name="quantity" id="fixedBuyNowQuantity" value="1">
+                                    <button type="submit"
+                                            class="w-full bg-gray-900 text-white py-3 rounded-xl font-bold text-sm hover:bg-gray-800 transition-all duration-300 shadow flex items-center justify-center">
+                                        <i class="fas fa-bolt mr-2"></i>
+                                        Commander maintenant
+                                    </button>
+                                </form>
+                            </div>
                         </div>
 
                         <!-- Share Button -->
@@ -661,6 +684,7 @@ function updateQuantity(change) {
     const input = document.getElementById('quantity');
     const formQuantity = document.getElementById('formQuantity');
     const buyNowQuantity = document.getElementById('buyNowQuantity');
+    const fixedBuyNowQuantity = document.getElementById('fixedBuyNowQuantity');
     
     let newValue = parseInt(input.value) + change;
     newValue = Math.max(1, Math.min(newValue, {{ $product->stock_quantity }}));
@@ -668,6 +692,9 @@ function updateQuantity(change) {
     input.value = newValue;
     formQuantity.value = newValue;
     buyNowQuantity.value = newValue;
+    if (fixedBuyNowQuantity) {
+        fixedBuyNowQuantity.value = newValue;
+    }
 }
 
 // Share product
@@ -690,6 +717,12 @@ updateActiveThumbnail(1);
 </script>
 
 <style>
+    @media (max-width: 767px) {
+        body {
+            padding-bottom: 84px;
+        }
+    }
+
     /* Smooth image transition */
     #mainImage {
         transition: opacity 0.3s ease-in-out, transform 0.5s ease;
