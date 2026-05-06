@@ -150,6 +150,8 @@
         }
 .gradient-bg {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+<<<<<<< codex/add-customizable-site-colors-and-multilingual-support-hu0vti
+=======
         }
 
         .to-green-500,
@@ -182,6 +184,7 @@
         .to-emerald-600,
         .to-emerald-700 {
             --tw-gradient-to: var(--secondary-color) var(--tw-gradient-to-position) !important;
+>>>>>>> master
         }
 .gradient-bg {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
