@@ -696,7 +696,12 @@ function updateMobileBuyNowBar() {
         return;
     }
 
+<<<<<<< codex/add-customizable-site-colors-and-multilingual-support-hu0vti
     const shouldShow = window.scrollY > 260;
+=======
+    const originalButtonBottom = originalForm.getBoundingClientRect().bottom;
+    const shouldShow = originalButtonBottom < 0;
+>>>>>>> master
 
     bar.classList.toggle('translate-y-full', !shouldShow);
     bar.classList.toggle('opacity-0', !shouldShow);
