@@ -60,24 +60,24 @@
             <div class="container mx-auto px-4 relative z-10">
                 <div class="max-w-3xl mx-auto text-center">
                     <span class="inline-block bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-semibold mb-6 animate-pulse">
-                        <i class="fas fa-star mr-2"></i> Pharmacie de Confiance
+                        <i class="fas fa-star mr-2"></i> {{ __('messages.trusted_pharmacy') }}
                     </span>
                     <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
                         {{ settings('hero_title_prefix', 'Your') }} <span class="text-yellow-300">{{ settings('hero_title_emphasis', 'Store') }}</span> {{ settings('hero_title_suffix', 'Your Priority') }}
                     </h1>
                     <p class="text-xl md:text-2xl mb-10 text-white/90 max-w-2xl mx-auto">
-                        {{ settings('hero_subtitle', 'Premium products, expert support, and personalized service for every business niche.') }}
+                        {{ settings('hero_subtitle', __('messages.hero_subtitle_default')) }}
                     </p>
                     <div class="flex flex-col sm:flex-row gap-4 justify-center">
                         <a href="{{ route('products.index') }}" 
                            class="group bg-white text-green-700 hover:bg-green-50 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
                             <i class="fas fa-pills group-hover:rotate-12 transition-transform"></i>
-                            Découvrir nos produits
+                            {{ __('messages.discover_products') }}
                         </a>
                         <a href="#categories" 
                            class="group bg-transparent border-2 border-white/50 text-white hover:bg-white/10 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 backdrop-blur-sm flex items-center justify-center gap-2">
                             <i class="fas fa-tags group-hover:scale-110 transition-transform"></i>
-                            Explorer catégories
+                            {{ __('messages.explore_categories') }}
                         </a>
                     </div>
                 </div>
@@ -96,13 +96,13 @@
         <div class="container mx-auto px-4">
             <div class="text-center mb-12">
                 <span class="inline-block bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-semibold mb-4">
-                    <i class="fas fa-tags mr-2"></i> Nos Produits
+                    <i class="fas fa-tags mr-2"></i> {{ __('messages.our_products') }}
                 </span>
                 <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-4">
-                    Explorez par <span class="text-green-600">Catégorie</span>
+                    {{ __('messages.explore_by_category') }}
                 </h2>
                 <p class="text-gray-600 text-lg max-w-2xl mx-auto">
-                    Découvrez notre large gamme de produits de santé et bien-être classés par catégorie
+                    {{ __('messages.category_subtitle') }}
                 </p>
             </div>
             
@@ -179,7 +179,7 @@
                                             </h3>
                                             
                                             <div class="inline-flex items-center gap-1 text-sm font-medium {{ $colors['text'] }} group-hover:text-gray-800 transition-colors duration-300">
-                                                <span>Voir produits</span>
+                                                <span>{{ __('messages.see_products') }}</span>
                                                 <i class="fas fa-arrow-right text-xs transform group-hover:translate-x-1 transition-transform duration-300"></i>
                                             </div>
                                         </div>
@@ -201,8 +201,8 @@
                     <div class="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center">
                         <i class="fas fa-inbox text-4xl text-gray-400"></i>
                     </div>
-                    <h3 class="text-xl font-semibold text-gray-700 mb-2">Aucune catégorie disponible</h3>
-                    <p class="text-gray-600 mb-6">Les catégories seront bientôt ajoutées</p>
+                    <h3 class="text-xl font-semibold text-gray-700 mb-2">{{ __('messages.no_category') }}</h3>
+                    <p class="text-gray-600 mb-6">{{ __('messages.categories_soon') }}</p>
                 </div>
             @endif
         </div>
