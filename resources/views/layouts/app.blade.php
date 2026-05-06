@@ -151,6 +151,51 @@
 .gradient-bg {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
         }
+
+        .to-green-500,
+        .to-green-600,
+        .to-green-700,
+        .to-emerald-500,
+        .to-emerald-600,
+        .to-emerald-700 {
+            --tw-gradient-to: var(--secondary-color) var(--tw-gradient-to-position) !important;
+        }
+.gradient-bg {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        }
+
+        .from-green-400,
+        .from-green-500,
+        .from-green-600,
+        .from-emerald-400,
+        .from-emerald-500,
+        .from-emerald-600 {
+            --tw-gradient-from: var(--primary-color) var(--tw-gradient-from-position) !important;
+            --tw-gradient-to: color-mix(in srgb, var(--primary-color) 0%, transparent) var(--tw-gradient-to-position) !important;
+            --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+        }
+
+        .to-green-500,
+        .to-green-600,
+        .to-green-700,
+        .to-emerald-500,
+        .to-emerald-600,
+        .to-emerald-700 {
+            --tw-gradient-to: var(--secondary-color) var(--tw-gradient-to-position) !important;
+        }
+.gradient-bg {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);}
+        /* Dynamic brand color overrides for common Tailwind green utility classes */
+        /* .text-green-600,.text-green-700,.text-green-400,.hover\:text-green-600:hover,.hover\:text-green-700:hover{color:var(--primary-color)!important;}
+        .bg-green-600,.bg-green-100,.hover\:bg-green-600:hover,.hover\:bg-green-50:hover{background-color:color-mix(in srgb,var(--primary-color) 16%, white)!important;}
+        .border-green-600,.border-green-500,.focus\:ring-green-500:focus{border-color:var(--primary-color)!important;}
+.gradient-bg {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+} */
         .hover-lift {
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
@@ -1458,6 +1503,13 @@ button:disabled {
     to { transform: rotate(360deg); }
 }
 </style>
+
+
+    <div class="fixed bottom-4 left-4 z-50 bg-white border rounded-lg shadow px-3 py-2 text-sm">
+        <span class="mr-2 font-semibold">{{ __('messages.language') }}:</span>
+        <a href="{{ route('lang.switch', 'fr') }}" class="text-blue-600 mr-2">FR</a>
+        <a href="{{ route('lang.switch', 'ar') }}" class="text-blue-600">AR</a>
+    </div>
 
 </body>
 </html>
