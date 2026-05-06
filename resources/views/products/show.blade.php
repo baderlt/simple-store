@@ -243,9 +243,9 @@
                             </form>
                         </div>
 
-                        <!-- Mobile fixed buy action (shown after scrolling past the original action buttons) -->
+                        <!-- Fixed buy action (shown after scrolling past the original action buttons) -->
                         <div id="mobileBuyNowBar"
-                             class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-2xl p-3 transform translate-y-full opacity-0 pointer-events-none transition-all duration-300">
+                             class="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur border-t border-gray-200 shadow-2xl p-3 transform translate-y-full opacity-0 pointer-events-none transition-all duration-300">
                             <form action="{{ route('checkout.direct', $product->id) }}" method="GET" id="fixedBuyNowForm">
                                 <input type="hidden" name="quantity" id="fixedBuyNowQuantity" value="1">
                                 <button type="submit"
@@ -687,21 +687,17 @@ function updateQuantity(change) {
     }
 }
 
-// Mobile sticky buy-now visibility
+// Sticky buy-now visibility
 function updateMobileBuyNowBar() {
     const bar = document.getElementById('mobileBuyNowBar');
     const originalForm = document.getElementById('buyNowForm');
 
-    if (!bar || !originalForm || window.innerWidth >= 768) {
+    if (!bar || !originalForm) {
         return;
     }
 
-<<<<<<< codex/add-customizable-site-colors-and-multilingual-support-hu0vti
-    const shouldShow = window.scrollY > 260;
-=======
     const originalButtonBottom = originalForm.getBoundingClientRect().bottom;
     const shouldShow = originalButtonBottom < 0;
->>>>>>> master
 
     bar.classList.toggle('translate-y-full', !shouldShow);
     bar.classList.toggle('opacity-0', !shouldShow);
@@ -732,10 +728,8 @@ updateActiveThumbnail(1);
 </script>
 
 <style>
-    @media (max-width: 767px) {
-        body {
-            padding-bottom: 84px;
-        }
+    body {
+        padding-bottom: 84px;
     }
 
     /* Smooth image transition */
