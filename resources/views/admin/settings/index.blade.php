@@ -461,6 +461,25 @@
                 </div>
             </div>
 
+
+            <div class="bg-amber-50 rounded-xl p-6 border border-amber-100">
+                <div class="flex items-center mb-6">
+                    <div class="bg-amber-500 p-3 rounded-lg mr-4"><i class="fas fa-palette text-white text-xl"></i></div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800">Personnalisation du site</h3>
+                        <p class="text-gray-600">Couleurs principales et textes de la page d'accueil</p>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div><label class="block font-semibold text-gray-700 mb-2">Couleur principale</label><input type="color" name="primary_color" value="{{ old('primary_color', $settings['primary_color'] ?? '#22c55e') }}" class="w-full h-12 border border-gray-300 rounded-lg"></div>
+                    <div><label class="block font-semibold text-gray-700 mb-2">Couleur secondaire</label><input type="color" name="secondary_color" value="{{ old('secondary_color', $settings['secondary_color'] ?? '#0f172a') }}" class="w-full h-12 border border-gray-300 rounded-lg"></div>
+                    <div><label class="block font-semibold text-gray-700 mb-2">Titre hero (début)</label><input type="text" name="hero_title_prefix" value="{{ old('hero_title_prefix', $settings['hero_title_prefix'] ?? 'Your') }}" class="w-full px-4 py-3 border border-gray-300 rounded-lg"></div>
+                    <div><label class="block font-semibold text-gray-700 mb-2">Titre hero (accent)</label><input type="text" name="hero_title_emphasis" value="{{ old('hero_title_emphasis', $settings['hero_title_emphasis'] ?? 'Store') }}" class="w-full px-4 py-3 border border-gray-300 rounded-lg"></div>
+                    <div class="md:col-span-2"><label class="block font-semibold text-gray-700 mb-2">Titre hero (fin)</label><input type="text" name="hero_title_suffix" value="{{ old('hero_title_suffix', $settings['hero_title_suffix'] ?? 'Your Priority') }}" class="w-full px-4 py-3 border border-gray-300 rounded-lg"></div>
+                    <div class="md:col-span-2"><label class="block font-semibold text-gray-700 mb-2">Sous-titre hero</label><textarea name="hero_subtitle" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg">{{ old('hero_subtitle', $settings['hero_subtitle'] ?? '') }}</textarea></div>
+                </div>
+            </div>
+
             <!-- Footer Actions -->
             <div class="bg-gray-50 px-8 py-6 border-t">
                 <div class="flex justify-between items-center">
