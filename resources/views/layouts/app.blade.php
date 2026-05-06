@@ -78,9 +78,13 @@
             --secondary-color: {{ settings('secondary_color', '#16a34a') }};
         }
 
-        .gradient-bg {
+        
+        /* Dynamic brand color overrides for common Tailwind green utility classes */
+        .text-green-600,.text-green-700,.text-green-400,.hover\:text-green-600:hover,.hover\:text-green-700:hover{color:var(--primary-color)!important;}
+        .bg-green-600,.bg-green-100,.hover\:bg-green-600:hover,.hover\:bg-green-50:hover{background-color:color-mix(in srgb,var(--primary-color) 16%, white)!important;}
+        .border-green-600,.border-green-500,.focus\:ring-green-500:focus{border-color:var(--primary-color)!important;}
+.gradient-bg {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-        }
         .hover-lift {
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
@@ -325,7 +329,7 @@
                             <input type="text" 
                                    name="search" 
                                    id="desktop-search-input"
-                                   placeholder="Rechercher des produits..." 
+                                   placeholder="{{ __('messages.search_products') }}" 
                                    class="w-full px-4 py-2 pl-12 pr-10 text-gray-700 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
                                    value="{{ request('search') }}"
                                    autocomplete="off">
@@ -393,7 +397,7 @@
                                             <i class="fas fa-tachometer-alt text-sm"></i>
                                         </div>
                                         <div>
-                                            <div class="font-medium">Dashboard Admin</div>
+                                            <div class="font-medium">{{ __('messages.admin_dashboard') }}</div>
                                             <div class="text-xs text-gray-500">Gestion du site</div>
                                         </div>
                                     </a>
@@ -407,7 +411,7 @@
                                             <i class="fas fa-sign-out-alt text-sm"></i>
                                         </div>
                                         <div>
-                                            <div class="font-medium">Déconnexion</div>
+                                            <div class="font-medium">{{ __('messages.logout') }}</div>
                                             <div class="text-xs text-gray-500">Se déconnecter</div>
                                         </div>
                                     </button>
@@ -439,7 +443,7 @@
                         <input type="text" 
                                name="search" 
                                id="mobile-search-input"
-                               placeholder="Rechercher des produits..." 
+                               placeholder="{{ __('messages.search_products') }}" 
                                class="w-full px-4 py-2 pl-12 pr-10 text-gray-700 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
                                value="{{ request('search') }}"
                                autocomplete="off">
@@ -459,13 +463,13 @@
             {{-- Desktop Navigation --}}
             <nav class="desktop-nav -mt-1 hidden lg:flex items-center justify-center space-x-8 ">
                 <a href="{{ route('home') }}" class="nav-link pt-0 text-gray-700 hover:text-green-600 font-medium">
-                    <i class="fas fa-home mr-2"></i>Accueil
+                    <i class="fas fa-home mr-2"></i>{{ __('messages.home') }}
                 </a>
                 <a href="{{ route('products.index') }}" class="nav-link text-gray-700 hover:text-green-600 font-medium">
-                    <i class="fas fa-pills mr-2"></i>Produits
+                    <i class="fas fa-pills mr-2"></i>{{ __('messages.products') }}
                 </a>
                 <a href="{{ route('categories.index') }}" class="nav-link text-gray-700 hover:text-green-600 font-medium">
-                    <i class="fas fa-th-large mr-2"></i>Catégories
+                    <i class="fas fa-th-large mr-2"></i>{{ __('messages.categories') }}
                 </a>
                 <a href="{{ route('promotions.index') }}" 
                    class="nav-link flex items-center gap-2 text-red-600 font-bold hover:text-red-700 
@@ -480,7 +484,7 @@
                 </a>
                 @auth
                     <a href="{{ route('orders.index') }}" class="nav-link text-gray-700 hover:text-green-600 font-medium">
-                        <i class="fas fa-clipboard-list mr-2"></i>Mes Commandes
+                        <i class="fas fa-clipboard-list mr-2"></i>{{ __('messages.my_orders') }}
                     </a>
                 @endauth
             </nav>
@@ -489,13 +493,13 @@
             <div id="mobileMenu" class="lg:hidden hidden bg-white border-t mt-2 py-4">
                 <div class="flex flex-col space-y-4">
                     <a href="{{ route('home') }}" class="flex items-center text-gray-700 hover:text-green-600 p-2 rounded-lg hover:bg-gray-50">
-                        <i class="fas fa-home mr-3"></i>Accueil
+                        <i class="fas fa-home mr-3"></i>{{ __('messages.home') }}
                     </a>
                     <a href="{{ route('products.index') }}" class="flex items-center text-gray-700 hover:text-green-600 p-2 rounded-lg hover:bg-gray-50">
-                        <i class="fas fa-pills mr-3"></i>Produits
+                        <i class="fas fa-pills mr-3"></i>{{ __('messages.products') }}
                     </a>
                     <a href="{{ route('categories.index') }}" class="flex items-center text-gray-700 hover:text-green-600 p-2 rounded-lg hover:bg-gray-50">
-                        <i class="fas fa-th-large mr-3"></i>Catégories
+                        <i class="fas fa-th-large mr-3"></i>{{ __('messages.categories') }}
                     </a>
                     <a href="{{ route('promotions.index') }}" 
                        class="flex items-center text-red-600 font-bold hover:text-red-700 p-2 rounded-lg bg-red-50 hover:bg-red-100 transition-all duration-200">
@@ -505,11 +509,11 @@
                     </a>
                     @auth
                         <a href="{{ route('orders.index') }}" class="flex items-center text-gray-700 hover:text-green-600 p-2 rounded-lg hover:bg-gray-50">
-                            <i class="fas fa-clipboard-list mr-3"></i>Mes Commandes
+                            <i class="fas fa-clipboard-list mr-3"></i>{{ __('messages.my_orders') }}
                         </a>
                         @if(Auth::user()->is_admin)
                             <a href="{{ route('admin.dashboard') }}" class="flex items-center text-gray-700 hover:text-green-600 p-2 rounded-lg hover:bg-gray-50">
-                                <i class="fas fa-tachometer-alt mr-3"></i>Dashboard Admin
+                                <i class="fas fa-tachometer-alt mr-3"></i>{{ __('messages.admin_dashboard') }}
                             </a>
                         @endif
                         <form method="POST" action="{{ route('logout') }}" class="mt-2 pt-2 border-t">
@@ -517,16 +521,16 @@
                             <button type="submit" 
                                     class="flex items-center w-full text-left text-red-600 hover:text-red-700 p-2 rounded-lg hover:bg-red-50">
                                 <i class="fas fa-sign-out-alt mr-3"></i>
-                                <span>Déconnexion</span>
+                                <span>{{ __('messages.logout') }}</span>
                             </button>
                         </form>
                     @else
                         <div class="flex space-x-4 pt-2 border-t">
                             <a href="{{ route('login') }}" class="flex-1 text-center px-4 py-2 text-green-600 hover:text-green-700 font-medium border border-green-600 rounded-lg">
-                                Connexion
+                                {{ __('messages.login') }}
                             </a>
                             <a href="{{ route('register') }}" class="flex-1 text-center gradient-bg text-white px-4 py-2 rounded-lg hover:shadow-lg transition-shadow font-medium">
-                                Inscription
+                                {{ __('messages.register') }}
                             </a>
                         </div>
                     @endauth
@@ -574,23 +578,23 @@
 
                 {{-- Quick Links --}}
                 <div>
-                    <h3 class="text-xl font-bold mb-6 text-green-400">Navigation</h3>
+                    <h3 class="text-xl font-bold mb-6 text-green-400">{{ __('messages.navigation') }}</h3>
                     <ul class="space-y-3">
                         <li><a href="{{ route('home') }}" class="text-gray-300 hover:text-green-400 transition-colors flex items-center">
-                            <i class="fas fa-chevron-right text-xs mr-2"></i>Accueil
+                            <i class="fas fa-chevron-right text-xs mr-2"></i>{{ __('messages.home') }}
                         </a></li>
                         <li><a href="{{ route('products.index') }}" class="text-gray-300 hover:text-green-400 transition-colors flex items-center">
-                            <i class="fas fa-chevron-right text-xs mr-2"></i>Produits
+                            <i class="fas fa-chevron-right text-xs mr-2"></i>{{ __('messages.products') }}
                         </a></li>
                         <li><a href="{{ route('categories.index') }}" class="text-gray-300 hover:text-green-400 transition-colors flex items-center">
-                            <i class="fas fa-chevron-right text-xs mr-2"></i>Catégories
+                            <i class="fas fa-chevron-right text-xs mr-2"></i>{{ __('messages.categories') }}
                         </a></li>
                     </ul>
                 </div>
 
                 {{-- Contact --}}
                 <div>
-                    <h3 class="text-xl font-bold mb-6 text-green-400">Contact</h3>
+                    <h3 class="text-xl font-bold mb-6 text-green-400">{{ __('messages.contact') }}</h3>
                     <ul class="space-y-4">
                         <li class="flex items-start">
                             <i class="fas fa-map-marker-alt text-green-400 mt-1 mr-3"></i>
@@ -609,7 +613,7 @@
 
                 {{-- Hours & Payment --}}
                 <div>
-                    <h3 class="text-xl font-bold mb-6 text-green-400">Horaires</h3>
+                    <h3 class="text-xl font-bold mb-6 text-green-400">{{ __('messages.hours') }}</h3>
                     <p class="text-gray-300 mb-6">{{ settings('working_hours', 'Lun-Sam: 9h-20h') }}</p>
                 </div>
             </div>
@@ -617,7 +621,7 @@
             {{-- Bottom Bar --}}
             <div class="border-t border-gray-700 mt-8 pt-8 text-center">
                 <p class="text-gray-400">
-                    &copy; {{ date('Y') }} {{ $storeName }}. Tous droits réservés. 
+                    &copy; {{ date('Y') }} {{ $storeName }}. {{ __('messages.rights') }} 
                     <span class="mx-2">|</span>
                     <a href="#" class="hover:text-green-400">Politique de confidentialité</a>
                     <span class="mx-2">|</span>
