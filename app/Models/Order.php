@@ -90,12 +90,12 @@ class Order extends Model
     public function getStatusLabelAttribute(): string
     {
         return match($this->status) {
-            'pending' => 'En attente',
-            'preparing' => 'En préparation',
-            'out_for_delivery' => 'En livraison',
-            'delivered' => 'Livré',
-            'cancelled' => 'Annulé',
-            default => 'Inconnu',
+            'pending' => __('status_pending'),
+            'preparing' => __('status_preparing'),
+            'out_for_delivery' => __('status_out_for_delivery'),
+            'delivered' => __('status_delivered'),
+            'cancelled' => __('status_cancelled'),
+            default => __('status_unknown'),
         };
     }
 

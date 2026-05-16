@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
+use App\Services\StoreSettingsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -23,7 +24,7 @@ class SettingController extends Controller
             // Informations Générales
             'store_name' => 'required|string|max:255',
             'working_hours' => 'required|string|max:255',
-            
+
             // Contact & Réseaux
             'phone' => 'required|string|max:20',
             'email' => 'required|email|max:255',
@@ -31,19 +32,19 @@ class SettingController extends Controller
             'address' => 'required|string|max:500',
             "instagram_url"=>'nullable|string',
             "facebook_url"=>"nullable|string",
-            
+
             // Localisation GPS
             'latitude' => 'required|numeric|between:-90,90',
             'longitude' => 'required|numeric|between:-180,180',
             'maps_link' => 'nullable|string',
-            
-            
+
+
             // Paramètres de Livraison
             'delivery_fee' => 'required|numeric|min:0',
             'delivery_zone' => 'nullable|string|max:255',
             'delivery_time' => 'nullable|string|max:100',
             'free_delivery_threshold' => 'nullable|numeric|min:0',
-            
+
             // Logo
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048',
             'primary_color' => 'nullable|string|max:20',
@@ -68,7 +69,7 @@ class SettingController extends Controller
             if ($request->hasFile('logo')) {
                 $image = $request->file('logo');
                 $dimensions = getimagesize($image->getPathname());
-                
+
                 if ($dimensions[0] < 100 || $dimensions[1] < 100) {
                     $validator->errors()->add(
                         'logo', 'Le logo doit avoir au moins 100x100 pixels.'
@@ -85,7 +86,7 @@ class SettingController extends Controller
 
         // Get validated data
         $validated = $validator->validated();
-        
+
         // Define field types for your model
         $fieldTypes = [
             'store_name' => 'text',
@@ -118,7 +119,7 @@ class SettingController extends Controller
             if ($oldLogo) {
                 Storage::disk('public')->delete($oldLogo);
             }
-            
+
             $logoPath = $request->file('logo')->store('settings/logos', 'public');
             Setting::set('logo', $logoPath, 'image');
         }
@@ -138,12 +139,15 @@ class SettingController extends Controller
 
             // Get field type or default to 'text'
             $type = $fieldTypes[$key] ?? 'text';
-            
+
             // Save setting
             Setting::set($key, $value, $type);
         }
 
-return back()->with('success', 'Tous les paramètres ont été enregistrés avec succès.');
+        // Flush the settings cache so new values are picked up immediately
+        app(StoreSettingsService::class)->flush();
+
+	return back()->with('success', 'Tous les paramètres ont été enregistrés avec succès.');
     }
 
     /**
@@ -153,19 +157,20 @@ return back()->with('success', 'Tous les paramètres ont été enregistrés avec
     {
         try {
             $logoPath = Setting::get('logo');
-            
+
             if ($logoPath && Storage::disk('public')->exists($logoPath)) {
                 Storage::disk('public')->delete($logoPath);
             }
-            
+
             Setting::remove('logo');
-            
-return back()->with('success', 'Le logo a été supprimé avec succès.');
+            // Flush the settings cache
+            app(StoreSettingsService::class)->flush();
+
+	return back()->with('success', 'Le logo a été supprimé avec succès.');
         } catch (\Exception $e) {
             return back()->with('error','Impossible de supprimer le logo : ' . $e->getMessage());
         }
     }
-
 
 
     /**
@@ -174,11 +179,11 @@ return back()->with('success', 'Le logo a été supprimé avec succès.');
     public function getJson()
     {
         $settings = Setting::all()->pluck('value', 'key')->toArray();
-        
+
         // Add some computed fields
         $settings['has_logo'] = !empty($settings['logo']);
         $settings['has_whatsapp'] = !empty($settings['whatsapp']);
-        
+
         // Format numeric values
         $numericFields = ['delivery_fee', 'latitude', 'longitude', 'free_delivery_threshold'];
         foreach ($numericFields as $field) {
@@ -200,7 +205,7 @@ return back()->with('success', 'Le logo a été supprimé avec succès.');
     public function getSetting($key)
     {
         $value = Setting::get($key);
-        
+
         if (is_null($value)) {
             return response()->json([
                 'success' => false,
@@ -248,7 +253,7 @@ return back()->with('success', 'Le logo a été supprimé avec succès.');
         }
 
         $value = $request->input('value');
-        
+
         // Validate specific fields
         $validationRules = [
             'email' => 'email',
@@ -274,8 +279,11 @@ return back()->with('success', 'Le logo a été supprimé avec succès.');
         // Determine field type
         $numberFields = ['delivery_fee', 'latitude', 'longitude', 'free_delivery_threshold'];
         $type = in_array($key, $numberFields) ? 'number' : 'text';
-        
+
         Setting::set($key, $value, $type);
+
+        // Flush the settings cache so new values are picked up immediately
+        app(StoreSettingsService::class)->flush();
 
         return response()->json([
             'success' => true,

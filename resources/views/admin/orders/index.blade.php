@@ -1,18 +1,18 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Orders - Admin')
-@section('header', 'Gestion des Commandes')
+@section('title', __('orders_management') . ' - Admin')
+@section('header', __('orders_management'))
 
 @section('content')
     <div class="mb-6">
         <form method="GET" action="{{ route('admin.orders.index') }}">
             <select name="status" class="w-full sm:w-auto px-4 py-2 border rounded-lg" onchange="this.form.submit()">
                 <option value="">Tous les statuts</option>
-                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>En attente</option>
-                <option value="preparing" {{ request('status') == 'preparing' ? 'selected' : '' }}>En préparation</option>
-                <option value="out_for_delivery" {{ request('status') == 'out_for_delivery' ? 'selected' : '' }}>En livraison</option>
-                <option value="delivered" {{ request('status') == 'delivered' ? 'selected' : '' }}>Livré</option>
-                <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Annulé</option>
+                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>{{ __('status_pending') }}</option>
+                <option value="preparing" {{ request('status') == 'preparing' ? 'selected' : '' }}>{{ __('status_preparing') }}</option>
+                <option value="out_for_delivery" {{ request('status') == 'out_for_delivery' ? 'selected' : '' }}>{{ __('status_out_for_delivery') }}</option>
+                <option value="delivered" {{ request('status') == 'delivered' ? 'selected' : '' }}>{{ __('status_delivered') }}</option>
+                <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>{{ __('status_cancelled') }}</option>
             </select>
         </form>
     </div>
@@ -22,13 +22,13 @@
         <table class="w-full">
             <thead class="bg-gray-50">
                 <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">N° Commande</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Client</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Téléphone</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('order_number') }}</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('customer') }}</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Téléphone') }}</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Total') }}</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Statut') }}</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Date') }}</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Actions') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-200">

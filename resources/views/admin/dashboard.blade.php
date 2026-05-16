@@ -1,7 +1,7 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Tableau de Bord')
-@section('header', 'Tableau de Bord')
+@section('title', __('dashboard'))
+@section('header', __('dashboard'))
 
 @section('content')
 <div class="container mx-auto ">
@@ -12,11 +12,11 @@
         <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-emerald-500">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-gray-500 text-sm font-medium">Revenu Total</p>
+                    <p class="text-gray-500 text-sm font-medium">{{ __('total_revenue') }}</p>
                     <h3 class="text-2xl font-bold text-gray-800 mt-1">{{ number_format($totalSales, 0) }} DH</h3>
                     <div class="flex items-center mt-2">
                         <span class="text-xs px-2 py-1 bg-emerald-100 text-emerald-800 rounded-full">
-                            <i class="fas fa-arrow-up mr-1"></i> {{ number_format($monthlySales, 0) }} DH ce mois
+                            <i class="fas fa-arrow-up mr-1"></i> {{ number_format($monthlySales, 0) }} DH {{ __('month') }}
                         </span>
                     </div>
                 </div>
@@ -30,14 +30,14 @@
         <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-gray-500 text-sm font-medium">Commandes</p>
+                    <p class="text-gray-500 text-sm font-medium">{{ __('Commandes') }}</p>
                     <h3 class="text-2xl font-bold text-gray-800 mt-1">{{ $totalOrders }}</h3>
                     <div class="flex items-center space-x-2 mt-2">
                         <span class="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full">
-                            Aujourd'hui: {{ $todayOrders }}
+                            {{ __('Aujourd\'hui:') }} {{ $todayOrders }}
                         </span>
                         <span class="text-xs px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full">
-                            En attente: {{ $pendingOrders }}
+                            {{ __('En attente:') }} {{ $pendingOrders }}
                         </span>
                     </div>
                 </div>
@@ -51,11 +51,11 @@
         <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-gray-500 text-sm font-medium">Produits</p>
+                    <p class="text-gray-500 text-sm font-medium">{{ __('Produits') }}</p>
                     <h3 class="text-2xl font-bold text-gray-800 mt-1">{{ $totalProducts }}</h3>
                     <div class="flex items-center mt-2">
                         <span class="text-xs px-2 py-1 {{ $lowStockProducts > 0 ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800' }} rounded-full">
-                            <i class="fas fa-exclamation-triangle mr-1"></i> {{ $lowStockProducts }} faible stock
+                            <i class="fas fa-exclamation-triangle mr-1"></i> {{ $lowStockProducts }} {{ __('faible stock') }}
                         </span>
                     </div>
                 </div>
@@ -69,11 +69,11 @@
         <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-gray-500 text-sm font-medium">Moy. Commande</p>
+                    <p class="text-gray-500 text-sm font-medium">{{ __('Moy. Commande') }}</p>
                     <h3 class="text-2xl font-bold text-gray-800 mt-1">{{ number_format($avgOrderValue, 0) }} DH</h3>
                     <div class="flex items-center mt-2">
                         <span class="text-xs px-2 py-1 bg-orange-100 text-orange-800 rounded-full">
-                            {{ $totalCategories }} catégories
+                            {{ $totalCategories }} {{ __('catégories') }}
                         </span>
                     </div>
                 </div>
@@ -92,7 +92,7 @@
             <div class="bg-white rounded-xl shadow-lg">
                 <div class="px-6 py-4 border-b">
                     <div class="flex justify-between items-center">
-                        <h3 class="font-bold text-lg text-gray-800">Revenus Mensuels ({{ date('Y') }})</h3>
+                        <h3 class="font-bold text-lg text-gray-800">{{ __('monthly_revenue') }} ({{ date('Y') }})</h3>
                         <div class="flex items-center space-x-2">
                             <span class="text-sm text-gray-500">Total: {{ number_format($monthlySales, 0) }} DH</span>
                         </div>
@@ -109,9 +109,9 @@
             <div class="bg-white rounded-xl shadow-lg">
                 <div class="px-6 py-4 border-b">
                     <div class="flex justify-between items-center">
-                        <h3 class="font-bold text-lg text-gray-800">Commandes Récentes</h3>
+                        <h3 class="font-bold text-lg text-gray-800">{{ __('recent_orders') }}</h3>
                         <a href="{{ route('admin.orders.index') }}" class="text-blue-600 hover:text-blue-800 text-sm font-semibold">
-                            Voir tout <i class="fas fa-arrow-right ml-1"></i>
+                            {{ __('view_all') }} <i class="fas fa-arrow-right ml-1"></i>
                         </a>
                     </div>
                 </div>
@@ -120,11 +120,11 @@
                         <table class="w-full">
                             <thead>
                                 <tr class="border-b">
-                                    <th class="pb-3 text-left text-sm font-semibold text-gray-600">N°</th>
-                                    <th class="pb-3 text-left text-sm font-semibold text-gray-600">Client</th>
-                                    <th class="pb-3 text-left text-sm font-semibold text-gray-600">Montant</th>
-                                    <th class="pb-3 text-left text-sm font-semibold text-gray-600">Statut</th>
-                                    <th class="pb-3 text-left text-sm font-semibold text-gray-600"></th>
+                                    <th class="pb-3 text-left text-sm font-semibold text-gray-600">{{ __('order_number') }}</th>
+                                    <th class="pb-3 text-left text-sm font-semibold text-gray-600">{{ __('customer') }}</th>
+                                    <th class="pb-3 text-left text-sm font-semibold text-gray-600">{{ __('amount') }}</th>
+                                    <th class="pb-3 text-left text-sm font-semibold text-gray-600">{{ __('status') }}</th>
+                                    <th class="pb-3 text-left text-sm font-semibold text-gray-600">{{ __('actions') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -154,7 +154,7 @@
                                         @endphp
                                         <span class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold {{ $config['color'] }}">
                                             <i class="{{ $config['icon'] }} mr-1"></i>
-                                            {{ substr(ucfirst(str_replace('_', ' ', $order->status)), 0, 10) }}
+                                            {{ __('status.' . $order->status) }}
                                         </span>
                                     </td>
                                     <td class="py-4">
@@ -169,7 +169,7 @@
                                 <tr>
                                     <td colspan="5" class="py-8 text-center text-gray-500">
                                         <i class="fas fa-shopping-cart text-3xl mb-3"></i>
-                                        <p>Aucune commande récente</p>
+                                        <p>{{ __('no_recent_orders') }}</p>
                                     </td>
                                 </tr>
                                 @endif
@@ -186,7 +186,7 @@
             <div class="bg-white rounded-xl shadow-lg">
                 <div class="px-6 py-4 border-b">
                     <div class="flex justify-between items-center">
-                        <h3 class="font-bold text-lg text-gray-800">Stock Faible</h3>
+                        <h3 class="font-bold text-lg text-gray-800">{{ __('low_stock') }}</h3>
                         <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs font-semibold">
                             {{ $lowStockProducts }}
                         </span>
@@ -217,20 +217,20 @@
                                 <span class="inline-block px-2 py-1 bg-red-100 text-red-800 rounded text-xs font-bold">
                                     {{ $product->stock_quantity }}
                                 </span>
-                                <p class="text-xs text-gray-500 mt-1">stock</p>
+                                <p class="text-xs text-gray-500 mt-1">{{ __('stock') }}</p>
                             </div>
                         </div>
                         @endforeach
                         @if($lowStockProductsList->isEmpty())
                         <div class="text-center py-4">
                             <i class="fas fa-check-circle text-3xl text-green-500 mb-2"></i>
-                            <p class="text-gray-500 text-sm">Tous les stocks sont bons</p>
+                            <p class="text-gray-500 text-sm">{{ __('all_stocks_good') }}</p>
                         </div>
                         @else
                         <div class="pt-4 border-t">
                             <a href="{{ route('admin.products.index') }}?stock=low" 
                                class="block w-full text-center bg-red-50 text-red-700 py-2 rounded-lg hover:bg-red-100 transition duration-200 text-sm font-semibold">
-                                <i class="fas fa-list mr-2"></i> Voir tous les produits en stock faible
+                                <i class="fas fa-list mr-2"></i> {{ __('view_low_stock') }}
                             </a>
                         </div>
                         @endif
@@ -242,7 +242,7 @@
             <div class="bg-white rounded-xl shadow-lg">
                 <div class="px-6 py-4 border-b">
                     <div class="flex justify-between items-center">
-                        <h3 class="font-bold text-lg text-gray-800">Top Produits</h3>
+                        <h3 class="font-bold text-lg text-gray-800">{{ __('admin.dashboard.top_products') }}</h3>
                         <a href="{{ route('admin.products.index') }}" class="text-blue-600 hover:text-blue-800 text-sm">
                             <i class="fas fa-arrow-right"></i>
                         </a>
@@ -271,7 +271,7 @@
                                 <span class="inline-block px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-bold">
                                     {{ $product->total_sold ?? 0 }}
                                 </span>
-                                <p class="text-xs text-gray-500 mt-1">vendus</p>
+                                <p class="text-xs text-gray-500 mt-1">{{ __('sold') }}</p>
                             </div>
                         </div>
                         @endforeach
@@ -282,7 +282,7 @@
             <!-- Quick Stats -->
             <div class="bg-white rounded-xl shadow-lg">
                 <div class="px-6 py-4 border-b">
-                    <h3 class="font-bold text-lg text-gray-800">Statistiques Rapides</h3>
+                    <h3 class="font-bold text-lg text-gray-800">{{ __('quick_stats') }}</h3>
                 </div>
                 <div class="p-6">
                     <div class="space-y-4">
@@ -292,7 +292,7 @@
                                     <i class="fas fa-clock text-yellow-600"></i>
                                 </div>
                                 <div>
-                                    <p class="text-sm text-gray-600">En attente</p>
+                                    <p class="text-sm text-gray-600">{{ __('status.pending') }}</p>
                                     <p class="font-bold text-gray-800">{{ $pendingOrders }}</p>
                                 </div>
                             </div>
@@ -307,7 +307,7 @@
                                     <i class="fas fa-utensils text-blue-600"></i>
                                 </div>
                                 <div>
-                                    <p class="text-sm text-gray-600">En préparation</p>
+                                    <p class="text-sm text-gray-600">{{ __('status.preparing') }}</p>
                                     <p class="font-bold text-gray-800">{{ $preparingOrders }}</p>
                                 </div>
                             </div>
@@ -322,7 +322,7 @@
                                     <i class="fas fa-truck text-purple-600"></i>
                                 </div>
                                 <div>
-                                    <p class="text-sm text-gray-600">En livraison</p>
+                                    <p class="text-sm text-gray-600">{{ __('status.out_for_delivery') }}</p>
                                     <p class="font-bold text-gray-800">{{ $deliveryOrders }}</p>
                                 </div>
                             </div>
@@ -336,19 +336,19 @@
 
             <!-- Quick Actions -->
             <div class="bg-gradient-to-r from-gray-800 to-gray-900 rounded-xl shadow-lg p-6">
-                <h3 class="font-bold text-lg text-white mb-4">Actions Rapides</h3>
+                <h3 class="font-bold text-lg text-white mb-4">{{ __('quick_actions') }}</h3>
                 <div class="space-y-3">
                     
                     <a href="{{ route('admin.products.create') }}" 
                        class="flex items-center justify-center w-full bg-emerald-500 text-white py-3 px-4 rounded-lg hover:bg-emerald-600 transition duration-200">
                         <i class="fas fa-box mr-3"></i>
-                        <span class="font-semibold">Ajouter Produit</span>
+                        <span class="font-semibold">{{ __('add_product') }}</span>
                     </a>
                     
                     <a href="{{ route('admin.orders.index') }}" 
                        class="flex items-center justify-center w-full bg-blue-500 text-white py-3 px-4 rounded-lg hover:bg-blue-600 transition duration-200">
                         <i class="fas fa-list mr-3"></i>
-                        <span class="font-semibold">Toutes les Commandes</span>
+                        <span class="font-semibold">{{ __('all_orders') }}</span>
                     </a>
                 </div>
             </div>
@@ -363,10 +363,10 @@
     new Chart(revenueCtx, {
         type: 'line',
         data: {
-            labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'],
+            labels: {!! json_encode([__('jan'), __('feb'), __('mar'), __('apr'), __('may'), __('jun'), __('jul'), __('aug'), __('sep'), __('oct'), __('nov'), __('dec')]) !!},
             datasets: [{
-                label: 'Revenus (DH)',
-                data: @json(array_values($revenueData)),
+                label: "{{ __('revenue_dh') }}",
+                data: {!! json_encode(array_values($revenueData)) !!},
                 borderColor: '#10b981',
                 backgroundColor: 'rgba(16, 185, 129, 0.05)',
                 borderWidth: 2,

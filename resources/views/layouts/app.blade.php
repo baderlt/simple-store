@@ -44,14 +44,14 @@
     {{-- Performance Optimizations --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
-    
-    {{-- Styles and Scripts --}}
-    <script src="https://cdn.tailwindcss.com"></script>
+
+    {{-- Vite Assets --}}
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    {{-- Styles --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="//unpkg.com/alpinejs" defer></script>
     
     {{-- Favicon --}}
     @php
@@ -484,7 +484,7 @@
                                         </div>
                                         <div>
                                             <div class="font-medium">{{ __('messages.admin_dashboard') }}</div>
-                                            <div class="text-xs text-gray-500">Gestion du site</div>
+                                            <div class="text-xs text-gray-500">{{ __('messages.site_management') }}</div>
                                         </div>
                                     </a>
                                 @endif
@@ -498,7 +498,7 @@
                                         </div>
                                         <div>
                                             <div class="font-medium">{{ __('messages.logout') }}</div>
-                                            <div class="text-xs text-gray-500">Se déconnecter</div>
+                                            <div class="text-xs text-gray-500">{{ __('messages.logout') }}</div>
                                         </div>
                                     </button>
                                 </form>
@@ -507,10 +507,10 @@
                     @else
                         <div class="hidden lg:flex items-center space-x-4">
                             <a href="{{ route('login') }}" class="px-4 py-2 text-green-600 hover:text-green-700 font-medium">
-                                <i class="fas fa-sign-in-alt mr-2"></i>Connexion
+                                <i class="fas fa-sign-in-alt mr-2"></i>{{ __('messages.login') }}
                             </a>
                             <a href="{{ route('register') }}" class="gradient-bg text-white px-4 py-2 rounded-lg hover:shadow-lg transition-shadow font-medium">
-                                <i class="fas fa-user-plus mr-2"></i>Inscription
+                                <i class="fas fa-user-plus mr-2"></i>{{ __('messages.register') }}
                             </a>
                         </div>
                     @endauth
@@ -811,11 +811,11 @@
                         <div class="flex space-x-3">
                             <a href="{{ route('cart.index') }}" class="flex-1 text-center bg-gray-100 text-gray-700 hover:bg-gray-200 py-3 rounded-lg font-medium transition-colors">
                                 <i class="fas fa-shopping-bag mr-2"></i>
-                                Voir le panier
+                                {{ __('messages.view_cart') }}
                             </a>
                             <a href="{{ route('checkout.index') }}" id="checkout-btn" class="flex-1 text-center bg-emerald-600 text-white hover:bg-emerald-700 py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                                 <i class="fas fa-lock mr-2"></i>
-                                Commander
+                                {{ __('order_now') }}
                             </a>
                         </div>
                     </div>

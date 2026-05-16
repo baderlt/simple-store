@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Settings - Admin')
+@section('title', 'Paramètres - Admin')
 @section('header', 'Paramètres de la Parapharmacie')
 
 @section('content')

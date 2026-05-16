@@ -250,13 +250,13 @@
         <div class="container mx-auto px-4">
             <div class="text-center mb-12">
                 <span class="inline-block bg-yellow-100 text-yellow-700 px-4 py-2 rounded-full text-sm font-semibold mb-4">
-                    <i class="fas fa-star mr-2"></i> Sélection du Pharmacien
+                    <i class="fas fa-star mr-2"></i> {{ __('home.featured_title') }}
                 </span>
                 <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-4">
-                    Produits <span class="text-green-600">Recommandés</span>
+                    {{ __('home.featured_products') }}
                 </h2>
                 <p class="text-gray-600 text-lg max-w-2xl mx-auto">
-                    Découvrez notre sélection exclusive de produits de santé et bien-être
+                    {{ __('home.featured_description') }}
                 </p>
             </div>
             
@@ -370,7 +370,7 @@
 <div id="cart-toast" class="fixed top-5 right-5 bg-emerald-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 hidden transform translate-x-full transition-transform duration-300">
     <div class="flex items-center">
         <i class="fas fa-check-circle mr-3"></i>
-        <span id="toast-message">Produit ajouté au panier !</span>
+        <span id="toast-message">{{ __('notifications.cart.added') }}</span>
     </div>
 </div>
 
@@ -405,11 +405,11 @@
                     <div class="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center">
                         <i class="fas fa-box-open text-4xl text-gray-400"></i>
                     </div>
-                    <h3 class="text-xl font-semibold text-gray-700 mb-2">Aucun produit en vedette</h3>
-                    <p class="text-gray-600 mb-6">Découvrez tous nos produits disponibles</p>
-                    <a href="{{ route('products.index') }}" 
+                    <h3 class="text-xl font-semibold text-gray-700 mb-2">{{ __('home.none_featured') }}</h3>
+                    <p class="text-gray-600 mb-6">{{ __('home.discover_available') }}</p>
+                    <a href="{{ route('products.index') }}"
                        class="inline-block bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors duration-300">
-                        Explorer nos produits
+                        {{ __('home.explore_products') }}
                     </a>
                 </div>
             @endif
@@ -462,10 +462,10 @@
                 <!-- Left Column: Information -->
                 <div>
                     <span class="inline-block bg-green-500/20 text-green-300 px-4 py-2 rounded-full text-sm font-semibold mb-4 backdrop-blur-sm">
-                        <i class="fas fa-map-marker-alt mr-2"></i> Notre Emplacement
+                        <i class="fas fa-map-marker-alt mr-2"></i> {{ __('home.location.title') }}
                     </span>
                     <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
-                        Visitez Notre <span class="text-green-400">Parapharmacie</span>
+                        {{ __('home.location.visit') }} <span class="text-green-400">Parapharmacie</span>
                     </h2>
                     
                     <div class="space-y-6 mb-8">
@@ -475,7 +475,7 @@
                                 <i class="fas fa-map-pin text-xl text-green-400"></i>
                             </div>
                             <div>
-                                <h3 class="font-bold text-xl mb-2">Adresse</h3>
+                                <h3 class="font-bold text-xl mb-2">{{ __('home.location.address') }}</h3>
                                 <p class="text-gray-300">
                             {{settings("address")}}
                                 </p>
@@ -488,7 +488,7 @@
                                 <i class="fas fa-clock text-xl text-blue-400"></i>
                             </div>
                             <div>
-                                <h3 class="font-bold text-xl mb-2">Horaires d'Ouverture</h3>
+                                <h3 class="font-bold text-xl mb-2">{{ __('home.location.hours') }}</h3>
 @php
     $workingHoursRaw = settings('working_hours');
 
@@ -518,7 +518,7 @@
                                 <i class="fas fa-phone-alt text-xl text-purple-400"></i>
                             </div>
                             <div>
-                                <h3 class="font-bold text-xl mb-2">Contact</h3>
+                                <h3 class="font-bold text-xl mb-2">{{ __('home.location.contact') }}</h3>
                                 <div class="space-y-2 text-gray-300">
                                     <div class="flex items-center gap-2">
                                         <i class="fas fa-phone text-green-400"></i>
@@ -566,7 +566,7 @@
                            target="_blank"
                            class="group bg-green-600 hover:bg-green-700 px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center gap-2">
                             <i class="fas fa-directions"></i>
-                            <span>Obtenir l'itinéraire</span>
+                            <span>{{ __('home.location.directions') }}</span>
                         </a>
                         <a href="tel:{{ $phoneLink }}"
                            class="group bg-gray-700 hover:bg-gray-600 px-6 py-3 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2">
@@ -597,10 +597,10 @@
         <div class="container mx-auto px-4">
             <div class="text-center mb-12">
                 <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-4">
-                    Pourquoi Nous <span class="text-green-600">Choisir</span>
+                    Pourquoi Nous <span class="text-green-600">{{ __('home.features.choose_title') }}</span>
                 </h2>
                 <p class="text-gray-600 text-lg max-w-2xl mx-auto">
-                    Des services de qualité pour votre santé et bien-être
+                    {{ __('home.features.choose_description') }}
                 </p>
             </div>
             
@@ -609,16 +609,16 @@
                     <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-500 text-white rounded-2xl mb-6 group-hover:scale-110 transition-transform duration-300">
                         <i class="fas fa-user-md text-2xl"></i>
                     </div>
-                    <h3 class="font-bold text-xl mb-3">Conseils Experts</h3>
-                    <p class="text-gray-600">Pharmaciens diplômés à votre écoute pour des conseils personnalisés</p>
+                    <h3 class="font-bold text-xl mb-3">{{ __('home.features.expert_advice.title') }}</h3>
+                    <p class="text-gray-600">{{ __('home.features.expert_advice.description') }}</p>
                 </div>
                 
                 <div class="text-center p-8 rounded-2xl bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-100 hover:border-blue-300 transition-all duration-300 group">
                     <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-cyan-500 text-white rounded-2xl mb-6 group-hover:scale-110 transition-transform duration-300">
                         <i class="fas fa-shield-alt text-2xl"></i>
                     </div>
-                    <h3 class="font-bold text-xl mb-3">Produits Certifiés</h3>
-                    <p class="text-gray-600">Tous nos produits sont authentiques et conformes aux normes sanitaires</p>
+                    <h3 class="font-bold text-xl mb-3">{{ __('home.features.certified_products.title') }}</h3>
+                    <p class="text-gray-600">{{ __('home.features.certified_products.description') }}</p>
                 </div>
                 
                 <div class="text-center p-8 rounded-2xl bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-100 hover:border-purple-300 transition-all duration-300 group">
@@ -668,22 +668,23 @@
 @endsection
 
 
-<link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
+<link rel="stylesheet" href="{{ asset('css/swiper-bundle.min.css') }}" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <link rel="stylesheet" href="{{asset("css/home.css")}}" />
 
 
-<script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
+<script src="{{ asset('js/swiper-bundle.min.js') }}"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
 // COMPLETE FIX FOR CATEGORIES SWIPER
 document.addEventListener('DOMContentLoaded', function() {
-    
+
     // 1. HERO BANNER SWIPER
     const heroSwiper = document.querySelector('.hero-swiper');
-    if (heroSwiper) {
-        new Swiper('.hero-swiper', {
+    if (heroSwiper && window.Swiper) {
+        new window.Swiper('.hero-swiper', {
+            modules: [window.SwiperNavigation, window.SwiperPagination, window.SwiperAutoplay],
             loop: true,
             autoplay: {
                 delay: 5000,
@@ -707,8 +708,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 2. CATEGORIES SWIPER - FIXED FOR DESKTOP
     const categoriesSwiper = document.querySelector('.categories-swiper');
-    if (categoriesSwiper) {
-        new Swiper('.categories-swiper', {
+    if (categoriesSwiper && window.Swiper) {
+        new window.Swiper('.categories-swiper', {
+            modules: [window.SwiperNavigation, window.SwiperPagination, window.SwiperAutoplay],
             slidesPerView: 2,
             slidesPerGroup: 1,
             spaceBetween: 16,

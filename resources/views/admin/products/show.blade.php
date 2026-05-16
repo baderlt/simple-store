@@ -15,7 +15,7 @@
                         <li class="inline-flex items-center">
                             <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600">
                                 <i class="fas fa-home mr-2"></i>
-                                Dashboard
+                                Tableau de bord
                             </a>
                         </li>
                         <li>
@@ -610,7 +610,7 @@ table tr {
                         <li class="inline-flex items-center">
                             <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600">
                                 <i class="fas fa-home mr-2"></i>
-                                Dashboard
+                                Tableau de bord
                             </a>
                         </li>
                         <li>

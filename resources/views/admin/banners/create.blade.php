@@ -120,8 +120,8 @@
                                 @php
                                     $positions = [
                                         'hero' => [
-                                            'label' => 'Hero Section',
-                                            'description' => 'Slider principal en haut de page',
+                                            'label' => 'Section Hero',
+                                            'description' => 'Carrousel principal en haut de page',
                                             'icon' => 'fas fa-home'
                                         ],
                                         'middle' => [
@@ -131,11 +131,11 @@
                                         ],
                                         'bottom' => [
                                             'label' => 'Bas de Page',
-                                            'description' => 'Call to Action final',
+                                            'description' => 'Appel à l\'action final',
                                             'icon' => 'fas fa-arrow-down'
                                         ],
                                         'sidebar' => [
-                                            'label' => 'Sidebar',
+                                            'label' => 'Barre Latérale',
                                             'description' => 'Colonne latérale',
                                             'icon' => 'fas fa-columns'
                                         ],
@@ -218,7 +218,7 @@
                         
                         <!-- Call to Action -->
                         <div class="mb-6">
-                            <h4 class="text-md font-semibold text-gray-800 mb-4">Call to Action (Bouton)</h4>
+                            <h4 class="text-md font-semibold text-gray-800 mb-4">Appel à l'action (Bouton)</h4>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <!-- CTA Text -->
                                 <div>
@@ -370,7 +370,7 @@
                         </div>
                         <div class="text-gray-600">
                             <div class="font-medium">Statut:</div>
-                            <div class="capitalize">{{ $banner->is_active ? 'Active' : 'Inactive' }}</div>
+                            <div class="capitalize">{{ $banner->is_active ? 'Actif' : 'Inactif' }}</div>
                         </div>
                     </div>
                 </div>

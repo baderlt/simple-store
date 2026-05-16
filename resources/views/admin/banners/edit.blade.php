@@ -14,7 +14,7 @@
                         <a href="{{ route('admin.dashboard') }}" 
                            class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-green-600">
                             <i class="fas fa-home mr-2"></i>
-                            Dashboard
+                            Tableau de bord
                         </a>
                     </li>
                     <li>
@@ -126,13 +126,13 @@
                                 <div class="flex justify-between">
                                     <span class="text-gray-600">Statut:</span>
                                     <span class="font-medium {{ $banner->is_active ? 'text-green-600' : 'text-red-600' }}">
-                                        {{ $banner->is_active ? 'Active' : 'Inactive' }}
+                                        {{ $banner->is_active ? 'Actif' : 'Inactif' }}
                                     </span>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Right Column: Form Fields -->
                     <div class="lg:col-span-2">
                         <!-- Title -->
@@ -177,8 +177,8 @@
                                 @php
                                     $positions = [
                                         'hero' => [
-                                            'label' => 'Hero Section',
-                                            'description' => 'Slider principal en haut de page',
+                                            'label' => 'Section Hero',
+                                            'description' => 'Carrousel principal en haut de page',
                                             'icon' => 'fas fa-home'
                                         ],
                                         'middle' => [
@@ -188,11 +188,11 @@
                                         ],
                                         'bottom' => [
                                             'label' => 'Bas de Page',
-                                            'description' => 'Call to Action final',
+                                            'description' => 'Appel à l\'action final',
                                             'icon' => 'fas fa-arrow-down'
                                         ],
                                         'sidebar' => [
-                                            'label' => 'Sidebar',
+                                            'label' => 'Barre Latérale',
                                             'description' => 'Colonne latérale',
                                             'icon' => 'fas fa-columns'
                                         ],
@@ -278,7 +278,7 @@
                         
                         <!-- Call to Action -->
                         <div class="mb-6">
-                            <h4 class="text-md font-semibold text-gray-800 mb-4">Call to Action (Optionnel)</h4>
+                            <h4 class="text-md font-semibold text-gray-800 mb-4">Appel à l'action (Optionnel)</h4>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <!-- CTA Text -->
                                 <div>
@@ -477,7 +477,7 @@
                                     <div class="mt-1">
                                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ $banner->is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                             <i class="fas fa-{{ $banner->is_active ? 'check-circle' : 'times-circle' }} mr-1"></i>
-                                            {{ $banner->is_active ? 'Active' : 'Inactive' }}
+                                            {{ $banner->is_active ? 'Actif' : 'Inactif' }}
                                         </span>
                                     </div>
                                 </div>

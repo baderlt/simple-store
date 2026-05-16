@@ -34,11 +34,11 @@
                             @endphp
                             <span class="inline-flex items-center gap-2 {{ $statusColors[$status] }} px-3 py-1 rounded-full text-sm font-medium">
                                 <i class="fas fa-circle text-xs"></i>
-                                {{ ucfirst($status) }}
+                                {{ $status === 'active' ? 'Actif' : ($status === 'inactive' ? 'Inactif' : ($status === 'scheduled' ? 'Programmée' : 'Expirée')) }}
                             </span>
                             <span class="inline-flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
                                 <i class="fas fa-{{ $banner->position == 'hero' ? 'images' : 'image' }}"></i>
-                                {{ ucfirst($banner->position) }}
+                                {{ $banner->position == 'hero' ? 'Section Hero' : ($banner->position == 'middle' ? 'Milieu de Page' : ($banner->position == 'bottom' ? 'Bas de Page' : 'Barre Latérale')) }}
                             </span>
                             <span class="text-sm text-gray-600">
                                 <i class="far fa-calendar-alt mr-1"></i>
@@ -97,7 +97,7 @@
                         <!-- Call to Action -->
                         @if($banner->cta_text)
                             <div class="mb-6">
-                                <h4 class="font-medium text-gray-700 mb-2">Call to Action</h4>
+                                <h4 class="font-medium text-gray-700 mb-2">Appel à l'action</h4>
                                 <div class="bg-green-50 p-4 rounded-lg">
                                     <div class="flex items-center gap-3 mb-2">
                                         <span class="font-medium">Texte:</span>
@@ -157,7 +157,7 @@
                                         <div class="text-gray-600">Statut</div>
                                         <div class="font-medium">
                                             <span class="{{ $banner->is_active ? 'text-green-600' : 'text-gray-600' }}">
-                                                {{ $banner->is_active ? 'Active' : 'Inactive' }}
+                                                {{ $banner->is_active ? 'Actif' : 'Inactif' }}
                                             </span>
                                         </div>
                                     </div>

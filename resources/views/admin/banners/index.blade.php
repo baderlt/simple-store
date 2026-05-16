@@ -74,10 +74,10 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1">Filtrer par position</label>
                 <select id="positionFilter" class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent">
                     <option value="">Toutes positions</option>
-                    <option value="hero">Hero (Slider)</option>
+                    <option value="hero">Hero (Carrousel)</option>
                     <option value="middle">Milieu de page</option>
                     <option value="bottom">Bas de page</option>
-                    <option value="sidebar">Sidebar</option>
+                    <option value="sidebar">Barre latérale</option>
                 </select>
             </div>
             
@@ -217,7 +217,7 @@
                                 @if(!$isActive)
                                     <span class="inline-flex items-center gap-2 bg-gray-100 text-gray-800 px-3 py-1.5 rounded-full text-sm font-medium">
                                         <i class="fas fa-pause-circle"></i>
-                                        Inactive
+                                        Inactif
                                     </span>
                                 @elseif($hasEnded)
                                     <span class="inline-flex items-center gap-2 bg-red-100 text-red-800 px-3 py-1.5 rounded-full text-sm font-medium">

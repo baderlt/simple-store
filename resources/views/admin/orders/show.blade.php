@@ -1,7 +1,7 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Order Details - Admin')
-@section('header', 'Détails de la Commande #' . $order->order_number)
+@section('title', __('order_details') . ' - Admin')
+@section('header', __('order_details') . ' #' . $order->order_number)
 
 @section('content')
 <div class="container mx-auto px-3 sm:px-4">
@@ -10,7 +10,7 @@
         <a href="{{ route('admin.orders.index') }}" 
            class="inline-flex items-center text-blue-600 hover:text-blue-800 transition duration-200">
             <i class="fas fa-arrow-left mr-2"></i>
-            <span class="font-medium">Retour à la liste des commandes</span>
+            <span class="font-medium">{{ __('back_to_orders_list') }}</span>
         </a>
     </div>
     {{-- Status Alert --}}
@@ -27,7 +27,7 @@
     <div class="md:hidden bg-white rounded-xl shadow-lg p-4 mb-6">
         <div class="flex justify-between items-start mb-4">
             <div>
-                <h1 class="text-lg font-bold text-gray-800">Commande #{{ $order->order_number }}</h1>
+                <h1 class="text-lg font-bold text-gray-800">{{ __('order_number') }}{{ $order->order_number }}</h1>
                 <p class="text-sm text-gray-500 mt-1">{{ $order->created_at->format('d/m/Y H:i') }}</p>
             </div>
             @php
@@ -38,16 +38,9 @@
                     'delivered' => 'bg-green-100 text-green-800',
                     'cancelled' => 'bg-red-100 text-red-800',
                 ];
-                $statusLabels = [
-                    'pending' => 'En attente',
-                    'preparing' => 'En préparation',
-                    'out_for_delivery' => 'En livraison',
-                    'delivered' => 'Livré',
-                    'cancelled' => 'Annulé',
-                ];
             @endphp
             <span class="px-3 py-1 rounded-full text-xs font-semibold {{ $statusColors[$order->status] ?? 'bg-gray-100 text-gray-800' }}">
-                {{ $statusLabels[$order->status] ?? $order->status }}
+                {{ $order->status_label }}
             </span>
         </div>
         
@@ -65,7 +58,7 @@
             </div>
             @if($isFreeDelivery)
                 <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                    <i class="fas fa-gift mr-1"></i> Livraison offerte
+                    <i class="fas fa-gift mr-1"></i> {{ __('free_delivery') }}
                 </span>
             @endif
         </div>
@@ -77,7 +70,7 @@
             {{-- Order Items --}}
             <div class="bg-white rounded-xl shadow-lg overflow-hidden">
                 <div class="bg-gradient-to-r from-green-500 to-emerald-600 px-4 sm:px-6 py-4">
-                    <h3 class="text-lg sm:text-xl font-bold text-white">Articles Commandés</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-white">{{ __('ordered_items') }}</h3>
                 </div>
                 <div class="p-4 sm:p-6">
                     <div class="space-y-3">
@@ -168,7 +161,7 @@
                                 </div>
                                 @if($isFreeDelivery)
                                     <p class="text-xs sm:text-sm text-green-600 text-right mt-1">
-                                        <i class="fas fa-gift mr-1"></i> Livraison offerte
+                                        <i class="fas fa-gift mr-1"></i> {{ __('free_delivery') }}
                                     </p>
                                 @endif
                             </div>
@@ -183,23 +176,23 @@
             {{-- Order Status Card --}}
             <div class="bg-white rounded-xl shadow-lg overflow-hidden">
                 <div class="bg-gradient-to-r from-blue-500 to-blue-600 px-4 sm:px-6 py-4">
-                    <h3 class="text-lg sm:text-xl font-bold text-white">Statut de la Commande</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-white">{{ __('order_status_section') }}</h3>
                 </div>
                 <div class="p-4 sm:p-6">
                     <div class="space-y-4">
                         <div class="flex justify-between items-center">
                             <div>
-                                <p class="text-xs sm:text-sm text-gray-600 mb-1">N° Commande</p>
+                                <p class="text-xs sm:text-sm text-gray-600 mb-1">{{ __('order_number') }}</p>
                                 <p class="font-bold text-base sm:text-lg text-gray-800 font-mono">{{ $order->order_number }}</p>
                             </div>
                             <div class="text-right">
-                                <p class="text-xs sm:text-sm text-gray-600 mb-1">Date</p>
+                                <p class="text-xs sm:text-sm text-gray-600 mb-1">{{ __('Date') }}</p>
                                 <p class="font-semibold text-gray-700">{{ $order->created_at->format('d/m/Y') }}</p>
                             </div>
                         </div>
                         
                         <div class="pt-3 border-t">
-                            <p class="text-xs sm:text-sm text-gray-600 mb-2">Mettre à jour le statut</p>
+                            <p class="text-xs sm:text-sm text-gray-600 mb-2">{{ __('update_status') }}</p>
                             <form action="{{ route('admin.orders.updateStatus', $order) }}" method="POST">
                                 @csrf
                                 @method('PUT')
@@ -207,11 +200,11 @@
                                     <select name="status" 
                                             class="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-sm sm:text-base"
                                             onchange="this.form.submit()">
-                                        <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>⏳ En attente</option>
-                                        <option value="preparing" {{ $order->status == 'preparing' ? 'selected' : '' }}>👨‍🍳 En préparation</option>
-                                        <option value="out_for_delivery" {{ $order->status == 'out_for_delivery' ? 'selected' : '' }}>🚚 En livraison</option>
-                                        <option value="delivered" {{ $order->status == 'delivered' ? 'selected' : '' }}>✅ Livré</option>
-                                        <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }}>❌ Annulé</option>
+                                        <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>⏳ {{ __('status_pending') }}</option>
+                                        <option value="preparing" {{ $order->status == 'preparing' ? 'selected' : '' }}>👨‍🍳 {{ __('status_preparing') }}</option>
+                                        <option value="out_for_delivery" {{ $order->status == 'out_for_delivery' ? 'selected' : '' }}>🚚 {{ __('status_out_for_delivery') }}</option>
+                                        <option value="delivered" {{ $order->status == 'delivered' ? 'selected' : '' }}>✅ {{ __('status_delivered') }}</option>
+                                        <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }}>❌ {{ __('status_cancelled') }}</option>
                                     </select>
                                     <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
                                         <i class="fas fa-chevron-down text-gray-400"></i>
@@ -221,13 +214,13 @@
                         </div>
                         
                         <div class="pt-3 border-t">
-                            <p class="text-xs sm:text-sm text-gray-600 mb-1">Mode de paiement</p>
+                            <p class="text-xs sm:text-sm text-gray-600 mb-1">{{ __('payment_method') }}</p>
                             <div class="flex items-center">
                                 <div class="w-8 h-8 sm:w-10 sm:h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
                                     <i class="fas fa-money-bill-wave text-green-600 text-sm sm:text-base"></i>
                                 </div>
                                 <div>
-                                    <p class="font-semibold text-sm sm:text-base">Paiement à la livraison</p>
+                                    <p class="font-semibold text-sm sm:text-base">{{ __('payment_on_delivery') }}</p>
                                     <p class="text-xs sm:text-sm text-gray-500">(Cash)</p>
                                 </div>
                             </div>
@@ -318,7 +311,7 @@
                     <a href="{{ route('admin.orders.index') }}" 
                        class="flex items-center justify-center w-full bg-gradient-to-r from-gray-500 to-gray-600 text-white py-3 px-4 rounded-lg hover:from-gray-600 hover:to-gray-700 transition duration-200 shadow hover:shadow-lg active:scale-[0.98]">
                         <i class="fas fa-arrow-left mr-2 sm:mr-3"></i>
-                        <span class="font-semibold text-sm sm:text-base">Retour aux Commandes</span>
+                        <span class="font-semibold text-sm sm:text-base">{{ __('back_to_orders') }}</span>
                     </a>
                 </div>
             </div>

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="{{ app()->getLocale() }}" dir="ltr">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Admin Dashboard')</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>@yield('title', __('admin_panel') . ' - ' . __('dashboard'))</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -113,7 +113,19 @@
                     <i class="fas fa-bell"></i>
                     <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
                 </button>
-                
+
+                {{-- Mobile Language Switcher --}}
+                <div class="flex rounded-full border border-gray-200 bg-white p-1 text-xs font-semibold">
+                    <a href="{{ route('lang.switch', 'fr') }}"
+                       class="px-2 py-1 rounded-full transition-colors {{ app()->getLocale() === 'fr' ? 'bg-green-600 text-white' : 'text-gray-600' }}">
+                        FR
+                    </a>
+                    <a href="{{ route('lang.switch', 'ar') }}"
+                       class="px-2 py-1 rounded-full transition-colors {{ app()->getLocale() === 'ar' ? 'bg-green-600 text-white' : 'text-gray-600' }}">
+                        AR
+                    </a>
+                </div>
+
                 {{-- Mobile User Avatar --}}
                 <a href="{{ route('admin.profile.edit') }}" class="user-avatar w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full flex items-center justify-center shadow-md">
                     <span class="font-bold text-white text-sm">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
@@ -137,8 +149,8 @@
                         </div>
                     @endif
                     <div>
-                        <h1 class="text-xl font-bold">Admin Panel</h1>
-                        <p class="text-gray-400 text-sm">Gestion de pharmacie</p>
+                        <h1 class="text-xl font-bold">{{ __('admin_panel') }}</h1>
+                        <p class="text-gray-400 text-sm">{{ __('pharmacy_management') }}</p>
                     </div>
                 </div>
             </div>
@@ -150,28 +162,28 @@
                 </div>
                 <div class="flex-1 min-w-0">
                     <p class="font-medium truncate">{{ auth()->user()->name }}</p>
-                    <p class="text-gray-400 text-sm truncate">Administrateur</p>
+                    <p class="text-gray-400 text-sm truncate">{{ __('administrator') }}</p>
                 </div>
             </div>
             
             {{-- Navigation --}}
             <nav class="flex-1 overflow-y-auto py-6 hide-scrollbar">
                 <div class="px-4 mb-6">
-                    <p class="text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">Principal</p>
+                    <p class="text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">{{ __('principal') }}</p>
                 </div>
                 
                 @php
                     $navItems = [
-                        ['route' => 'admin.dashboard', 'icon' => 'fas fa-chart-line', 'label' => 'Dashboard'],
-                        ['route' => 'admin.products.index', 'icon' => 'fas fa-box', 'label' => 'Produits'],
-                        ['route' => 'admin.categories.index', 'icon' => 'fas fa-tags', 'label' => 'Catégories'],
-                        ['route' => 'admin.orders.index', 'icon' => 'fas fa-shopping-cart', 'label' => 'Commandes'],
-                        ['route' => 'admin.discounts.index', 'icon' => 'fas fa-percent', 'label' => 'Réductions'],
-                        ['route' => 'admin.banners.index', 'icon' => 'fas fa-layer-group', 'label' => 'Bannières'],
+                        ['route' => 'admin.dashboard', 'icon' => 'fas fa-chart-line', 'label' => __('dashboard')],
+                        ['route' => 'admin.products.index', 'icon' => 'fas fa-box', 'label' => __('Produits')],
+                        ['route' => 'admin.categories.index', 'icon' => 'fas fa-tags', 'label' => __('Catégories')],
+                        ['route' => 'admin.orders.index', 'icon' => 'fas fa-shopping-cart', 'label' => __('Commandes')],
+                        ['route' => 'admin.discounts.index', 'icon' => 'fas fa-percent', 'label' => __('reductions')],
+                        ['route' => 'admin.banners.index', 'icon' => 'fas fa-layer-group', 'label' => __('banners')],
                     ];
-                    
+
                     $settingsItems = [
-                        ['route' => 'admin.settings.index', 'icon' => 'fas fa-cog', 'label' => 'Paramètres'],
+                        ['route' => 'admin.settings.index', 'icon' => 'fas fa-cog', 'label' => __('settings')],
                     ];
                 @endphp
                 
@@ -188,7 +200,7 @@
                 @endforeach
                 
                 <div class="px-4 my-6">
-                    <p class="text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">Système</p>
+                    <p class="text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">{{ __('system') }}</p>
                 </div>
                 
                 @foreach($settingsItems as $item)
@@ -204,7 +216,7 @@
                    class="sidebar-link flex items-center px-4 py-3 mx-2 rounded-lg mb-1 hover:bg-gray-700/50 
                           {{ request()->routeIs('admin.profile.*') ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 border-l-4 border-purple-500 text-white' : 'text-gray-300' }}">
                     <i class="fas fa-user-circle mr-3 w-5 text-center"></i>
-                    <span class="font-medium">Mon Profil</span>
+                    <span class="font-medium">{{ __('my_profile') }}</span>
                 </a>
             </nav>
             
@@ -214,7 +226,7 @@
                    class="flex items-center justify-between px-4 py-3 rounded-lg hover:bg-gray-700/50 text-gray-300 hover:text-white transition-colors">
                     <div class="flex items-center">
                         <i class="fas fa-external-link-alt mr-3"></i>
-                        <span>Voir le site</span>
+                        <span>{{ __('view_site') }}</span>
                     </div>
                     <i class="fas fa-external-link text-xs text-gray-400"></i>
                 </a>
@@ -225,7 +237,7 @@
                             class="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-red-500/10 text-red-400 hover:text-red-300 transition-colors">
                         <div class="flex items-center">
                             <i class="fas fa-sign-out-alt mr-3"></i>
-                            <span>Déconnexion</span>
+                            <span>{{ __('logout_fr') }}</span>
                         </div>
                     </button>
                 </form>
@@ -247,8 +259,8 @@
                         </div>
                     @endif
                     <div>
-                        <h1 class="text-lg font-bold">Admin Panel</h1>
-                        <p class="text-gray-400 text-xs">Gestion de pharmacie</p>
+                        <h1 class="text-lg font-bold">{{ __('admin_panel') }}</h1>
+                        <p class="text-gray-400 text-xs">{{ __('pharmacy_management') }}</p>
                     </div>
                 </div>
                 <button id="closeMobileMenu" class="p-2 hover:bg-gray-700/50 rounded-lg">
@@ -263,14 +275,14 @@
                 </div>
                 <div class="flex-1 min-w-0">
                     <p class="font-medium truncate">{{ auth()->user()->name }}</p>
-                    <p class="text-gray-400 text-sm truncate">Administrateur</p>
+                    <p class="text-gray-400 text-sm truncate">{{ __('administrator') }}</p>
                 </div>
             </div>
             
             {{-- Mobile Navigation --}}
             <nav class="flex-1 overflow-y-auto py-4 hide-scrollbar">
                 <div class="px-4 mb-4">
-                    <p class="text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">Principal</p>
+                    <p class="text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">{{ __('principal') }}</p>
                 </div>
                 
                 @foreach($navItems as $item)
@@ -284,7 +296,7 @@
                 @endforeach
                 
                 <div class="px-4 my-4">
-                    <p class="text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">Système</p>
+                    <p class="text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">{{ __('system') }}</p>
                 </div>
                 
                 @foreach($settingsItems as $item)
@@ -302,7 +314,7 @@
                           {{ request()->routeIs('admin.profile.*') ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 border-l-4 border-purple-500 text-white' : 'text-gray-300' }}"
                    onclick="closeMobileMenu()">
                     <i class="fas fa-user-circle mr-3 w-5 text-center"></i>
-                    <span class="font-medium">Mon Profil</span>
+                    <span class="font-medium">{{ __('my_profile') }}</span>
                 </a>
             </nav>
             
@@ -312,7 +324,7 @@
                    class="flex items-center justify-between px-4 py-3 rounded-lg hover:bg-gray-700/50 text-gray-300 hover:text-white transition-colors">
                     <div class="flex items-center">
                         <i class="fas fa-external-link-alt mr-3"></i>
-                        <span>Voir le site</span>
+                        <span>{{ __('view_site') }}</span>
                     </div>
                     <i class="fas fa-external-link text-xs text-gray-400"></i>
                 </a>
@@ -323,7 +335,7 @@
                             class="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-red-500/10 text-red-400 hover:text-red-300 transition-colors">
                         <div class="flex items-center">
                             <i class="fas fa-sign-out-alt mr-3"></i>
-                            <span>Déconnexion</span>
+                            <span>{{ __('logout_fr') }}</span>
                         </div>
                     </button>
                 </form>
@@ -336,7 +348,7 @@
             <header class="hidden lg:flex bg-white shadow-sm border-b border-gray-200">
                 <div class="flex items-center justify-between px-8 py-4 w-full">
                     <div class="flex items-center space-x-4">
-                        <h2 class="text-2xl font-bold text-gray-800">@yield('header', 'Dashboard')</h2>
+                        <h2 class="text-2xl font-bold text-gray-800">@yield('header', 'Tableau de bord')</h2>
                         @hasSection('subheader')
                             <span class="text-gray-400">/</span>
                             <span class="text-gray-600">@yield('subheader')</span>
@@ -349,12 +361,24 @@
                             <i class="fas fa-bell"></i>
                             <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
                         </button>
-                        
+
+                        {{-- Language Switcher --}}
+                        <div class="hidden sm:flex rounded-full border border-gray-200 bg-white p-1 text-xs font-semibold">
+                            <a href="{{ route('lang.switch', 'fr') }}"
+                               class="px-3 py-1 rounded-full transition-colors {{ app()->getLocale() === 'fr' ? 'bg-green-600 text-white shadow-sm' : 'text-gray-600 hover:text-green-600' }}">
+                                FR
+                            </a>
+                            <a href="{{ route('lang.switch', 'ar') }}"
+                               class="px-3 py-1 rounded-full transition-colors {{ app()->getLocale() === 'ar' ? 'bg-green-600 text-white shadow-sm' : 'text-gray-600 hover:text-green-600' }}">
+                                AR
+                            </a>
+                        </div>
+
                         {{-- User Menu --}}
                         <div class="flex items-center space-x-3">
                             <div class="text-right">
                                 <p class="font-semibold text-gray-800">{{ auth()->user()->name }}</p>
-                                <p class="text-sm text-gray-500">Administrateur</p>
+                                <p class="text-sm text-gray-500">{{ __('administrator') }}</p>
                             </div>
                             <div class="relative">
                                 <a href="{{ route('admin.profile.edit') }}" >
@@ -426,13 +450,13 @@
             <footer class="bg-white border-t border-gray-200 py-3 lg:py-4 px-4 lg:px-8">
                 <div class="flex flex-col lg:flex-row items-center justify-between text-sm text-gray-500 space-y-2 lg:space-y-0">
                     <div>
-                        <span class="text-responsive">© {{ date('Y') }} Admin Panel. Tous droits réservés.</span>
+                        <span class="text-responsive">© {{ date('Y') }} {{ __('admin_panel') }}. {{ __('rights') }}</span>
                     </div>
                     <div class="flex flex-col lg:flex-row items-center lg:space-x-4 space-y-1 lg:space-y-0">
-                        <span class="text-responsive">Dernière connexion: {{ auth()->user()->last_login_at ? auth()->user()->last_login_at->diffForHumans() : 'N/A' }}</span>
+                        <span class="text-responsive">{{ __('last_login') }} {{ auth()->user()->last_login_at ? auth()->user()->last_login_at->diffForHumans() : 'N/A' }}</span>
                         <span class="flex items-center">
                             <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                            <span class="text-responsive">En ligne</span>
+                            <span class="text-responsive">{{ __('online') }}</span>
                         </span>
                     </div>
                 </div>

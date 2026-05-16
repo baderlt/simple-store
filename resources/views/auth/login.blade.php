@@ -7,10 +7,10 @@
         <div class="text-center">
             <h2 class="text-2xl font-bold text-gray-900">
                 <i class="fas fa-sign-in-alt text-green-600 mr-2"></i>
-                Connexion à votre compte
+                {{ __('auth.login.title') }}
             </h2>
             <p class="mt-2 text-gray-600">
-                Accédez à votre espace personnel pour gérer vos commandes et préférences.
+                {{ __('auth.login.subtitle') }}
             </p>
         </div>
 
@@ -21,7 +21,7 @@
             <div class="space-y-2">
                 <label for="email" class="block text-sm font-medium text-gray-700">
                     <i class="fas fa-envelope mr-2 text-green-600"></i>
-                    Adresse Email
+                    {{ __('auth.login.email') }}
                 </label>
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -50,7 +50,7 @@
             <div class="space-y-2">
                 <label for="password" class="block text-sm font-medium text-gray-700">
                     <i class="fas fa-lock mr-2 text-green-600"></i>
-                    Mot de passe
+                    {{ __('auth.login.password') }}
                 </label>
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -86,7 +86,7 @@
                            type="checkbox"
                            class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded cursor-pointer">
                     <label for="remember_me" class="ml-2 block text-sm text-gray-700 cursor-pointer hover:text-gray-900 transition-colors duration-200">
-                        Se souvenir de moi
+                        {{ __('auth.login.remember_me') }}
                     </label>
                 </div>
 
@@ -94,7 +94,7 @@
                     <a href="{{ route('password.request') }}" 
                        class="text-sm font-medium text-green-600 hover:text-green-700 transition-colors duration-200 flex items-center">
                         <i class="fas fa-key mr-1"></i>
-                        Mot de passe oublié ?
+                        {{ __('auth.login.forgot_password') }}
                     </a>
                 @endif
             </div>
@@ -106,7 +106,7 @@
                     <span class="absolute left-0 inset-y-0 flex items-center pl-3">
                         <i class="fas fa-sign-in-alt text-green-200 group-hover:text-green-100 transition-colors duration-200"></i>
                     </span>
-                    Se connecter
+                    {{ __('auth.login.submit') }}
                     <span class="absolute right-0 inset-y-0 flex items-center pr-3">
                         <i class="fas fa-arrow-right text-green-200 group-hover:text-green-100 transition-colors duration-200"></i>
                     </span>

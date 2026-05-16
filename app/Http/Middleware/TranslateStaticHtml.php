@@ -13,7 +13,8 @@ class TranslateStaticHtml
     {
         $response = $next($request);
 
-        if (App::getLocale() !== 'ar' || ! $this->isHtmlResponse($response)) {
+        $locale = App::getLocale();
+        if ($locale !== 'ar' || ! $this->isHtmlResponse($response)) {
             return $response;
         }
 
@@ -24,7 +25,9 @@ class TranslateStaticHtml
         }
 
         uksort($translations, fn ($a, $b) => mb_strlen($b) <=> mb_strlen($a));
-        $response->setContent(strtr($response->getContent(), $translations));
+        $original = $response->getContent();
+        $translated = strtr($original, $translations);
+        $response->setContent($translated);
 
         return $response;
     }

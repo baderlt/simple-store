@@ -14,10 +14,10 @@
         <div class="text-center">
             <h2 class="text-2xl font-bold text-gray-900">
                 <i class="fas fa-user-plus text-green-600 mr-2"></i>
-                Créer un compte
+                {{ __('auth.register.title') }}
             </h2>
             <p class="mt-2 text-gray-600">
-                Rejoignez-nous pour profiter de nos services et suivre vos commandes.
+                {{ __('auth.register.subtitle') }}
             </p>
         </div>
 
