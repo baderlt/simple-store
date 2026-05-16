@@ -25,7 +25,7 @@ use Illuminate\Support\Facades\Route;
 // Home
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/lang/{locale}', function ($locale) {
-    if (in_array($locale, ['fr', 'ar'])) {
+    if (in_array($locale, ['en', 'fr', 'ar'], true)) {
         session(['locale' => $locale]);
     }
 

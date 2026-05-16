@@ -20,10 +20,10 @@ class CartController extends Controller
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Produit en rupture de stock'
+                    'message' => __('cart.out_of_stock')
                 ], 400);
             }
-            return back()->with('error', 'Produit en rupture de stock');
+            return back()->with('error', __('cart.out_of_stock'));
         }
 
         $cart = session()->get('cart', []);
@@ -33,10 +33,10 @@ class CartController extends Controller
                 if ($request->ajax() || $request->wantsJson()) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Quantité maximale atteinte'
+                        'message' => __('cart.max_quantity_reached')
                     ], 400);
                 }
-                return back()->with('error', 'Quantité maximale atteinte');
+                return back()->with('error', __('cart.max_quantity_reached'));
             }
             $cart[$id]['quantity']++;
         } else {
@@ -60,7 +60,7 @@ class CartController extends Controller
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => true,
-                'message' => $product->name . ' ajouté au panier',
+                'message' => __('cart.product_added_named', ['product' => $product->name]),
                 'cart_count' => $cartCount,
                 'cart_total' => $this->calculateCartTotal($cart),
                 'product' => [
@@ -71,7 +71,7 @@ class CartController extends Controller
             ]);
         }
         
-        return back()->with('success', 'Produit ajouté au panier');
+        return back()->with('success', __('cart.product_added'));
     }
 
     public function update(Request $request, $id)
@@ -87,10 +87,10 @@ class CartController extends Controller
                 if ($request->ajax() || $request->wantsJson()) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Quantité demandée non disponible'
+                        'message' => __('cart.quantity_unavailable')
                     ], 400);
                 }
-                return back()->with('error', 'Quantité demandée non disponible');
+                return back()->with('error', __('cart.quantity_unavailable'));
             }
             
             $cart[$id]['quantity'] = $quantity;
@@ -100,7 +100,7 @@ class CartController extends Controller
                 $cartCount = array_sum(array_column($cart, 'quantity'));
                 return response()->json([
                     'success' => true,
-                    'message' => 'Quantité mise à jour',
+                    'message' => __('cart.quantity_updated'),
                     'cart_count' => $cartCount,
                     'cart_total' => $this->calculateCartTotal($cart),
                     'item_total' => $cart[$id]['quantity'] * ($cart[$id]['has_discount'] ? $cart[$id]['final_price'] : $cart[$id]['price'])
@@ -108,7 +108,7 @@ class CartController extends Controller
             }
         }
 
-        return back()->with('success', 'Panier mis à jour');
+        return back()->with('success', __('cart.updated'));
     }
 
     public function remove($id)
@@ -123,14 +123,14 @@ class CartController extends Controller
                 $cartCount = array_sum(array_column($cart, 'quantity'));
                 return response()->json([
                     'success' => true,
-                    'message' => 'Produit retiré du panier',
+                    'message' => __('cart.product_removed'),
                     'cart_count' => $cartCount,
                     'cart_total' => $this->calculateCartTotal($cart)
                 ]);
             }
         }
 
-        return back()->with('success', 'Produit retiré du panier');
+        return back()->with('success', __('cart.product_removed'));
     }
 
     public function clear()
@@ -140,13 +140,13 @@ class CartController extends Controller
         if (request()->ajax() || request()->wantsJson()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Panier vidé',
+                'message' => __('cart.cleared'),
                 'cart_count' => 0,
                 'cart_total' => 0
             ]);
         }
         
-        return back()->with('success', 'Panier vidé');
+        return back()->with('success', __('cart.cleared'));
     }
     
     /**
@@ -175,7 +175,7 @@ public function ajaxUpdate(Request $request, $id)
         if ($product && $quantity > $product->stock_quantity) {
             return response()->json([
                 'success' => false,
-                'message' => 'Quantité maximale disponible : ' . $product->stock_quantity
+                'message' => __('cart.max_quantity_available', ['stock' => $product->stock_quantity])
             ], 400);
         }
         
@@ -195,7 +195,7 @@ public function ajaxUpdate(Request $request, $id)
         
         return response()->json([
             'success' => true,
-            'message' => 'Quantité mise à jour',
+            'message' => __('cart.quantity_updated'),
             'cart_count' => $cartCount,
             'item_total' => number_format($itemTotal, 2),
             'cart_total' => number_format($cartTotal, 2),
@@ -205,7 +205,7 @@ public function ajaxUpdate(Request $request, $id)
     
     return response()->json([
         'success' => false,
-        'message' => 'Produit non trouvé dans le panier'
+        'message' => __('cart.product_not_found')
     ], 404);
 }
 
@@ -229,7 +229,7 @@ public function ajaxRemove($id)
         
         return response()->json([
             'success' => true,
-            'message' => $productName . ' retiré du panier',
+            'message' => __('cart.product_removed_named', ['product' => $productName]),
             'cart_count' => $cartCount,
             'cart_total' => number_format($cartTotal, 2),
             'items_count' => count($cart)
@@ -238,7 +238,7 @@ public function ajaxRemove($id)
     
     return response()->json([
         'success' => false,
-        'message' => 'Produit non trouvé dans le panier'
+        'message' => __('cart.product_not_found')
     ], 404);
 }
 public function getAjax(Request $request)

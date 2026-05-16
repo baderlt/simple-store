@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ app()->getLocale() }}" dir="ltr" prefix="og: https://ogp.me/ns#">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}" prefix="og: https://ogp.me/ns#">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -444,6 +444,10 @@
 
                     {{-- Language Switcher (desktop/tablet) --}}
                     <div class="hidden sm:flex items-center rounded-full border border-gray-200 bg-gray-50 p-1 text-xs font-semibold">
+                        <a href="{{ route('lang.switch', 'en') }}"
+                           class="px-2.5 py-1 rounded-full transition-colors {{ app()->getLocale() === 'en' ? 'bg-green-600 text-white shadow-sm' : 'text-gray-600 hover:text-green-600' }}">
+                            EN
+                        </a>
                         <a href="{{ route('lang.switch', 'fr') }}"
                            class="px-2.5 py-1 rounded-full transition-colors {{ app()->getLocale() === 'fr' ? 'bg-green-600 text-white shadow-sm' : 'text-gray-600 hover:text-green-600' }}">
                             FR
@@ -601,6 +605,10 @@
                                 <i class="fas fa-globe mr-2 text-green-600"></i>{{ __('messages.language') }}
                             </span>
                             <div class="flex rounded-full border border-gray-200 bg-white p-1 text-xs font-semibold">
+                                <a href="{{ route('lang.switch', 'en') }}"
+                                   class="px-3 py-1 rounded-full transition-colors {{ app()->getLocale() === 'en' ? 'bg-green-600 text-white shadow-sm' : 'text-gray-600 hover:text-green-600' }}">
+                                    EN
+                                </a>
                                 <a href="{{ route('lang.switch', 'fr') }}"
                                    class="px-3 py-1 rounded-full transition-colors {{ app()->getLocale() === 'fr' ? 'bg-green-600 text-white shadow-sm' : 'text-gray-600 hover:text-green-600' }}">
                                     FR
@@ -755,7 +763,7 @@
                     <div class="flex items-center justify-between px-6 py-4 border-b">
                         <h2 class="text-lg font-semibold text-gray-900">
                             <i class="fas fa-shopping-cart mr-2 text-emerald-600"></i>
-                            Mon Panier
+                            {{ __('cart.drawer_title') }}
                         </h2>
                         <button type="button" id="close-cart-drawer" class="text-gray-400 hover:text-gray-500 focus:outline-none">
                             <i class="fas fa-times text-xl"></i>
@@ -770,7 +778,7 @@
                                 <div class="flex justify-center">
                                     <i class="fas fa-spinner fa-spin text-3xl text-emerald-600"></i>
                                 </div>
-                                <p class="text-center text-gray-500 mt-4">Chargement du panier...</p>
+                                <p class="text-center text-gray-500 mt-4">{{ __('cart.loading') }}</p>
                             </div>
                             
                             <!-- Empty Cart -->
@@ -778,11 +786,11 @@
                                 <div class="text-gray-400 mb-4">
                                     <i class="fas fa-shopping-cart text-5xl"></i>
                                 </div>
-                                <h3 class="text-lg font-medium text-gray-900 mb-2">Votre panier est vide</h3>
-                                <p class="text-gray-500 mb-6">Ajoutez des produits pour commencer vos achats</p>
+                                <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('cart.empty_title') }}</h3>
+                                <p class="text-gray-500 mb-6">{{ __('cart.empty_description') }}</p>
                                 <button type="button" id="close-cart-empty" class="inline-flex items-center px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors">
                                     <i class="fas fa-store mr-2"></i>
-                                    Voir les produits
+                                    {{ __('cart.view_products') }}
                                 </button>
                             </div>
                             
@@ -798,11 +806,11 @@
                         <!-- Summary -->
                         <div id="cart-summary" class="mb-4 hidden">
                             <div class="flex justify-between mb-2">
-                                <span class="text-gray-600">Sous-total:</span>
+                                <span class="text-gray-600">{{ __('cart.subtotal') }}</span>
                                 <span id="cart-subtotal" class="font-semibold">0.00 DH</span>
                             </div>
                             <div class="flex justify-between mb-4">
-                                <span class="text-gray-600">Total:</span>
+                                <span class="text-gray-600">{{ __('cart.total') }}</span>
                                 <span id="cart-total" class="text-xl font-bold text-emerald-600">0.00 DH</span>
                             </div>
                         </div>
@@ -823,6 +831,35 @@
             </div>
         </div>
     </div>
+
+    @php
+        $appTranslations = [
+            'cart_empty_line' => __('cart.empty_line'),
+            'adding' => __('cart.adding'),
+            'added' => __('cart.added_short'),
+            'error' => __('cart.error'),
+            'product.max_quantity_units' => __('product.max_quantity_units'),
+            'product.share_discover' => __('product.share_discover'),
+            'product.share_success' => __('product.share_success'),
+            'product.share_error' => __('product.share_error'),
+            'product.link_copied' => __('product.link_copied'),
+            'product.copy_error' => __('product.copy_error'),
+            'product.copy_link' => __('product.copy_link'),
+            'product.only_stock_available' => __('product.only_stock_available'),
+            'product.invalid_quantity' => __('product.invalid_quantity'),
+            'product.redirecting_checkout' => __('product.redirecting_checkout'),
+            'products.none_found' => __('products.none_found'),
+            'products.sku' => __('products.sku'),
+            'products.category' => __('products.category'),
+            'validation.required_field' => __('validation.required_field'),
+            'discounts.end_date_after_start' => __('discounts.end_date_after_start'),
+            'discounts.select_product' => __('discounts.select_product'),
+            'discounts.enter_discount_value' => __('discounts.enter_discount_value'),
+        ];
+    @endphp
+    <script>
+        window.appTranslations = {!! json_encode($appTranslations, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) !!};
+    </script>
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -1113,7 +1150,7 @@
             itemsContainer.innerHTML = '';
             
             if (!items || items.length === 0) {
-                itemsContainer.innerHTML = '<p class="text-center text-gray-500 py-4">Aucun article dans le panier</p>';
+                itemsContainer.innerHTML = `<p class="text-center text-gray-500 py-4">${window.appTranslations.cart_empty_line}</p>`;
                 return;
             }
             
@@ -1153,11 +1190,11 @@
                                         `<div class="text-sm">
                                             <span class="font-bold text-emerald-600">${item.final_price.toFixed(2)} DH</span>
                                             <span class="text-gray-400 line-through text-xs ml-2">${item.price.toFixed(2)} DH</span>
-                                            <div class="text-xs text-rose-600 mt-0.5">Total: ${itemTotal.toFixed(2)} DH</div>
+                                            <div class="text-xs text-rose-600 mt-0.5">{{ __('cart.total') }} ${itemTotal.toFixed(2)} DH</div>
                                         </div>` :
                                         `<div>
                                             <span class="font-bold text-gray-900">${item.price.toFixed(2)} DH</span>
-                                            <div class="text-xs text-gray-600 mt-0.5">Total: ${itemTotal.toFixed(2)} DH</div>
+                                            <div class="text-xs text-gray-600 mt-0.5">{{ __('cart.total') }} ${itemTotal.toFixed(2)} DH</div>
                                         </div>`
                                     }
                                 </div>

@@ -112,7 +112,7 @@ class DiscountController extends Controller
 
             return redirect()->back()
                 ->withInput()
-                ->with('warning', "Il existe $overlappingCount réduction(s) chevauchante(s) pour ce produit. Voulez-vous les supprimer ?")
+                ->with('warning', __('admin.overlapping_discounts_warning', ['count' => $overlappingCount]))
                 ->with('overlap_confirmation', true);
         }
 
@@ -120,7 +120,7 @@ class DiscountController extends Controller
         Discount::create($validated);
 
         return redirect()->route('admin.discounts.index')
-            ->with('success', 'Réduction créée avec succès');
+            ->with('success', __('admin.discount_created'));
     }
 
     public function storeWithOverride(Request $request)
@@ -193,7 +193,7 @@ class DiscountController extends Controller
         Discount::create($validated);
 
         return redirect()->route('admin.discounts.index')
-            ->with('success', 'Réduction créée avec succès');
+            ->with('success', __('admin.discount_created'));
     }
 
     public function edit(Discount $discount)
@@ -230,7 +230,7 @@ class DiscountController extends Controller
             
             if (!$product) {
                 return redirect()->back()
-                    ->withErrors(['general' => 'Produit associé non trouvé.'])
+                    ->withErrors(['general' => __('admin.product_not_found')])
                     ->withInput();
             }
             
@@ -288,14 +288,14 @@ class DiscountController extends Controller
 
             return redirect()->back()
                 ->withInput()
-                ->with('warning', "Il existe $overlappingCount réduction(s) chevauchante(s) pour ce produit. Voulez-vous les supprimer ?")
+                ->with('warning', __('admin.overlapping_discounts_warning', ['count' => $overlappingCount]))
                 ->with('overlap_confirmation', true);
         }
 
         $discount->update($validated);
 
         return redirect()->route('admin.discounts.index')
-            ->with('success', 'Réduction mise à jour avec succès');
+            ->with('success', __('admin.discount_updated'));
     }
 
     public function updateWithOverride(Request $request, Discount $discount)
@@ -316,7 +316,7 @@ class DiscountController extends Controller
             
             if (!$product) {
                 return redirect()->back()
-                    ->withErrors(['general' => 'Produit associé non trouvé.'])
+                    ->withErrors(['general' => __('admin.product_not_found')])
                     ->withInput();
             }
             
@@ -363,7 +363,7 @@ class DiscountController extends Controller
         $discount->update($validated);
 
         return redirect()->route('admin.discounts.index')
-            ->with('success', 'Réduction mise à jour avec succès');
+            ->with('success', __('admin.discount_updated'));
     }
 
     public function destroy(Discount $discount)
@@ -371,6 +371,6 @@ class DiscountController extends Controller
         $discount->delete();
 
         return redirect()->route('admin.discounts.index')
-            ->with('success', 'Réduction supprimée avec succès');
+            ->with('success', __('admin.discount_deleted'));
     }
 }

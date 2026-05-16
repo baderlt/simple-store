@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'out_of_stock' => 'Produit en rupture de stock.',
+    'max_quantity_reached' => 'Quantité maximale atteinte.',
+    'product_added_named' => ':product ajouté au panier.',
+    'product_added' => 'Produit ajouté au panier.',
+    'quantity_unavailable' => 'Quantité demandée non disponible.',
+    'quantity_updated' => 'Quantité mise à jour.',
+    'updated' => 'Panier mis à jour.',
+    'product_removed' => 'Produit retiré du panier.',
+    'product_removed_named' => ':product retiré du panier.',
+    'cleared' => 'Panier vidé.',
+    'max_quantity_available' => 'Quantité maximale disponible : :stock',
+    'product_not_found' => 'Produit non trouvé dans le panier.',
+    'drawer_title' => 'Mon Panier',
+    'loading' => 'Chargement du panier...',
+    'empty_title' => 'Votre panier est vide',
+    'empty_description' => 'Ajoutez des produits pour commencer vos achats',
+    'view_products' => 'Voir les produits',
+    'subtotal' => 'Sous-total :',
+    'total' => 'Total :',
+    'empty_line' => 'Aucun article dans le panier',
+    'adding' => 'Ajout en cours...',
+    'added_short' => 'Ajouté !',
+    'error' => 'Erreur',
+];
