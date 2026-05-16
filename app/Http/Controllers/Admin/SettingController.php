@@ -147,7 +147,7 @@ class SettingController extends Controller
         // Flush the settings cache so new values are picked up immediately
         app(StoreSettingsService::class)->flush();
 
-	return back()->with('success', 'Tous les paramètres ont été enregistrés avec succès.');
+	return back()->with('success', __('admin.settings_saved'));
     }
 
     /**
@@ -166,9 +166,9 @@ class SettingController extends Controller
             // Flush the settings cache
             app(StoreSettingsService::class)->flush();
 
-	return back()->with('success', 'Le logo a été supprimé avec succès.');
+	return back()->with('success', __('admin.logo_deleted'));
         } catch (\Exception $e) {
-            return back()->with('error','Impossible de supprimer le logo : ' . $e->getMessage());
+            return back()->with('error',__('admin.logo_delete_failed', ['message' => $e->getMessage()]));
         }
     }
 
@@ -209,7 +209,7 @@ class SettingController extends Controller
         if (is_null($value)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Setting not found'
+                'message' => __('admin.setting_not_found')
             ], 404);
         }
 
@@ -237,7 +237,7 @@ class SettingController extends Controller
         if (!in_array($key, $validKeys)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid setting key'
+                'message' => __('admin.invalid_setting_key')
             ], 400);
         }
 
@@ -287,7 +287,7 @@ class SettingController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Setting updated successfully',
+            'message' => __('admin.setting_updated'),
             'data' => [
                 'key' => $key,
                 'value' => $value

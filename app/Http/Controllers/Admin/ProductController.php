@@ -80,7 +80,7 @@ public function store(Request $request)
     }
 
     return redirect()->route('admin.products.index')
-        ->with('success', 'Product created successfully');
+        ->with('success', __('admin.product_created'));
 }
 
     public function edit(Product $product)
@@ -224,7 +224,7 @@ public function store(Request $request)
         }
 
         return redirect()->route('admin.products.index')
-            ->with('success', 'Product updated successfully');
+            ->with('success', __('admin.product_updated'));
     }
 
     public function destroy(Product $product)
@@ -237,7 +237,7 @@ public function store(Request $request)
         $product->delete();
 
         return redirect()->route('admin.products.index')
-            ->with('success', 'Product deleted successfully');
+            ->with('success', __('admin.product_deleted'));
     }
 
     public function setPrimaryImage(Request $request, $imageId)
@@ -255,13 +255,13 @@ public function store(Request $request)
             
             return response()->json([
                 'success' => true,
-                'message' => 'Image principale mise à jour avec succès'
+                'message' => __('admin.primary_image_updated')
             ]);
             
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur: ' . $e->getMessage()
+                'message' => __('admin.error_with_message', ['message' => $e->getMessage()])
             ], 500);
         }
     }
@@ -287,19 +287,19 @@ public function store(Request $request)
                 
                 return response()->json([
                     'success' => true,
-                    'message' => 'Image supprimée. Une autre image a été définie comme principale.',
+                    'message' => __('admin.image_deleted_new_primary'),
                     'new_primary_id' => $newPrimaryImage->id
                 ]);
             }
             return response()->json([
                 'success' => true,
-                'message' => 'Image supprimée avec succès'
+                'message' => __('admin.image_deleted')
             ]);
             
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur lors de la suppression de l\'image'
+                'message' => __('admin.image_delete_failed')
             ], 500);
         }
     }

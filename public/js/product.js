@@ -1,3 +1,12 @@
+function t(key, replacements = {}) {
+    const messages = window.appTranslations || {};
+    let message = messages[key] || key;
+    Object.entries(replacements).forEach(([name, value]) => {
+        message = message.replace(`:${name}`, value);
+    });
+    return message;
+}
+
     // Change main image when thumbnail is clicked
     function changeMainImage(src) {
         const mainImage = document.getElementById('mainImage');
@@ -23,7 +32,7 @@
             newValue = minValue;
         } else if (newValue > maxStock) {
             newValue = maxStock;
-            alert(`Quantité maximale: ${maxStock} unités disponibles`);
+            alert(t('product.max_quantity_units', { stock: maxStock }));
         }
         
         // Update input value
@@ -38,26 +47,26 @@
     function shareProduct() {
         const productName = "{{ $product->name }}";
         const productUrl = window.location.href;
-        const shareText = `Découvrez ${productName} sur notre boutique! ${productUrl}`;
+        const shareText = `${t('product.share_discover', { product: productName })} ${productUrl}`;
         
         if (navigator.share) {
             // Use Web Share API if available
             navigator.share({
                 title: productName,
-                text: `Découvrez ${productName}`,
+                text: t('product.share_discover', { product: productName }),
                 url: productUrl,
             })
-            .then(() => console.log('Partage réussi'))
-            .catch((error) => console.log('Erreur de partage:', error));
+            .then(() => console.log(t('product.share_success')))
+            .catch((error) => console.log(t('product.share_error') + ':', error));
         } else {
             // Fallback: Copy to clipboard
             navigator.clipboard.writeText(shareText)
                 .then(() => {
-                    alert('Lien copié dans le presse-papier!');
+                    alert(t('product.link_copied'));
                 })
                 .catch(err => {
-                    console.error('Erreur de copie:', err);
-                    prompt('Copiez ce lien:', shareText);
+                    console.error(t('product.copy_error') + ':', err);
+                    prompt(t('product.copy_link'), shareText);
                 });
         }
     }
@@ -123,13 +132,13 @@
                 
                 if (quantity > maxStock) {
                     e.preventDefault();
-                    alert(`Désolé, seulement ${maxStock} unités disponibles en stock.`);
+                    alert(t('product.only_stock_available', { stock: maxStock }));
                     return false;
                 }
                 
                 // Optional: Add loading state
                 const button = this.querySelector('button[type="submit"]');
-                button.innerHTML = '<i class="fas fa-spinner fa-spin mr-3"></i>Ajout en cours...';
+                button.innerHTML = `<i class="fas fa-spinner fa-spin mr-3"></i>${t('cart.adding')}`;
                 button.disabled = true;
             });
         }
@@ -143,19 +152,19 @@
                 
                 if (quantity > maxStock) {
                     e.preventDefault();
-                    alert(`Désolé, seulement ${maxStock} unités disponibles en stock.`);
+                    alert(t('product.only_stock_available', { stock: maxStock }));
                     return false;
                 }
                 
                 if (quantity < 1) {
                     e.preventDefault();
-                    alert('Veuillez sélectionner une quantité valide.');
+                    alert(t('product.invalid_quantity'));
                     return false;
                 }
                 
                 // Optional: Add loading state
                 const button = this.querySelector('button[type="submit"]');
-                button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Redirection vers le paiement...';
+                button.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i>${t('product.redirecting_checkout')}`;
                 button.disabled = true;
             });
         }

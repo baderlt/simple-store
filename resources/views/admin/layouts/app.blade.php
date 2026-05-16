@@ -116,6 +116,10 @@
 
                 {{-- Mobile Language Switcher --}}
                 <div class="flex rounded-full border border-gray-200 bg-white p-1 text-xs font-semibold">
+                    <a href="{{ route('lang.switch', 'en') }}"
+                       class="px-2 py-1 rounded-full transition-colors {{ app()->getLocale() === 'en' ? 'bg-green-600 text-white' : 'text-gray-600' }}">
+                        EN
+                    </a>
                     <a href="{{ route('lang.switch', 'fr') }}"
                        class="px-2 py-1 rounded-full transition-colors {{ app()->getLocale() === 'fr' ? 'bg-green-600 text-white' : 'text-gray-600' }}">
                         FR

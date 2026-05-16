@@ -82,7 +82,7 @@ public function updateStatus(Request $request, Order $order)
     
     $order->update($validated);
 
-    return back()->with('success', 'Statut de la commande mis à jour avec succès');
+    return back()->with('success', __('admin.order_status_updated'));
 }
 
     public function invoice(Order $order)

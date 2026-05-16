@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'out_of_stock' => 'المنتج غير متوفر في المخزون.',
+    'max_quantity_reached' => 'تم الوصول إلى الكمية القصوى.',
+    'product_added_named' => 'تمت إضافة :product إلى السلة.',
+    'product_added' => 'تمت إضافة المنتج إلى السلة.',
+    'quantity_unavailable' => 'الكمية المطلوبة غير متوفرة.',
+    'quantity_updated' => 'تم تحديث الكمية.',
+    'updated' => 'تم تحديث السلة.',
+    'product_removed' => 'تمت إزالة المنتج من السلة.',
+    'product_removed_named' => 'تمت إزالة :product من السلة.',
+    'cleared' => 'تم إفراغ السلة.',
+    'max_quantity_available' => 'الكمية القصوى المتاحة: :stock',
+    'product_not_found' => 'المنتج غير موجود في السلة.',
+    'drawer_title' => 'سلتي',
+    'loading' => 'جارٍ تحميل السلة...',
+    'empty_title' => 'سلتك فارغة',
+    'empty_description' => 'أضف منتجات لبدء التسوق',
+    'view_products' => 'عرض المنتجات',
+    'subtotal' => 'المجموع الفرعي:',
+    'total' => 'المجموع:',
+    'empty_line' => 'لا توجد عناصر في السلة',
+    'adding' => 'جارٍ الإضافة...',
+    'added_short' => 'تمت الإضافة!',
+    'error' => 'خطأ',
+];
