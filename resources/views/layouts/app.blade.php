@@ -832,6 +832,35 @@
         </div>
     </div>
 
+    @php
+        $appTranslations = [
+            'cart_empty_line' => __('cart.empty_line'),
+            'adding' => __('cart.adding'),
+            'added' => __('cart.added_short'),
+            'error' => __('cart.error'),
+            'product.max_quantity_units' => __('product.max_quantity_units'),
+            'product.share_discover' => __('product.share_discover'),
+            'product.share_success' => __('product.share_success'),
+            'product.share_error' => __('product.share_error'),
+            'product.link_copied' => __('product.link_copied'),
+            'product.copy_error' => __('product.copy_error'),
+            'product.copy_link' => __('product.copy_link'),
+            'product.only_stock_available' => __('product.only_stock_available'),
+            'product.invalid_quantity' => __('product.invalid_quantity'),
+            'product.redirecting_checkout' => __('product.redirecting_checkout'),
+            'products.none_found' => __('products.none_found'),
+            'products.sku' => __('products.sku'),
+            'products.category' => __('products.category'),
+            'validation.required_field' => __('validation.required_field'),
+            'discounts.end_date_after_start' => __('discounts.end_date_after_start'),
+            'discounts.select_product' => __('discounts.select_product'),
+            'discounts.enter_discount_value' => __('discounts.enter_discount_value'),
+        ];
+    @endphp
+    <script>
+        window.appTranslations = @json($appTranslations);
+    </script>
+
     <script>
         window.appTranslations = @json([
             'cart_empty_line' => __('cart.empty_line'),
