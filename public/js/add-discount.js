@@ -1,3 +1,12 @@
+function t(key, replacements = {}) {
+    const messages = window.appTranslations || {};
+    let message = messages[key] || key;
+    Object.entries(replacements).forEach(([name, value]) => {
+        message = message.replace(`:${name}`, value);
+    });
+    return message;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Initialiser les événements
     initEventListeners();
@@ -140,7 +149,7 @@ function filterProducts(searchTerm) {
     if (!hasResults) {
         const noResults = document.createElement('div');
         noResults.className = 'p-4 text-center text-gray-500';
-        noResults.textContent = 'Aucun produit trouvé';
+        noResults.textContent = t('products.none_found');
         productList.appendChild(noResults);
     }
 }
@@ -164,8 +173,8 @@ function selectProduct(productId) {
     
     selectedProductName.textContent = selectedOption.textContent.split(' - ')[0];
     selectedProductPrice.textContent = parseFloat(selectedOption.dataset.price || 0).toFixed(2) + ' DH';
-    selectedProductSKU.textContent = selectedOption.dataset.sku ? `SKU: ${selectedOption.dataset.sku}` : '';
-    selectedProductCategory.textContent = selectedOption.dataset.category ? `Catégorie: ${selectedOption.dataset.category}` : '';
+    selectedProductSKU.textContent = selectedOption.dataset.sku ? `${t('products.sku')}: ${selectedOption.dataset.sku}` : '';
+    selectedProductCategory.textContent = selectedOption.dataset.category ? `${t('products.category')}: ${selectedOption.dataset.category}` : '';
     
     selectedProductDiv.classList.remove('hidden');
     
@@ -364,7 +373,7 @@ document.getElementById('discountForm')?.addEventListener('submit', function(e) 
             if (!field.nextElementSibling?.classList.contains('text-red-600')) {
                 const errorDiv = document.createElement('div');
                 errorDiv.className = 'flex items-center text-red-600 text-sm mt-1';
-                errorDiv.innerHTML = '<i class="fas fa-exclamation-circle mr-2"></i> Ce champ est obligatoire';
+                errorDiv.innerHTML = `<i class="fas fa-exclamation-circle mr-2"></i> ${t('validation.required_field')}`;
                 field.parentNode.insertBefore(errorDiv, field.nextSibling);
             }
         }
@@ -380,7 +389,7 @@ document.getElementById('discountForm')?.addEventListener('submit', function(e) 
         
         if (end <= start) {
             isValid = false;
-            alert('La date de fin doit être après la date de début');
+            alert(t('discounts.end_date_after_start'));
         }
     }
     
@@ -388,7 +397,7 @@ document.getElementById('discountForm')?.addEventListener('submit', function(e) 
     const productSelect = document.getElementById('productSelect');
     if (!productSelect.value || productSelect.value === '') {
         isValid = false;
-        alert('Veuillez sélectionner un produit');
+        alert(t('discounts.select_product'));
     }
     
     // Vérifier qu'un type de réduction est défini
@@ -397,7 +406,7 @@ document.getElementById('discountForm')?.addEventListener('submit', function(e) 
     if (!discountPercentage.value && !fixedAmount.value) {
         isValid = false;
         discountPercentage.classList.add('border-red-500', 'ring-2', 'ring-red-200');
-        alert('Veuillez entrer un pourcentage ou un montant fixe de réduction');
+        alert(t('discounts.enter_discount_value'));
     }
     
     if (!isValid) {

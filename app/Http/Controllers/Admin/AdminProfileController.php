@@ -31,7 +31,7 @@ class AdminProfileController extends Controller
             'email' => $request->email,
         ]);
         
-        return back()->with('success', 'Profil mis à jour avec succès.');
+        return back()->with('success', __('admin.profile_updated'));
     }
     
     public function updatePassword(Request $request)
@@ -47,6 +47,6 @@ class AdminProfileController extends Controller
             'password' => Hash::make($request->password),
         ]);
         
-        return back()->with('success', 'Mot de passe mis à jour avec succès.');
+        return back()->with('success', __('admin.password_updated'));
     }
 }

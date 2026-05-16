@@ -40,7 +40,7 @@ class CategoryController extends Controller
         Category::create($validated);
 
         return redirect()->route('admin.categories.index')
-            ->with('success', 'Category created successfully');
+            ->with('success', __('admin.category_created'));
     }
 
     public function edit(Category $category)
@@ -70,13 +70,13 @@ class CategoryController extends Controller
         $category->update($validated);
 
         return redirect()->route('admin.categories.index')
-            ->with('success', 'Category updated successfully');
+            ->with('success', __('admin.category_updated'));
     }
 
     public function destroy(Category $category)
     {
         if ($category->products()->count() > 0) {
-            return back()->with('error', 'Cannot delete category with products');
+            return back()->with('error', __('admin.category_delete_has_products'));
         }
 
         if ($category->image) {
@@ -86,6 +86,6 @@ class CategoryController extends Controller
         $category->delete();
 
         return redirect()->route('admin.categories.index')
-            ->with('success', 'Category deleted successfully');
+            ->with('success', __('admin.category_deleted'));
     }
 }
