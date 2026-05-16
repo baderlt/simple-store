@@ -30,7 +30,7 @@ class CheckoutController extends Controller
         } else {
             // Normal cart checkout
             if (empty($cart)) {
-                return redirect()->route('cart.index')->with('error', 'Votre panier est vide');
+                return redirect()->route('cart.index')->with('error', __('checkout.empty_cart'));
             }
             $isDirect = false;
         }
@@ -50,14 +50,14 @@ class CheckoutController extends Controller
         
         if ($product->stock_quantity < 1) {
             return redirect()->route('products.show', $product->slug)
-                ->with('error', 'Ce produit est en rupture de stock');
+                ->with('error', __('checkout.out_of_stock'));
         }
         
         $quantity = $request->input('quantity');
         
         if ($quantity > $product->stock_quantity) {
             return redirect()->route('products.show', $product->slug)
-                ->with('error', "Seulement {$product->stock_quantity} unités disponibles");
+                ->with('error', __('checkout.only_units_available', ['stock' => $product->stock_quantity]));
         }
         
         // Store direct product in session
@@ -101,7 +101,7 @@ class CheckoutController extends Controller
             $isDirect = false;
             
             if (empty($cart)) {
-                return redirect()->route('cart.index')->with('error', 'Votre panier est vide');
+                return redirect()->route('cart.index')->with('error', __('checkout.empty_cart'));
             }
         }
 
@@ -144,11 +144,11 @@ class CheckoutController extends Controller
                 $product = Product::find($item['id']);
                 
                 if (!$product) {
-                    throw new \Exception("Produit introuvable");
+                    throw new \Exception(__('checkout.product_not_found'));
                 }
                 
                 if ($product->stock_quantity < $item['quantity']) {
-                    throw new \Exception("Stock insuffisant pour {$product->name}");
+                    throw new \Exception(__('checkout.insufficient_stock_for_product', ['product' => $product->name]));
                 }
 
                 // Create order item with correct prices
@@ -172,7 +172,7 @@ class CheckoutController extends Controller
                     'quantity_change' => -$item['quantity'],
                     'quantity_after' => $product->stock_quantity,
                     'type' => 'sale',
-                    'notes' => "Commande #{$order->order_number}",
+                    'notes' => __('checkout.stock_log_order', ['number' => $order->order_number]),
                 ]);
             }
 
@@ -189,7 +189,7 @@ class CheckoutController extends Controller
             DB::commit();
 
             return redirect()->route('order.success', $order->id)
-                ->with('success', 'Commande passée avec succès !');
+                ->with('success', __('checkout.order_placed'));
 
         } catch (\Exception $e) {
             DB::rollBack();

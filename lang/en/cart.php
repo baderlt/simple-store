@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'out_of_stock' => 'Product is out of stock.',
+    'max_quantity_reached' => 'Maximum quantity reached.',
+    'product_added_named' => ':product added to cart.',
+    'product_added' => 'Product added to cart.',
+    'quantity_unavailable' => 'Requested quantity is not available.',
+    'quantity_updated' => 'Quantity updated.',
+    'updated' => 'Cart updated.',
+    'product_removed' => 'Product removed from cart.',
+    'product_removed_named' => ':product removed from cart.',
+    'cleared' => 'Cart cleared.',
+    'max_quantity_available' => 'Maximum available quantity: :stock',
+    'product_not_found' => 'Product not found in cart.',
+    'drawer_title' => 'My Cart',
+    'loading' => 'Loading cart...',
+    'empty_title' => 'Your cart is empty',
+    'empty_description' => 'Add products to start shopping',
+    'view_products' => 'View products',
+    'subtotal' => 'Subtotal:',
+    'total' => 'Total:',
+    'empty_line' => 'No items in cart',
+    'adding' => 'Adding...',
+    'added_short' => 'Added!',
+    'error' => 'Error',
+];

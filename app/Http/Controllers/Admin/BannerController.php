@@ -58,7 +58,7 @@ class BannerController extends Controller
         Banner::create($validated);
         
         return redirect()->route('admin.banners.index')
-            ->with('success', 'Bannière créée avec succès.');
+            ->with('success', __('admin.banner_created'));
     }
     
     public function show(Banner $banner)
@@ -99,7 +99,7 @@ class BannerController extends Controller
         $banner->update($validated);
         
         return redirect()->route('admin.banners.index')
-            ->with('success', 'Bannière mise à jour avec succès.');
+            ->with('success', __('admin.banner_updated'));
     }
     
     public function destroy(Banner $banner)
@@ -111,7 +111,7 @@ class BannerController extends Controller
         $banner->delete();
         
         return redirect()->route('admin.banners.index')
-            ->with('success', 'Bannière supprimée avec succès.');
+            ->with('success', __('admin.banner_deleted'));
     }
     
     public function toggle(Banner $banner)
@@ -120,7 +120,7 @@ class BannerController extends Controller
         
         $status = $banner->is_active ? 'activée' : 'désactivée';
         
-        return back()->with('success', "Bannière {$status} avec succès.");
+        return back()->with('success', __('admin.banner_status_updated', ['status' => $status]));
     }
     
     public function duplicate(Banner $banner)
@@ -130,6 +130,6 @@ class BannerController extends Controller
         $newBanner->save();
         
         return redirect()->route('admin.banners.edit', $newBanner)
-            ->with('success', 'Bannière dupliquée avec succès.');
+            ->with('success', __('admin.banner_duplicated'));
     }
 }
