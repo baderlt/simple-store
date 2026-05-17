@@ -1,20 +1,20 @@
 <?php
 
 return array (
-  'featured_title' => 'Sélection du Pharmacien',
+  'featured_title' => 'Sélection du Boutiquen',
   'featured_products' => 'Produits Recommandés',
-  'featured_description' => 'Découvrez notre sélection exclusive de produits de santé et bien-être',
+  'featured_description' => 'Découvrez notre sélection exclusive de produits et bien-être',
   'none_featured' => 'Aucun produit en vedette',
   'discover_available' => 'Découvrez tous nos produits disponibles',
   'explore_products' => 'Explorer nos produits',
   'features' => 
   array (
     'choose_title' => 'Choisir',
-    'choose_description' => 'Des services de qualité pour votre santé et bien-être',
+    'choose_description' => 'Des services de qualité pour votre qualité et style',
     'expert_advice' => 
     array (
       'title' => 'Conseils Experts',
-      'description' => 'Pharmaciens diplômés à votre écoute pour des conseils personnalisés',
+      'description' => 'Boutiquens diplômés à votre écoute pour des conseils personnalisés',
     ),
     'certified_products' => 
     array (

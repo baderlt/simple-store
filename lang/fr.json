@@ -51,7 +51,7 @@
   "notifications.cart.added": "Produit ajouté au panier.",
   "of": "sur",
   "order_now": "Commander",
-  "pharmacy_management": "Gestion de la pharmacie",
+  "pharmacy_management": "Gestion de boutique",
   "principal": "Principal",
   "reductions": "Réductions",
   "results": "résultats",
@@ -66,5 +66,6 @@
   "status_unknown": "Inconnu",
   "system": "Système",
   "to": "à",
-  "view_site": "Voir le site"
+  "view_site": "Voir le site",
+  "store_management": "Gestion de boutique"
 }

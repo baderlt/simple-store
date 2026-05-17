@@ -1,25 +1,25 @@
 <?php
 
 return array (
-  'featured_title' => 'Pharmacist’s Selection',
+  'featured_title' => 'Featured Selection',
   'featured_products' => 'Recommended Products',
-  'featured_description' => 'Discover our exclusive selection of health and wellness products',
+  'featured_description' => 'Discover our exclusive selection of quality lifestyle products',
   'none_featured' => 'No featured products',
   'discover_available' => 'Discover all available products',
   'explore_products' => 'Explore products',
   'features' => 
   array (
     'choose_title' => 'Choose',
-    'choose_description' => 'Quality services for your health and wellness',
+    'choose_description' => 'Quality services for your quality shopping',
     'expert_advice' => 
     array (
       'title' => 'Expert Advice',
-      'description' => 'Qualified pharmacists ready to provide personalized advice',
+      'description' => 'Qualified product experts ready to provide personalized advice',
     ),
     'certified_products' => 
     array (
       'title' => 'Certified Products',
-      'description' => 'All our products are authentic and compliant with health standards',
+      'description' => 'All our products are authentic and compliant with quality standards',
     ),
     'express_delivery' => 
     array (

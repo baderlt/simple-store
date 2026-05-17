@@ -1,41 +1,49 @@
 <?php
-// app/Http/Controllers/HomeController.php
 
 namespace App\Http\Controllers;
 
 use App\Models\Banner;
 use App\Models\Category;
+use App\Models\HomepageSection;
+use App\Models\Order;
 use App\Models\Product;
-use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
     public function index()
     {
-        // Récupérer les bannières actives groupées par position
         $activeBanners = Banner::getActiveBannersByPosition();
-        
-        $categories = Category::withCount('products')->get();
-        
-        $featuredProducts = Product::with(['category', 'primaryImage', 'activeDiscount'])
-            ->where('is_featured', true)
-            ->where('stock_quantity', '>', 0)
-            ->limit(8)
+
+        $categories = Category::query()
+            ->withCount('products')
+            ->where('is_active', true)
+            ->orderBy('name')
             ->get();
-            
-        // Statistiques pour les compteurs animés
+
+        $featuredProducts = Product::with(['category', 'primaryImage', 'activeDiscount'])
+            ->where('is_active', true)
+            ->where('is_featured', true)
+            ->when(config('database.default') !== 'sqlite', fn ($query) => $query->where('stock_quantity', '>', 0))
+            ->limit(12)
+            ->get();
+
+        $homepageSections = HomepageSection::query()
+            ->where('is_enabled', true)
+            ->orderBy('position')
+            ->get();
+
+        if ($homepageSections->isEmpty()) {
+            $homepageSections = collect(config('storefront.homepage_sections', []))
+                ->map(fn (array $section) => new HomepageSection($section + ['is_enabled' => true]));
+        }
+
         $stats = [
             'products' => Product::count(),
             'categories' => Category::count(),
-            'orders' => \App\Models\Order::count() ?? 0,
+            'orders' => Order::count(),
             'customers' => 100,
         ];
-        
-        return view('home', compact(
-            'categories', 
-            'featuredProducts', 
-            'activeBanners', 
-            'stats'
-        ));
+
+        return view('home', compact('categories', 'featuredProducts', 'activeBanners', 'homepageSections', 'stats'));
     }
 }

@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     {{-- SEO Meta Tags --}}
-    <title>@yield('title', settings('store_name', 'Parapharmacy')) - {{ settings('store_slogan', 'Votre santé, notre priorité') }}</title>
-    <meta name="description" content="@yield('description', settings('store_description', 'Votre parapharmacie en ligne au Maroc. Large choix de produits de santé, beauté et bien-être. Livraison rapide partout au Maroc.'))">
-    <meta name="keywords" content="@yield('keywords', 'parapharmacie Maroc, produits santé, médicaments, beauté, bien-être, pharmacie en ligne, livraison Maroc')">
-    <meta name="author" content="{{ settings('store_name', 'Parapharmacy') }}">
+    <title>@yield('title', settings('store_name', 'Simple Store')) - {{ settings('tagline', 'Commerce for every niche') }}</title>
+    <meta name="description" content="@yield('description', settings('store_description', 'A flexible online store for curated products, services, and digital commerce.'))">
+    <meta name="keywords" content="@yield('keywords', settings('seo_keywords', 'ecommerce, online store, products, shopping'))">
+    <meta name="author" content="{{ settings('store_name', 'Simple Store') }}">
     
     {{-- Canonical --}}
     <link rel="canonical" href="{{ url()->current() }}">
@@ -16,10 +16,10 @@
     {{-- Open Graph --}}
     <meta property="og:locale" content="fr_FR">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="@yield('title', settings('store_name', 'Parapharmacy'))">
-    <meta property="og:description" content="@yield('description', settings('store_description', 'Votre parapharmacie en ligne au Maroc'))">
+    <meta property="og:title" content="@yield('title', settings('store_name', 'Simple Store'))">
+    <meta property="og:description" content="@yield('description', settings('store_description', 'A flexible online store for any business niche.'))">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:site_name" content="{{ settings('store_name', 'Parapharmacy') }}">
+    <meta property="og:site_name" content="{{ settings('store_name', 'Simple Store') }}">
     @php
         $ogImage = $ogImage ?? (settings('logo') ? asset('storage/' . settings('logo')) : asset('img/default-og.jpg'));
     @endphp
@@ -27,12 +27,12 @@
     <meta property="og:image:secure_url" content="{{ $ogImage }}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="{{ settings('store_name', 'Parapharmacy') }}">
+    <meta property="og:image:alt" content="{{ settings('store_name', 'Simple Store') }}">
     
     {{-- Twitter Card --}}
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="@yield('title', settings('store_name', 'Parapharmacy'))">
-    <meta name="twitter:description" content="@yield('description', settings('store_description', 'Votre parapharmacie en ligne au Maroc'))">
+    <meta name="twitter:title" content="@yield('title', settings('store_name', 'Simple Store'))">
+    <meta name="twitter:description" content="@yield('description', settings('store_description', 'A flexible online store for any business niche.'))">
     <meta name="twitter:image" content="{{ $ogImage }}">
     
     {{-- Robots --}}
@@ -55,7 +55,7 @@
     
     {{-- Favicon --}}
     @php
-        $logoPath = settings('logo');
+        $logoPath = settings('favicon', settings('logo'));
     @endphp
     @if($logoPath && file_exists(public_path('storage/'.$logoPath)))
         <link rel="icon" type="image/x-icon" href="{{ asset('storage/' . $logoPath) }}">
@@ -348,7 +348,7 @@
             <div class="flex justify-between items-center">
                 <div class="flex items-center space-x-4">
                     <span><i class="fas fa-phone-alt mr-2"></i> {{ settings('phone', '+212 XXX-XXXXXX') }}</span>
-                    <span><i class="fas fa-envelope mr-2"></i> {{ settings('email', 'contact@parapharmacie.ma') }}</span>
+                    <span><i class="fas fa-envelope mr-2"></i> {{ settings('email', 'contact@example.com') }}</span>
                 </div>
                 <div class="flex items-center space-x-4">
                     @auth
@@ -373,8 +373,8 @@
             {{-- First Row: Logo + Action Buttons --}}
             <div class="header-container flex items-center justify-between pt-2 lg:pt-4">
                 @php
-                    $logoPath = settings('logo');
-                    $storeName = settings('store_name', 'Parapharmacy');
+                    $logoPath = settings('favicon', settings('logo'));
+                    $storeName = settings('store_name', 'Simple Store');
                 @endphp
                 
                 {{-- Logo --}}
@@ -388,7 +388,7 @@
                         @else 
                             <div class="flex items-center space-x-2">
                                 <div class="bg-green-600 text-white p-1 lg:p-2 rounded-lg">
-                                    <i class="fas fa-prescription-bottle-alt text-lg lg:text-2xl"></i>
+                                    <i class="fas fa-store text-lg lg:text-2xl"></i>
                                 </div>
                                 <span class="text-lg lg:text-2xl font-bold text-gray-800 hidden sm:block">{{ $storeName }}</span>
                             </div>
@@ -556,7 +556,7 @@
                     <i class="fas fa-home mr-2"></i>{{ __('messages.home') }}
                 </a>
                 <a href="{{ route('products.index') }}" class="nav-link text-gray-700 hover:text-green-600 font-medium">
-                    <i class="fas fa-pills mr-2"></i>{{ __('messages.products') }}
+                    <i class="fas fa-box-open mr-2"></i>{{ __('messages.products') }}
                 </a>
                 <a href="{{ route('categories.index') }}" class="nav-link text-gray-700 hover:text-green-600 font-medium">
                     <i class="fas fa-th-large mr-2"></i>{{ __('messages.categories') }}
@@ -586,7 +586,7 @@
                         <i class="fas fa-home mr-3"></i>{{ __('messages.home') }}
                     </a>
                     <a href="{{ route('products.index') }}" class="flex items-center text-gray-700 hover:text-green-600 p-2 rounded-lg hover:bg-gray-50">
-                        <i class="fas fa-pills mr-3"></i>{{ __('messages.products') }}
+                        <i class="fas fa-box-open mr-3"></i>{{ __('messages.products') }}
                     </a>
                     <a href="{{ route('categories.index') }}" class="flex items-center text-gray-700 hover:text-green-600 p-2 rounded-lg hover:bg-gray-50">
                         <i class="fas fa-th-large mr-3"></i>{{ __('messages.categories') }}
@@ -671,12 +671,12 @@
                                  loading="lazy">
                         @else
                             <div class="bg-green-600 text-white p-2 rounded-lg">
-                                <i class="fas fa-prescription-bottle-alt text-2xl"></i>
+                                <i class="fas fa-store text-2xl"></i>
                             </div>
                         @endif
                         <span class="text-2xl font-bold">{{ $storeName }}</span>
                     </div>
-                    <p class="text-gray-300">Votre partenaire santé de confiance depuis 2024.</p>
+                    <p class="text-gray-300">{{ settings('footer_description', 'Your configurable ecommerce partner for every niche.') }}</p>
                     <div class="flex space-x-4 pt-2">
                         <a href="{{ settings('facebook_url', '#') }}" target="_blank" 
                            class="bg-gray-800 hover:bg-green-600 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
@@ -719,7 +719,7 @@
                         </li>
                         <li class="flex items-center">
                             <i class="fas fa-envelope text-green-400 mr-3"></i>
-                            <span class="text-gray-300">{{ settings('email', 'contact@parapharmacie.ma') }}</span>
+                            <span class="text-gray-300">{{ settings('email', 'contact@example.com') }}</span>
                         </li>
                     </ul>
                 </div>
@@ -1505,5 +1505,6 @@ button:disabled {
 </style>
 
 
+@stack('scripts')
 </body>
 </html>

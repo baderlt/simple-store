@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $category->name . ' - ' . settings('store_name', 'Parapharmacy'))
+@section('title', $category->name . ' - ' . settings('store_name', 'Simple Store'))
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
@@ -77,7 +77,7 @@
                                 </div>
                             @else
                                 <div class="h-48 bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center">
-                                    <i class="fas fa-pills text-4xl text-green-400"></i>
+                                    <i class="fas fa-box-open text-4xl text-green-400"></i>
                                 </div>
                             @endif
                         </a>

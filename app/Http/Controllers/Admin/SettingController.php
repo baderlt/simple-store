@@ -13,285 +13,172 @@ class SettingController extends Controller
 {
     public function index()
     {
-        $settings = Setting::all()->pluck('value', 'key');
+        $settings = app(StoreSettingsService::class)->all();
+
         return view('admin.settings.index', compact('settings'));
     }
 
     public function update(Request $request)
     {
-        // Define validation rules
         $validator = Validator::make($request->all(), [
-            // Informations Générales
             'store_name' => 'required|string|max:255',
-            'working_hours' => 'required|string|max:255',
-
-            // Contact & Réseaux
-            'phone' => 'required|string|max:20',
-            'email' => 'required|email|max:255',
-            'whatsapp' => 'nullable|string|max:20',
-            'address' => 'required|string|max:500',
-            "instagram_url"=>'nullable|string',
-            "facebook_url"=>"nullable|string",
-
-            // Localisation GPS
-            'latitude' => 'required|numeric|between:-90,90',
-            'longitude' => 'required|numeric|between:-180,180',
-            'maps_link' => 'nullable|string',
-
-
-            // Paramètres de Livraison
-            'delivery_fee' => 'required|numeric|min:0',
-            'delivery_zone' => 'nullable|string|max:255',
-            'delivery_time' => 'nullable|string|max:100',
-            'free_delivery_threshold' => 'nullable|numeric|min:0',
-
-            // Logo
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048',
+            'tagline' => 'nullable|string|max:255',
+            'store_description' => 'nullable|string|max:1000',
+            'seo_title' => 'nullable|string|max:255',
+            'seo_description' => 'nullable|string|max:500',
+            'seo_keywords' => 'nullable|string|max:500',
+            'phone' => 'nullable|string|max:50',
+            'email' => 'nullable|email|max:255',
+            'whatsapp' => 'nullable|string|max:50',
+            'address' => 'nullable|string|max:1000',
+            'working_hours' => 'nullable|string|max:255',
+            'timezone' => 'nullable|timezone',
+            'default_locale' => 'nullable|in:en,fr,ar',
+            'supported_locales' => 'nullable|array',
+            'supported_locales.*' => 'in:en,fr,ar',
+            'currency' => 'nullable|string|max:10',
             'primary_color' => 'nullable|string|max:20',
             'secondary_color' => 'nullable|string|max:20',
-            'hero_title_prefix' => 'nullable|string|max:255',
-            'hero_title_emphasis' => 'nullable|string|max:255',
-            'hero_title_suffix' => 'nullable|string|max:255',
-            'hero_subtitle' => 'nullable|string|max:500',
-        ], [
-            'latitude.required' => 'La latitude est requise pour la localisation.',
-            'latitude.between' => 'La latitude doit être comprise entre -90 et 90.',
-            'longitude.required' => 'La longitude est requise pour la localisation.',
-            'longitude.between' => 'La longitude doit être comprise entre -180 et 180.',
-            'delivery_fee.min' => 'Les frais de livraison ne peuvent pas être négatifs.',
-            'logo.image' => 'Le logo doit être une image.',
-            'logo.mimes' => 'Le logo doit être au format JPEG, PNG, JPG ou SVG.',
-            'logo.max' => 'Le logo ne doit pas dépasser 2MB.',
+            'accent_color' => 'nullable|string|max:20',
+            'font_family' => 'nullable|string|max:120',
+            'button_style' => 'nullable|in:rounded,pill,square',
+            'border_radius' => 'nullable|string|max:20',
+            'theme_mode' => 'nullable|in:light,dark,system',
+            'header_layout' => 'nullable|in:classic,centered,minimal',
+            'footer_layout' => 'nullable|in:classic,compact,columns',
+            'product_card_style' => 'nullable|in:standard,compact,overlay',
+            'delivery_fee' => 'nullable|numeric|min:0',
+            'free_delivery_threshold' => 'nullable|numeric|min:0',
+            'delivery_zone' => 'nullable|string|max:255',
+            'delivery_time' => 'nullable|string|max:100',
+            'tax_rate' => 'nullable|numeric|min:0|max:100',
+            'hero_badge' => 'nullable|string|max:255',
+            'hero_title' => 'nullable|string|max:255',
+            'hero_subtitle' => 'nullable|string|max:1000',
+            'hero_primary_button_text' => 'nullable|string|max:100',
+            'hero_primary_button_url' => 'nullable|string|max:500',
+            'hero_secondary_button_text' => 'nullable|string|max:100',
+            'hero_secondary_button_url' => 'nullable|string|max:500',
+            'newsletter_title' => 'nullable|string|max:255',
+            'newsletter_description' => 'nullable|string|max:500',
+            'footer_description' => 'nullable|string|max:500',
+            'about_title' => 'nullable|string|max:255',
+            'about_body' => 'nullable|string|max:5000',
+            'about_seo_description' => 'nullable|string|max:500',
+            'facebook_url' => 'nullable|url|max:500',
+            'instagram_url' => 'nullable|url|max:500',
+            'twitter_url' => 'nullable|url|max:500',
+            'linkedin_url' => 'nullable|url|max:500',
+            'youtube_url' => 'nullable|url|max:500',
+            'tiktok_url' => 'nullable|url|max:500',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
+            'maps_link' => 'nullable|string|max:1000',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,webp,svg|max:2048',
+            'favicon' => 'nullable|image|mimes:jpeg,png,jpg,webp,svg,ico|max:1024',
+            'footer_logo' => 'nullable|image|mimes:jpeg,png,jpg,webp,svg|max:2048',
         ]);
 
-        // Add custom validation for logo dimensions
-        $validator->after(function ($validator) use ($request) {
-            if ($request->hasFile('logo')) {
-                $image = $request->file('logo');
-                $dimensions = getimagesize($image->getPathname());
-
-                if ($dimensions[0] < 100 || $dimensions[1] < 100) {
-                    $validator->errors()->add(
-                        'logo', 'Le logo doit avoir au moins 100x100 pixels.'
-                    );
-                }
-            }
-        });
-
         if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
+            return back()->withErrors($validator)->withInput();
         }
 
-        // Get validated data
         $validated = $validator->validated();
+        $jsonFields = ['supported_locales'];
+        $numberFields = ['delivery_fee', 'free_delivery_threshold', 'tax_rate', 'latitude', 'longitude'];
+        $imageFields = ['logo', 'favicon', 'footer_logo'];
 
-        // Define field types for your model
-        $fieldTypes = [
-            'store_name' => 'text',
-            'phone' => 'text',
-            'email' => 'text',
-            'whatsapp' => 'text',
-            'address' => 'textarea',
-            'working_hours' => 'text',
-            'delivery_fee' => 'number',
-            'latitude' => 'number',
-            'longitude' => 'number',
-            'maps_link' => 'text',
-            "instagram_url"=>"text",
-            "facebook_url"=>"text",
-            'delivery_zone' => 'text',
-            'delivery_time' => 'text',
-            'free_delivery_threshold' => 'number',
-            'logo' => 'image',
-            'primary_color' => 'text',
-            'secondary_color' => 'text',
-            'hero_title_prefix' => 'text',
-            'hero_title_emphasis' => 'text',
-            'hero_title_suffix' => 'text',
-            'hero_subtitle' => 'textarea',
-        ];
+        foreach ($imageFields as $field) {
+            if ($request->hasFile($field)) {
+                $oldPath = Setting::get($field);
+                if ($oldPath) {
+                    Storage::disk('public')->delete($oldPath);
+                }
 
-        // Handle logo upload
-        if ($request->hasFile('logo')) {
-            $oldLogo = Setting::get('logo');
-            if ($oldLogo) {
-                Storage::disk('public')->delete($oldLogo);
+                Setting::set($field, $request->file($field)->store('settings/brand', 'public'), 'image');
             }
 
-            $logoPath = $request->file('logo')->store('settings/logos', 'public');
-            Setting::set('logo', $logoPath, 'image');
+            unset($validated[$field]);
         }
 
-        // Handle other fields
         foreach ($validated as $key => $value) {
-            // Skip logo as it's already handled
-            if ($key === 'logo') {
-                continue;
+            $type = 'text';
+            if (in_array($key, $jsonFields, true)) {
+                $type = 'json';
+                $value = array_values($value ?? []);
+            } elseif (in_array($key, $numberFields, true)) {
+                $type = 'number';
+            } elseif (str_contains($key, 'description') || in_array($key, ['address', 'footer_description', 'about_body'], true)) {
+                $type = 'textarea';
             }
 
-            // Handle empty values for optional fields
-            if (empty($value) && in_array($key, ['whatsapp', 'delivery_zone', 'delivery_time', 'free_delivery_threshold',
-            'primary_color', 'secondary_color', 'hero_title_prefix', 'hero_title_emphasis', 'hero_title_suffix', 'hero_subtitle'])) {
-                $value = null;
-            }
-
-            // Get field type or default to 'text'
-            $type = $fieldTypes[$key] ?? 'text';
-
-            // Save setting
-            Setting::set($key, $value, $type);
+            Setting::set($key, in_array($key, $jsonFields, true) ? json_encode($value, JSON_UNESCAPED_UNICODE) : $value, $type);
         }
 
-        // Flush the settings cache so new values are picked up immediately
         app(StoreSettingsService::class)->flush();
 
-	return back()->with('success', __('admin.settings_saved'));
+        return back()->with('success', __('admin.settings_saved'));
     }
 
-    /**
-     * Delete the logo
-     */
     public function deleteLogo(Request $request)
     {
-        try {
-            $logoPath = Setting::get('logo');
+        $key = $request->input('asset', 'logo');
+        abort_unless(in_array($key, ['logo', 'favicon', 'footer_logo'], true), 404);
 
-            if ($logoPath && Storage::disk('public')->exists($logoPath)) {
-                Storage::disk('public')->delete($logoPath);
-            }
-
-            Setting::remove('logo');
-            // Flush the settings cache
-            app(StoreSettingsService::class)->flush();
-
-	return back()->with('success', __('admin.logo_deleted'));
-        } catch (\Exception $e) {
-            return back()->with('error',__('admin.logo_delete_failed', ['message' => $e->getMessage()]));
-        }
-    }
-
-
-    /**
-     * Show settings as JSON (for API or AJAX requests)
-     */
-    public function getJson()
-    {
-        $settings = Setting::all()->pluck('value', 'key')->toArray();
-
-        // Add some computed fields
-        $settings['has_logo'] = !empty($settings['logo']);
-        $settings['has_whatsapp'] = !empty($settings['whatsapp']);
-
-        // Format numeric values
-        $numericFields = ['delivery_fee', 'latitude', 'longitude', 'free_delivery_threshold'];
-        foreach ($numericFields as $field) {
-            if (isset($settings[$field]) && is_numeric($settings[$field])) {
-                $settings[$field] = (float) $settings[$field];
-            }
+        $path = Setting::get($key);
+        if ($path) {
+            Storage::disk('public')->delete($path);
         }
 
-        return response()->json([
-            'success' => true,
-            'data' => $settings,
-            'timestamp' => now()->toISOString()
-        ]);
-    }
-
-    /**
-     * Get a specific setting value
-     */
-    public function getSetting($key)
-    {
-        $value = Setting::get($key);
-
-        if (is_null($value)) {
-            return response()->json([
-                'success' => false,
-                'message' => __('admin.setting_not_found')
-            ], 404);
-        }
-
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'key' => $key,
-                'value' => $value
-            ]
-        ]);
-    }
-
-    /**
-     * Update a single setting (for AJAX requests)
-     */
-    public function updateSingle(Request $request, $key)
-    {
-        $validKeys = [
-            'store_name', 'phone', 'email', 'whatsapp', 'address', 'working_hours',
-            'delivery_fee', 'latitude', 'longitude', 'delivery_zone', 'delivery_time',
-            'free_delivery_threshold',
-            'primary_color', 'secondary_color', 'hero_title_prefix', 'hero_title_emphasis', 'hero_title_suffix', 'hero_subtitle'
-        ];
-
-        if (!in_array($key, $validKeys)) {
-            return response()->json([
-                'success' => false,
-                'message' => __('admin.invalid_setting_key')
-            ], 400);
-        }
-
-        $validator = Validator::make($request->all(), [
-            'value' => 'required'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        $value = $request->input('value');
-
-        // Validate specific fields
-        $validationRules = [
-            'email' => 'email',
-            'latitude' => 'numeric|between:-90,90',
-            'longitude' => 'numeric|between:-180,180',
-            'delivery_fee' => 'numeric|min:0',
-            'free_delivery_threshold' => 'numeric|min:0',
-        ];
-
-        if (isset($validationRules[$key])) {
-            $fieldValidator = Validator::make(['value' => $value], [
-                'value' => $validationRules[$key]
-            ]);
-
-            if ($fieldValidator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'errors' => $fieldValidator->errors()
-                ], 422);
-            }
-        }
-
-        // Determine field type
-        $numberFields = ['delivery_fee', 'latitude', 'longitude', 'free_delivery_threshold'];
-        $type = in_array($key, $numberFields) ? 'number' : 'text';
-
-        Setting::set($key, $value, $type);
-
-        // Flush the settings cache so new values are picked up immediately
+        Setting::remove($key);
         app(StoreSettingsService::class)->flush();
 
+        return back()->with('success', __('admin.logo_deleted'));
+    }
+
+    public function getJson()
+    {
         return response()->json([
             'success' => true,
-            'message' => __('admin.setting_updated'),
-            'data' => [
-                'key' => $key,
-                'value' => $value
-            ]
+            'data' => app(StoreSettingsService::class)->all(),
+            'timestamp' => now()->toISOString(),
         ]);
+    }
+
+    public function getSetting($key)
+    {
+        $settings = app(StoreSettingsService::class)->all();
+
+        if (! array_key_exists($key, $settings)) {
+            return response()->json(['success' => false, 'message' => __('admin.setting_not_found')], 404);
+        }
+
+        return response()->json(['success' => true, 'data' => ['key' => $key, 'value' => $settings[$key]]]);
+    }
+
+    public function updateSingle(Request $request, $key)
+    {
+        $allowed = [
+            'store_name', 'tagline', 'store_description', 'seo_title', 'seo_description', 'seo_keywords',
+            'phone', 'email', 'whatsapp', 'address', 'working_hours', 'timezone', 'default_locale', 'currency',
+            'primary_color', 'secondary_color', 'accent_color', 'font_family', 'button_style', 'border_radius',
+            'theme_mode', 'header_layout', 'footer_layout', 'product_card_style', 'delivery_fee',
+            'free_delivery_threshold', 'delivery_zone', 'delivery_time', 'tax_rate', 'hero_badge', 'hero_title',
+            'hero_subtitle', 'hero_primary_button_text', 'hero_primary_button_url', 'hero_secondary_button_text',
+            'hero_secondary_button_url', 'newsletter_title', 'newsletter_description', 'footer_description', 'about_title',
+            'about_body', 'about_seo_description', 'facebook_url', 'instagram_url', 'twitter_url', 'linkedin_url', 'youtube_url', 'tiktok_url',
+            'latitude', 'longitude', 'maps_link',
+        ];
+
+        abort_unless(in_array($key, $allowed, true), 400);
+
+        $request->validate(['value' => 'nullable']);
+        $numberFields = ['delivery_fee', 'free_delivery_threshold', 'tax_rate', 'latitude', 'longitude'];
+        $type = in_array($key, $numberFields, true) ? 'number' : 'text';
+
+        Setting::set($key, $request->input('value'), $type);
+        app(StoreSettingsService::class)->flush();
+
+        return response()->json(['success' => true, 'message' => __('admin.setting_updated')]);
     }
 }

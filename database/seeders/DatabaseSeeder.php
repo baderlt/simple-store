@@ -2,165 +2,50 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\User;
 use App\Models\Category;
 use App\Models\Product;
-use App\Models\ProductImage;
-use App\Models\Setting;
+use App\Models\User;
+use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // Create admin user
-        User::create([
-            'name' => 'Admin',
-            'email' => 'admin@parapharmacie.ma',
-            'password' => bcrypt('password'),
-            'is_admin' => true,
-        ]);
+        $this->call(StorefrontBootstrapSeeder::class);
 
-        // Create regular user
-        User::create([
-            'name' => 'Client Test',
-            'email' => 'client@test.ma',
-            'password' => bcrypt('password'),
-            'is_admin' => false,
-        ]);
+        User::firstOrCreate(
+            ['email' => 'admin@example.com'],
+            ['name' => 'Admin', 'password' => bcrypt('password'), 'is_admin' => true]
+        );
 
-        // Create categories
+        User::firstOrCreate(
+            ['email' => 'customer@example.com'],
+            ['name' => 'Demo Customer', 'password' => bcrypt('password'), 'is_admin' => false]
+        );
+
         $categories = [
-            [
-                'name' => 'Soins Visage',
-                'slug' => 'soins-visage',
-                'description' => 'Produits de soin pour le visage',
-                'is_active' => true,
-            ],
-            [
-                'name' => 'Soins Corps',
-                'slug' => 'soins-corps',
-                'description' => 'Produits de soin pour le corps',
-                'is_active' => true,
-            ],
-            [
-                'name' => 'Cheveux',
-                'slug' => 'cheveux',
-                'description' => 'Produits pour les cheveux',
-                'is_active' => true,
-            ],
-            [
-                'name' => 'Hygiène',
-                'slug' => 'hygiene',
-                'description' => 'Produits d\'hygiène',
-                'is_active' => true,
-            ],
-            [
-                'name' => 'Bébé & Maman',
-                'slug' => 'bebe-maman',
-                'description' => 'Produits pour bébé et maman',
-                'is_active' => true,
-            ],
-            [
-                'name' => 'Vitamines & Compléments',
-                'slug' => 'vitamines',
-                'description' => 'Vitamines et compléments alimentaires',
-                'is_active' => true,
-            ],
+            ['name' => 'Apparel', 'slug' => 'apparel', 'description' => 'Clothing, accessories, and lifestyle products.'],
+            ['name' => 'Electronics', 'slug' => 'electronics', 'description' => 'Devices, gadgets, and connected products.'],
+            ['name' => 'Home & Living', 'slug' => 'home-living', 'description' => 'Furniture, decor, and everyday essentials.'],
+            ['name' => 'Digital Goods', 'slug' => 'digital-goods', 'description' => 'Downloadable files, licenses, courses, and services.'],
         ];
 
-        foreach ($categories as $cat) {
-            Category::create($cat);
+        foreach ($categories as $category) {
+            Category::firstOrCreate(['slug' => $category['slug']], $category + ['is_active' => true]);
         }
 
-        // Create sample products
         $products = [
-            [
-                'category_id' => 1,
-                'name' => 'Crème Hydratante Visage',
-                'slug' => 'creme-hydratante-visage',
-                'description' => 'Crème hydratante pour tous types de peaux',
-                'price' => 150.00,
-                'stock_quantity' => 50,
-                'low_stock_alert' => 10,
-                'sku' => 'CREAM-001',
-                'is_active' => true,
-                'is_featured' => true,
-            ],
-            [
-                'category_id' => 2,
-                'name' => 'Lait Corps Nourrissant',
-                'slug' => 'lait-corps-nourrissant',
-                'description' => 'Lait corps nourrissant et hydratant',
-                'price' => 120.00,
-                'stock_quantity' => 30,
-                'low_stock_alert' => 10,
-                'sku' => 'BODY-001',
-                'is_active' => true,
-                'is_featured' => true,
-            ],
-            [
-                'category_id' => 3,
-                'name' => 'Shampoing Réparateur',
-                'slug' => 'shampoing-reparateur',
-                'description' => 'Shampoing pour cheveux abîmés',
-                'price' => 95.00,
-                'stock_quantity' => 40,
-                'low_stock_alert' => 10,
-                'sku' => 'HAIR-001',
-                'is_active' => true,
-                'is_featured' => true,
-            ],
-            [
-                'category_id' => 4,
-                'name' => 'Gel Douche Doux',
-                'slug' => 'gel-douche-doux',
-                'description' => 'Gel douche pour toute la famille',
-                'price' => 65.00,
-                'stock_quantity' => 60,
-                'low_stock_alert' => 15,
-                'sku' => 'HYG-001',
-                'is_active' => true,
-                'is_featured' => false,
-            ],
-            [
-                'category_id' => 5,
-                'name' => 'Lingettes Bébé',
-                'slug' => 'lingettes-bebe',
-                'description' => 'Lingettes douces pour bébé',
-                'price' => 45.00,
-                'stock_quantity' => 80,
-                'low_stock_alert' => 20,
-                'sku' => 'BABY-001',
-                'is_active' => true,
-                'is_featured' => true,
-            ],
-            [
-                'category_id' => 6,
-                'name' => 'Vitamine C 1000mg',
-                'slug' => 'vitamine-c-1000mg',
-                'description' => 'Complément alimentaire vitamine C',
-                'price' => 180.00,
-                'stock_quantity' => 25,
-                'low_stock_alert' => 10,
-                'sku' => 'VIT-001',
-                'is_active' => true,
-                'is_featured' => true,
-            ],
+            ['category_id' => 1, 'name' => 'Everyday Essential Item', 'slug' => 'everyday-essential-item', 'description' => 'A demo physical product that can represent any retail niche.', 'price' => 49.00, 'sku' => 'GEN-001', 'brand' => 'Generic Brand', 'is_featured' => true],
+            ['category_id' => 2, 'name' => 'Smart Accessory', 'slug' => 'smart-accessory', 'description' => 'A flexible sample product for electronics or gadget catalogs.', 'price' => 89.00, 'sku' => 'GEN-002', 'brand' => 'Tech Brand', 'is_featured' => true],
+            ['category_id' => 3, 'name' => 'Home Collection Product', 'slug' => 'home-collection-product', 'description' => 'A configurable sample product for furniture, decor, or local goods.', 'price' => 129.00, 'sku' => 'GEN-003', 'brand' => 'Home Brand', 'is_featured' => true],
+            ['category_id' => 4, 'name' => 'Digital Download', 'slug' => 'digital-download', 'description' => 'A sample digital product with download support.', 'price' => 29.00, 'sku' => 'DIG-001', 'brand' => 'Digital Studio', 'product_type' => 'digital', 'track_stock' => false, 'is_featured' => true],
         ];
 
-        foreach ($products as $prod) {
-            Product::create($prod);
+        foreach ($products as $product) {
+            Product::firstOrCreate(
+                ['slug' => $product['slug']],
+                $product + ['stock_quantity' => 50, 'low_stock_alert' => 10, 'is_active' => true]
+            );
         }
-
-        // Settings
-        Setting::set('store_name', 'Parapharmacie Santé');
-        Setting::set('phone', '+212 5XX-XXXXXX');
-        Setting::set('email', 'contact@parapharmacie.ma');
-        Setting::set('address', '123 Avenue Mohammed V, Casablanca');
-        Setting::set('working_hours', 'Lun-Sam: 9h00-20h00 | Dim: 10h00-18h00');
-        Setting::set('delivery_fee', '30');
-        Setting::set('facebook_url', '#');
-        Setting::set('instagram_url', '#');
     }
 }

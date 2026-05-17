@@ -93,14 +93,14 @@
                 <div class="flex items-center space-x-2">
                     @php
                         $logoPath = settings('logo');
-                        $storeName = settings('store_name', 'Parapharmacy');
+                        $storeName = settings('store_name', 'Simple Store');
                     @endphp
                     @if($logoPath && file_exists(public_path('storage/'.$logoPath)))
                         <img src="{{ asset('storage/'.$logoPath) }}" alt="{{ $storeName }}" 
                              class="h-8 w-auto object-contain">
                     @else 
                         <div class="bg-gradient-to-r from-green-500 to-emerald-500 p-2 rounded-lg">
-                            <i class="fas fa-prescription-bottle-medical text-white text-sm"></i>
+                            <i class="fas fa-store text-white text-sm"></i>
                         </div>
                     @endif
                     <span class="font-bold text-gray-800">Admin</span>
@@ -149,12 +149,12 @@
                              class="h-12 w-auto object-contain transition-transform duration-300 hover:scale-105">
                     @else 
                         <div class="bg-gradient-to-r from-green-500 to-emerald-500 p-3 rounded-xl shadow-lg">
-                            <i class="fas fa-prescription-bottle-medical text-white text-lg"></i>
+                            <i class="fas fa-store text-white text-lg"></i>
                         </div>
                     @endif
                     <div>
                         <h1 class="text-xl font-bold">{{ __('admin_panel') }}</h1>
-                        <p class="text-gray-400 text-sm">{{ __('pharmacy_management') }}</p>
+                        <p class="text-gray-400 text-sm">{{ __('store_management') }}</p>
                     </div>
                 </div>
             </div>
@@ -184,6 +184,7 @@
                         ['route' => 'admin.orders.index', 'icon' => 'fas fa-shopping-cart', 'label' => __('Commandes')],
                         ['route' => 'admin.discounts.index', 'icon' => 'fas fa-percent', 'label' => __('reductions')],
                         ['route' => 'admin.banners.index', 'icon' => 'fas fa-layer-group', 'label' => __('banners')],
+                        ['route' => 'admin.homepage-sections.index', 'icon' => 'fas fa-wand-magic-sparkles', 'label' => 'Homepage Builder'],
                     ];
 
                     $settingsItems = [
@@ -259,12 +260,12 @@
                              class="h-10 w-auto object-contain">
                     @else 
                         <div class="bg-gradient-to-r from-green-500 to-emerald-500 p-2 rounded-lg">
-                            <i class="fas fa-prescription-bottle-medical text-white"></i>
+                            <i class="fas fa-store text-white"></i>
                         </div>
                     @endif
                     <div>
                         <h1 class="text-lg font-bold">{{ __('admin_panel') }}</h1>
-                        <p class="text-gray-400 text-xs">{{ __('pharmacy_management') }}</p>
+                        <p class="text-gray-400 text-xs">{{ __('store_management') }}</p>
                     </div>
                 </div>
                 <button id="closeMobileMenu" class="p-2 hover:bg-gray-700/50 rounded-lg">

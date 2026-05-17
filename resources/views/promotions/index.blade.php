@@ -1,8 +1,8 @@
 {{-- resources/views/promotions/index.blade.php --}}
 @extends('layouts.app')
 
-@section('title', 'Promotions - Parapharmacie')
-@section('description', 'Découvrez toutes nos promotions et réductions sur les produits de parapharmacie')
+@section('title', 'Promotions - Boutique')
+@section('description', 'Découvrez toutes nos promotions et réductions sur les produits de boutique')
 
 @section('content')
     {{-- Hero Section --}}
@@ -18,7 +18,7 @@
                     <i class="fas fa-tags mr-3"></i>Nos Promotions
                 </h1>
                 <p class="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto">
-                    Profitez de nos meilleures offres sur les produits de santé et bien-être
+                    Profitez de nos meilleures offres sur les produits et bien-être
                 </p>
                 
                 {{-- Countdown Timer --}}

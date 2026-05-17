@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\DiscountController as AdminDiscountController;
 use App\Http\Controllers\Admin\SettingController as AdminSettingController;
+use App\Http\Controllers\Admin\HomepageSectionController as AdminHomepageSectionController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PromotionController;
@@ -117,6 +118,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 Route::post('/discounts/{discount}/update-with-override', [AdminDiscountController::class, 'updateWithOverride'])->name('discounts.updateWithOverride');
     
     // Settings
+    Route::resource('homepage-sections', AdminHomepageSectionController::class)->except(['create', 'show', 'edit']);
     Route::get('/settings', [AdminSettingController::class, 'index'])->name('settings.index');
     Route::put('/settings', [AdminSettingController::class, 'update'])->name('settings.update');
     Route::delete('/settings/logo', [AdminSettingController::class, 'deleteLogo'])->name('settings.delete-logo');

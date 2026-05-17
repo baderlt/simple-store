@@ -51,7 +51,7 @@
   "notifications.cart.added": "تمت إضافة المنتج إلى السلة.",
   "of": "من",
   "order_now": "اطلب الآن",
-  "pharmacy_management": "إدارة الصيدلية",
+  "pharmacy_management": "إدارة المتجر",
   "principal": "الرئيسية",
   "reductions": "التخفيضات",
   "results": "نتائج",
@@ -66,5 +66,6 @@
   "status_unknown": "غير معروف",
   "system": "النظام",
   "to": "إلى",
-  "view_site": "عرض الموقع"
+  "view_site": "عرض الموقع",
+  "store_management": "إدارة المتجر"
 }
