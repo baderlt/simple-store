@@ -210,9 +210,9 @@
 @media (max-width: 768px) {
     .hero-swiper .swiper-button-next,
     .hero-swiper .swiper-button-prev {
-        width: 40px;
-        height: 40px;
+    display: none;
     }
+
     
     .hero-swiper .swiper-button-next:after,
     .hero-swiper .swiper-button-prev:after {
