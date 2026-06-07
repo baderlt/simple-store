@@ -14,7 +14,7 @@ class PromotionController extends Controller
     {
         // Méthode 1: Récupérer les produits qui ont une réduction active (produit OU catégorie)
         $productsWithDiscount = Product::where('is_active', true)
-            ->where('stock_quantity', '>', 0)
+            ->available()
             ->where(function($query) {
                 $query->whereHas('discounts', function($q) {
                     $q->where('is_active', true)
@@ -28,7 +28,7 @@ class PromotionController extends Controller
                     });
                 });
             })
-            ->with(['category', 'primaryImage', 'discounts' => function($query) {
+            ->with(['category', 'primaryImage', 'variants', 'discounts' => function($query) {
                 $query->where('is_active', true)
                       ->where('start_date', '<=', now())
                       ->where('end_date', '>=', now());
@@ -37,7 +37,7 @@ class PromotionController extends Controller
 
         // Méthode 2: Produits phares (avec les plus grandes réductions)
         $featuredProducts = Product::where('is_active', true)
-            ->where('stock_quantity', '>', 0)
+            ->available()
             ->where(function($query) {
                 $query->whereHas('discounts', function($q) {
                     $q->where('is_active', true)
@@ -51,7 +51,7 @@ class PromotionController extends Controller
                     });
                 });
             })
-            ->with(['category', 'primaryImage', 'discounts' => function($query) {
+            ->with(['category', 'primaryImage', 'variants', 'discounts' => function($query) {
                 $query->where('is_active', true)
                       ->where('start_date', '<=', now())
                       ->where('end_date', '>=', now());
@@ -69,7 +69,7 @@ class PromotionController extends Controller
         // Catégories qui ont des produits en promotion
         $categoriesWithDiscounts = Category::whereHas('products', function($query) {
             $query->where('is_active', true)
-                  ->where('stock_quantity', '>', 0)
+                  ->available()
                   ->where(function($q) {
                       $q->whereHas('discounts', function($q2) {
                           $q2->where('is_active', true)
@@ -86,7 +86,7 @@ class PromotionController extends Controller
         })
         ->withCount(['products' => function($query) {
             $query->where('is_active', true)
-                  ->where('stock_quantity', '>', 0)
+                  ->available()
                   ->where(function($q) {
                       $q->whereHas('discounts', function($q2) {
                           $q2->where('is_active', true)
@@ -107,7 +107,7 @@ class PromotionController extends Controller
         // Toutes les catégories pour le filtre
         $categories = Category::whereHas('products', function($query) {
             $query->where('is_active', true)
-                  ->where('stock_quantity', '>', 0)
+                  ->available()
                   ->where(function($q) {
                       $q->whereHas('discounts', function($q2) {
                           $q2->where('is_active', true)

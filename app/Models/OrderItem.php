@@ -10,7 +10,9 @@ class OrderItem extends Model
     protected $fillable = [
         'order_id',
         'product_id',
+        'product_variant_id',
         'product_name',
+        'variant_snapshot',
         'price',
         'discount_price',
         'quantity',
@@ -21,6 +23,7 @@ class OrderItem extends Model
         'price' => 'decimal:2',
         'discount_price' => 'decimal:2',
         'subtotal' => 'decimal:2',
+        'variant_snapshot' => 'array',
     ];
 
     /**
@@ -37,6 +40,18 @@ class OrderItem extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function variant(): BelongsTo
+    {
+        return $this->belongsTo(ProductVariant::class, 'product_variant_id');
+    }
+
+    public function getDisplayNameAttribute(): string
+    {
+        $suffix = $this->variant_snapshot ? implode(' / ', array_values($this->variant_snapshot)) : '';
+
+        return $suffix ? $this->product_name . ' - ' . $suffix : $this->product_name;
     }
 
     /**

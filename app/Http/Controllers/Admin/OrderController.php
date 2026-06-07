@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\ProductVariant;
 use App\Models\StockLog;
 use Illuminate\Http\Request;
 
@@ -11,7 +12,7 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Order::with('items.product')->latest();
+        $query = Order::with(['items.product', 'items.variant'])->latest();
 
         if ($request->has('status') && $request->status != '') {
             $query->where('status', $request->status);
@@ -24,7 +25,7 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
-        $order->load('items.product', 'user');
+        $order->load(['items.product', 'items.variant', 'user']);
         return view('admin.orders.show', compact('order'));
     }
 
@@ -41,17 +42,22 @@ public function updateStatus(Request $request, Order $order)
     if($newStatus == 'cancelled' && $oldStatus != 'cancelled') {
         foreach($order->items as $item) {
             $product = Product::find($item->product_id);
-            
+            $variant = $item->product_variant_id ? ProductVariant::find($item->product_variant_id) : null;
+
             if($product) {
-                // Restaurer le stock
-                $product->increment('stock_quantity', $item->quantity);
-                
-                // Log dans StockLog
+                if ($variant) {
+                    $variant->increment('stock_quantity', $item->quantity);
+                    $quantityAfter = $variant->fresh()->stock_quantity;
+                } else {
+                    $product->increment('stock_quantity', $item->quantity);
+                    $quantityAfter = $product->fresh()->stock_quantity;
+                }
+
                 StockLog::create([
                     'product_id' => $product->id,
                     'user_id' => auth()->id(),
                     'quantity_change' => $item->quantity,
-                    'quantity_after' => $product->stock_quantity,
+                    'quantity_after' => $quantityAfter,
                     'type' => 'return',
                     'notes' => "Commande annulée #{$order->order_number}"
                 ]);
@@ -62,17 +68,23 @@ public function updateStatus(Request $request, Order $order)
     else if($oldStatus == 'cancelled' && $newStatus != 'cancelled') {
         foreach($order->items as $item) {
             $product = Product::find($item->product_id);
-            
-            if($product && $product->stock_quantity >= $item->quantity) {
-                // Déduire le stock
-                $product->decrement('stock_quantity', $item->quantity);
-                
-                // Log dans StockLog
+            $variant = $item->product_variant_id ? ProductVariant::find($item->product_variant_id) : null;
+            $stock = $variant ? $variant->stock_quantity : ($product?->stock_quantity ?? 0);
+
+            if($product && $stock >= $item->quantity) {
+                if ($variant) {
+                    $variant->decrement('stock_quantity', $item->quantity);
+                    $quantityAfter = $variant->fresh()->stock_quantity;
+                } else {
+                    $product->decrement('stock_quantity', $item->quantity);
+                    $quantityAfter = $product->fresh()->stock_quantity;
+                }
+
                 StockLog::create([
                     'product_id' => $product->id,
                     'user_id' => auth()->id(),
                     'quantity_change' => -$item->quantity,
-                    'quantity_after' => $product->stock_quantity,
+                    'quantity_after' => $quantityAfter,
                     'type' => 'sale',
                     'notes' => "Commande réactivée #{$order->order_number}"
                 ]);
@@ -87,7 +99,7 @@ public function updateStatus(Request $request, Order $order)
 
     public function invoice(Order $order)
     {
-        $order->load('items.product');
+        $order->load(['items.product', 'items.variant']);
         return view('admin.orders.invoice', compact('order'));
     }
 }

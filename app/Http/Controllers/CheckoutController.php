@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\StockLog;
+use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -24,7 +25,7 @@ class CheckoutController extends Controller
         if ($directProduct) {
             // Use direct product as the only item in cart
             $cart = [
-                $directProduct['id'] => $directProduct
+                ($directProduct['cart_key'] ?? $directProduct['id']) => $directProduct
             ];
             $isDirect = true;
         } else {
@@ -44,29 +45,44 @@ class CheckoutController extends Controller
     {
         $request->validate([
             'quantity' => 'required|integer|min:1',
+            'variant_id' => 'nullable|integer|exists:product_variants,id',
         ]);
-        
-        $product = Product::with(['activeDiscount', 'primaryImage'])->findOrFail($id);
-        
-        if ($product->stock_quantity < 1) {
-            return redirect()->route('products.show', $product->slug)
-                ->with('error', __('checkout.out_of_stock'));
+
+        $product = Product::with(['activeDiscount', 'primaryImage', 'category.activeDiscounts', 'variants.items.attribute', 'variants.items.value'])->findOrFail($id);
+        $variant = $request->filled('variant_id') ? $product->variants->firstWhere('id', (int) $request->variant_id) : null;
+
+        if ($product->usesVariants() && !$variant) {
+            return redirect()->route('products.show', $product->slug)->with('error', __('checkout.select_variant'));
         }
-        
-        $quantity = $request->input('quantity');
-        
-        if ($quantity > $product->stock_quantity) {
-            return redirect()->route('products.show', $product->slug)
-                ->with('error', __('checkout.only_units_available', ['stock' => $product->stock_quantity]));
+
+        $stock = $product->getCurrentStock($variant);
+        if ($stock < 1) {
+            return redirect()->route('products.show', $product->slug)->with('error', __('checkout.out_of_stock'));
         }
-        
-        // Store direct product in session
+
+        $quantity = (int) $request->input('quantity');
+        if ($quantity > $stock) {
+            return redirect()->route('products.show', $product->slug)->with('error', __('checkout.only_units_available', ['stock' => $stock]));
+        }
+
+        $basePrice = $product->getCurrentPrice($variant);
+        $finalPrice = $product->getDiscountedPrice($basePrice);
+        $attributes = $variant ? $variant->option_values : [];
+        $variantLabel = $attributes ? implode(' / ', array_values($attributes)) : null;
+
         $directProduct = [
             'id' => $product->id,
+            'product_id' => $product->id,
+            'variant_id' => $variant?->id,
+            'cart_key' => $variant ? "product_{$product->id}_variant_{$variant->id}" : (string) $product->id,
             'name' => $product->name,
-            'price' => (float) $product->price,
-            'final_price' => (float) $product->final_price,
-            'image' => $product->primaryImage ? $product->primaryImage->image_path : null,
+            'display_name' => $variantLabel ? $product->name . ' - ' . $variantLabel : $product->name,
+            'variant_label' => $variantLabel,
+            'selected_attributes' => $attributes,
+            'sku' => $variant?->sku ?: $product->sku,
+            'price' => (float) $basePrice,
+            'final_price' => (float) $finalPrice,
+            'image' => $variant?->image_path ?: ($product->primaryImage ? $product->primaryImage->image_path : null),
             'quantity' => $quantity,
             'slug' => $product->slug,
             'has_discount' => $product->hasDiscount(),
@@ -93,7 +109,7 @@ class CheckoutController extends Controller
         
         if ($directProduct) {
             // Use direct product as cart
-            $cart = [$directProduct['id'] => $directProduct];
+            $cart = [($directProduct['cart_key'] ?? $directProduct['id']) => $directProduct];
             $isDirect = true;
         } else {
             // Normal cart checkout
@@ -141,38 +157,52 @@ class CheckoutController extends Controller
 
             // Create order items and update stock
             foreach ($cart as $item) {
-                $product = Product::find($item['id']);
-                
+                $product = Product::with(['category.activeDiscounts', 'activeDiscount', 'variants'])->find($item['id']);
+
                 if (!$product) {
                     throw new \Exception(__('checkout.product_not_found'));
                 }
-                
-                if ($product->stock_quantity < $item['quantity']) {
-                    throw new \Exception(__('checkout.insufficient_stock_for_product', ['product' => $product->name]));
+
+                $variant = !empty($item['variant_id']) ? ProductVariant::where('product_id', $product->id)->find($item['variant_id']) : null;
+                if ($product->usesVariants() && !$variant) {
+                    throw new \Exception(__('checkout.invalid_variant'));
                 }
 
-                // Create order item with correct prices
+                $stock = $product->getCurrentStock($variant);
+                if ($stock < $item['quantity']) {
+                    throw new \Exception(__('checkout.insufficient_stock_for_product', ['product' => $item['display_name'] ?? $product->name]));
+                }
+
+                $basePrice = $product->getCurrentPrice($variant);
+                $finalPrice = $product->getDiscountedPrice($basePrice);
+
                 OrderItem::create([
                     'order_id' => $order->id,
                     'product_id' => $product->id,
+                    'product_variant_id' => $variant?->id,
                     'product_name' => $product->name,
-                    'price' => $product->price,
-                    'discount_price' => $product->hasDiscount() ? $product->final_price : null,
+                    'variant_snapshot' => $item['selected_attributes'] ?? null,
+                    'price' => $basePrice,
+                    'discount_price' => $product->hasDiscount() ? $finalPrice : null,
                     'quantity' => $item['quantity'],
-                    'subtotal' => $item['final_price'] * $item['quantity'],
+                    'subtotal' => $finalPrice * $item['quantity'],
                 ]);
 
-                // Update stock
-                $product->decrement('stock_quantity', $item['quantity']);
+                if ($variant) {
+                    $variant->decrement('stock_quantity', $item['quantity']);
+                    $quantityAfter = $variant->fresh()->stock_quantity;
+                } else {
+                    $product->decrement('stock_quantity', $item['quantity']);
+                    $quantityAfter = $product->fresh()->stock_quantity;
+                }
 
-                // Log stock change
                 StockLog::create([
                     'product_id' => $product->id,
                     'user_id' => auth()->id(),
                     'quantity_change' => -$item['quantity'],
-                    'quantity_after' => $product->stock_quantity,
+                    'quantity_after' => $quantityAfter,
                     'type' => 'sale',
-                    'notes' => __('checkout.stock_log_order', ['number' => $order->order_number]),
+                    'notes' => __('checkout.stock_log_order', ['number' => $order->order_number]) . ($variant ? ' - ' . ($item['variant_label'] ?? '') : ''),
                 ]);
             }
 
@@ -253,7 +283,7 @@ class CheckoutController extends Controller
 
     public function success($orderId)
     {
-        $order = Order::with('items')->findOrFail($orderId);
+        $order = Order::with('items.variant')->findOrFail($orderId);
         return view('checkout.success', compact('order'));
     }
 }

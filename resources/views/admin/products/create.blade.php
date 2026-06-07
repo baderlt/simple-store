@@ -433,6 +433,8 @@
                     </div>
                 </div>
 
+                @include('admin.products.partials.variants')
+
                 <!-- Actions -->
                 <div class="pt-6 sm:pt-8 border-t border-gray-200">
                     <div class="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">

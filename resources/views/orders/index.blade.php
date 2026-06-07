@@ -43,8 +43,8 @@
                             @foreach($order->items as $item)
                                 <div class="flex items-center space-x-4">
                                     @if($item->product && $item->product->primaryImage)
-                                        <img src="{{ asset('storage/' . $item->product->primaryImage->image_path) }}" 
-                                             alt="{{ $item->product_name }}" 
+                                        <img src="{{ asset('storage/' . $item->product->primaryImage->image_path) }}"
+                                             alt="{{ $item->display_name }}"
                                              loading="lazy"
                                              class="w-20 h-20 object-cover rounded">
                                     @else
@@ -52,15 +52,15 @@
                                             <i class="fas fa-image text-gray-400"></i>
                                         </div>
                                     @endif
-                                    
+
                                     <div class="flex-1">
-                                        <h4 class="font-semibold">{{ $item->product_name }}</h4>
+                                        <h4 class="font-semibold">{{ $item->display_name }}</h4>
                                         <p class="text-sm text-gray-600">Quantité: {{ $item->quantity }}</p>
                                         <p class="text-sm text-green-600 font-semibold">
                                             {{ $item->discount_price ?? $item->price }} DH x {{ $item->quantity }}
                                         </p>
                                     </div>
-                                    
+
                                     <div class="text-right">
                                         <p class="font-bold text-lg">{{ $item->subtotal }} DH</p>
                                     </div>
@@ -77,7 +77,7 @@
                                     <p class="text-gray-600">{{ $order->customer_city }}</p>
                                     <p class="text-gray-600 mt-1">{{ $order->customer_phone }}</p>
                                 </div>
-                                
+
                                 <div class="space-y-2 text-right">
                                     <div class="flex justify-between">
                                         <span class="text-gray-600">Sous-total:</span>
@@ -118,7 +118,7 @@
             <i class="fas fa-shopping-bag text-8xl text-gray-300 mb-6"></i>
             <h2 class="text-2xl font-bold mb-4">Aucune commande</h2>
             <p class="text-gray-600 mb-6">Vous n'avez pas encore passé de commande</p>
-            <a href="{{ route('products.index') }}" 
+            <a href="{{ route('products.index') }}"
                class="inline-block bg-green-500 text-white px-8 py-3 rounded-lg hover:bg-green-600">
                 Découvrir nos produits
             </a>

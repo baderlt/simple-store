@@ -10,7 +10,7 @@ class OrderController extends Controller
     public function index()
     {
         $orders = Order::where('user_id', auth()->id())
-            ->with('items.product')
+            ->with(['items.product', 'items.variant'])
             ->latest()
             ->paginate(10);
 
