@@ -8,4 +8,6 @@ return [
     'insufficient_stock_for_product' => 'Insufficient stock for :product.',
     'stock_log_order' => 'Order #:number',
     'order_placed' => 'Order placed successfully!',
+    'select_variant' => 'Please select a variant before checkout.',
+    'invalid_variant' => 'The selected variant is no longer available.',
 ];

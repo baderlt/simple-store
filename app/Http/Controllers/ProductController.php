@@ -47,7 +47,7 @@ class ProductController extends Controller
     {
         $product = Product::where('slug', $slug)
             ->where('is_active', true)
-            ->with(['images', 'activeDiscount', 'category'])
+            ->with(['images', 'primaryImage', 'activeDiscount', 'category.activeDiscounts', 'variants.items.attribute', 'variants.items.value'])
             ->firstOrFail();
 
         $relatedProducts = Product::where('category_id', $product->category_id)

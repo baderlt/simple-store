@@ -10,4 +10,13 @@ return [
     'only_stock_available' => 'Désolé, seulement :stock unités disponibles en stock.',
     'invalid_quantity' => 'Veuillez sélectionner une quantité valide.',
     'redirecting_checkout' => 'Redirection vers le paiement...',
+    'select_variant' => 'Sélectionner une variante',
+    'choose_option' => 'Choisissez une option disponible',
+    'out_of_stock' => 'Rupture de stock',
+    'color' => 'Couleur',
+    'size' => 'Taille',
+    'weight' => 'Poids',
+    'volume' => 'Volume',
+    'attributes' => 'Attributs',
+    'attribute_values' => 'Valeurs d’attribut',
 ];

@@ -63,7 +63,7 @@
                 <div class="space-y-2">
                     @foreach($order->items as $item)
                         <div class="flex justify-between">
-                            <span>{{ $item->product_name }} x{{ $item->quantity }}</span>
+                            <span>{{ $item->display_name }} x{{ $item->quantity }}</span>
                             <span>{{ $item->subtotal }} DH</span>
                         </div>
                     @endforeach

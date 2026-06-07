@@ -6,14 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Casts\Attribute;
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Product extends Model
 {
@@ -24,13 +16,15 @@ class Product extends Model
 
     protected $casts = [
         'price' => 'decimal:2',
+        'stock_quantity' => 'integer',
+        'low_stock_alert' => 'integer',
         'is_active' => 'boolean',
         'is_featured' => 'boolean',
     ];
 
-    // APPEND ATTRIBUTE TO ALWAYS INCLUDE
     protected $appends = ['final_price'];
-        public function orderItems(): HasMany
+
+    public function orderItems(): HasMany
     {
         return $this->hasMany(OrderItem::class);
     }
@@ -68,40 +62,102 @@ class Product extends Model
         return $this->hasMany(StockLog::class);
     }
 
-    // FIXED: Get final price with discount
-    public function getFinalPriceAttribute()
+    public function variants(): HasMany
     {
-        // Check for product-specific discount
+        return $this->hasMany(ProductVariant::class)->with(['items.attribute', 'items.value']);
+    }
+
+    public function defaultVariant(): HasOne
+    {
+        return $this->hasOne(ProductVariant::class)->where('is_default', true)->with(['items.attribute', 'items.value']);
+    }
+
+    public function usesVariants(): bool
+    {
+        if ($this->relationLoaded('variants')) {
+            return $this->variants->isNotEmpty();
+        }
+
+        return $this->variants()->exists();
+    }
+
+    public function getCurrentPrice(?ProductVariant $variant = null): float
+    {
+        if ($variant) {
+            return (float) $variant->price;
+        }
+
+        if ($this->usesVariants()) {
+            $defaultVariant = $this->relationLoaded('defaultVariant') ? $this->defaultVariant : $this->defaultVariant()->first();
+            if (!$defaultVariant && $this->relationLoaded('variants')) {
+                $defaultVariant = $this->variants->first();
+            }
+            if ($defaultVariant) {
+                return (float) $defaultVariant->price;
+            }
+        }
+
+        return (float) $this->price;
+    }
+
+    public function getCurrentStock(?ProductVariant $variant = null): int
+    {
+        if ($variant) {
+            return (int) $variant->stock_quantity;
+        }
+
+        if ($this->usesVariants()) {
+            $defaultVariant = $this->relationLoaded('defaultVariant') ? $this->defaultVariant : $this->defaultVariant()->first();
+            if (!$defaultVariant && $this->relationLoaded('variants')) {
+                $defaultVariant = $this->variants->first();
+            }
+            if ($defaultVariant) {
+                return (int) $defaultVariant->stock_quantity;
+            }
+        }
+
+        return (int) $this->stock_quantity;
+    }
+
+    public function inStock(?ProductVariant $variant = null): bool
+    {
+        return $this->getCurrentStock($variant) > 0;
+    }
+
+    public function getDiscountedPrice(float $basePrice): float
+    {
         $discount = $this->activeDiscount;
-        
-        // If no product discount, check category discount
+
         if (!$discount && $this->category) {
             $discount = $this->category->activeDiscounts()->first();
         }
-        
+
         if ($discount) {
-            $discountAmount = ($this->price * $discount->discount_percentage) / 100;
-            return round($this->price - $discountAmount, 2);
+            $discountAmount = ($basePrice * $discount->discount_percentage) / 100;
+            return round($basePrice - $discountAmount, 2);
         }
-        
-        return $this->price;
+
+        return round($basePrice, 2);
     }
 
-    // Check if product has any active discount
+    public function getFinalPriceAttribute()
+    {
+        return $this->getDiscountedPrice((float) $this->price);
+    }
+
     public function hasDiscount(): bool
     {
         if ($this->activeDiscount) {
             return true;
         }
-        
+
         if ($this->category) {
             return $this->category->activeDiscounts()->exists();
         }
-        
+
         return false;
     }
 
-    // Get the active discount (product or category)
     public function getActiveDiscountAttribute()
     {
         $productDiscount = $this->discounts()
@@ -109,20 +165,29 @@ class Product extends Model
             ->where('start_date', '<=', now())
             ->where('end_date', '>=', now())
             ->first();
-            
+
         if ($productDiscount) {
             return $productDiscount;
         }
-        
+
         if ($this->category) {
             return $this->category->activeDiscounts()->first();
         }
-        
+
         return null;
     }
 
-    public function isLowStock(): bool
+
+    public function scopeAvailable($query)
     {
-        return $this->stock_quantity <= $this->low_stock_alert;
+        return $query->where(function ($stockQuery) {
+            $stockQuery->where('stock_quantity', '>', 0)
+                ->orWhereHas('variants', fn ($variantQuery) => $variantQuery->where('stock_quantity', '>', 0));
+        });
+    }
+
+    public function isLowStock(?ProductVariant $variant = null): bool
+    {
+        return $this->getCurrentStock($variant) <= $this->low_stock_alert;
     }
 }

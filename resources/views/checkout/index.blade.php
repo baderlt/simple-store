@@ -23,8 +23,8 @@
                         @foreach($cart as $item)
                             <div class="flex items-center p-4 border border-gray-200 rounded-xl hover:border-emerald-300 transition-colors">
                                 @if($item['image'])
-                                    <img src="{{ asset('storage/' . $item['image']) }}" 
-                                         alt="{{ $item['name'] }}" 
+                                    <img src="{{ asset('storage/' . $item['image']) }}"
+                                         alt="{{ $item['display_name'] ?? $item['name'] }}"
                                          loading="lazy"
                                          class="w-16 h-16 object-cover rounded-lg">
                                 @else
@@ -32,9 +32,12 @@
                                         <i class="fas fa-box text-gray-400"></i>
                                     </div>
                                 @endif
-                                
+
                                 <div class="ml-4 flex-1">
-                                    <h4 class="font-medium text-gray-900">{{ $item['name'] }}</h4>
+                                    <h4 class="font-medium text-gray-900">{{ $item['display_name'] ?? $item['name'] }}</h4>
+                                    @if(!empty($item['selected_attributes']))
+                                        <p class="text-xs text-gray-500 mt-1">{{ implode(' / ', $item['selected_attributes']) }}</p>
+                                    @endif
                                     <div class="flex items-center justify-between mt-2">
                                         <div class="flex items-center space-x-4">
                                             <span class="text-lg font-bold text-gray-900">
@@ -107,18 +110,18 @@
                     </div>
 
                     <h2 class="text-2xl font-bold text-gray-900 mb-6">Informations de livraison</h2>
-                    
+
                     <form action="{{ route('checkout.store') }}" method="POST" id="checkoutForm">
                         @csrf
-                        
+
                         <div class="space-y-6">
                             <!-- Customer Name -->
                             <div>
                                 <label for="customer_name" class="block text-sm font-medium text-gray-700 mb-2">
                                     Nom complet *
                                 </label>
-                                <input type="text" 
-                                       name="customer_name" 
+                                <input type="text"
+                                       name="customer_name"
                                        id="customer_name"
                                        value="{{ old('customer_name', auth()->user()->name ?? '') }}"
                                        required
@@ -127,14 +130,14 @@
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
-                            
+
                             <!-- Phone -->
                             <div>
                                 <label for="customer_phone" class="block text-sm font-medium text-gray-700 mb-2">
                                     Téléphone *
                                 </label>
-                                <input type="tel" 
-                                       name="customer_phone" 
+                                <input type="tel"
+                                       name="customer_phone"
                                        id="customer_phone"
                                        value="{{ old('customer_phone', auth()->user()->phone ?? '') }}"
                                        required
@@ -144,13 +147,13 @@
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
-                            
+
                             <!-- City -->
                             <div>
                                 <label for="customer_city" class="block text-sm font-medium text-gray-700 mb-2">
                                     Ville *
                                 </label>
-                                <input type="text" name="customer_city" 
+                                <input type="text" name="customer_city"
                                         id="customer_city"
                                         required
                                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"/>
@@ -158,13 +161,13 @@
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
-                            
+
                             <!-- Address -->
                             <div>
                                 <label for="customer_address" class="block text-sm font-medium text-gray-700 mb-2">
                                     Adresse complète *
                                 </label>
-                                <textarea name="customer_address" 
+                                <textarea name="customer_address"
                                           id="customer_address"
                                           rows="3"
                                           required
@@ -174,28 +177,28 @@
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
-                            
+
                             <!-- Notes -->
                             <div>
                                 <label for="notes" class="block text-sm font-medium text-gray-700 mb-2">
                                     Notes supplémentaires (optionnel)
                                 </label>
-                                <textarea name="notes" 
+                                <textarea name="notes"
                                           id="notes"
                                           rows="2"
                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                                           placeholder="Instructions de livraison, codes d'accès, horaires préférés...">{{ old('notes') }}</textarea>
                             </div>
-                            
+
                             <!-- Payment Method -->
                             <div class="border-t border-gray-200 pt-6">
                                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Méthode de paiement</h3>
                                 <div class="space-y-3">
                                     <div class="flex items-center p-4 border-2 border-emerald-500 rounded-lg bg-emerald-50">
-                                        <input type="radio" 
-                                               id="cash_on_delivery" 
-                                               name="payment_method" 
-                                               value="cash_on_delivery" 
+                                        <input type="radio"
+                                               id="cash_on_delivery"
+                                               name="payment_method"
+                                               value="cash_on_delivery"
                                                checked
                                                class="h-5 w-5 text-emerald-600 focus:ring-emerald-500">
                                         <label for="cash_on_delivery" class="ml-3 flex-1">
@@ -211,10 +214,10 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Submit Button -->
                         <div id="mobileCheckoutSubmit" class="mt-8 md:mt-8 mobile-checkout-submit md:static fixed bottom-0 left-0 right-0 z-50 bg-white p-3 md:p-0 border-t md:border-t-0 shadow-2xl md:shadow-none transform translate-y-full opacity-0 pointer-events-none md:translate-y-0 md:opacity-100 md:pointer-events-auto transition-all duration-300">
-                            <button type="submit" 
+                            <button type="submit"
                                     id="submitButton"
                                     class="w-full bg-green-600 text-white font-bold py-4 px-6 rounded-lg hover:bg-green-700 transition-all shadow-lg hover:shadow-xl flex items-center justify-center group disabled:opacity-70 disabled:cursor-not-allowed">
                                 <span id="buttonText">
@@ -231,17 +234,17 @@
                                     Traitement en cours...
                                 </span>
                             </button>
-                            
+
                             <!-- Back link -->
                             <div class="mt-4 text-center">
                                 @if($isDirect ?? false)
-                                    <a href="{{ route('products.show', reset($cart)['slug'] ?? '#') }}" 
+                                    <a href="{{ route('products.show', reset($cart)['slug'] ?? '#') }}"
                                        class="inline-flex items-center text-gray-600 hover:text-gray-900">
                                         <i class="fas fa-arrow-left mr-2"></i>
                                         Retour au produit
                                     </a>
                                 @else
-                                    <a href="{{ route('cart.index') }}" 
+                                    <a href="{{ route('cart.index') }}"
                                        class="inline-flex items-center text-gray-600 hover:text-gray-900">
                                         <i class="fas fa-arrow-left mr-2"></i>
                                         Modifier le panier
@@ -275,7 +278,7 @@
         }
         e.target.value = value;
     });
-    
+
     // Show the fixed mobile submit button only after the customer scrolls down.
     function updateMobileCheckoutSubmit() {
         const submitBar = document.getElementById('mobileCheckoutSubmit');
@@ -301,24 +304,24 @@
             e.preventDefault();
             return false;
         }
-        
+
         this.classList.add('submitting');
-        
+
         const button = document.getElementById('submitButton');
         const buttonText = document.getElementById('buttonText');
         const buttonSpinner = document.getElementById('buttonSpinner');
         const loadingOverlay = document.getElementById('loadingOverlay');
-        
+
         // Show loading states
         button.disabled = true;
         buttonText.classList.add('hidden');
         buttonSpinner.classList.remove('hidden');
         loadingOverlay.classList.remove('hidden');
-    
+
         // Allow form to submit normally - the loading will continue until page reloads
         return true;
     });
-    
+
     // Prevent double-click
     let formSubmitted = false;
     document.getElementById('checkoutForm').addEventListener('submit', function() {
@@ -334,12 +337,12 @@
     #loadingOverlay {
         backdrop-filter: blur(2px);
     }
-    
+
     @keyframes pulse {
         0%, 100% { opacity: 1; }
         50% { opacity: 0.7; }
     }
-    
+
     .submitting {
         animation: pulse 1.5s infinite;
     }

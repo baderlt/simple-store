@@ -1164,7 +1164,7 @@
                 const productUrl = baseRoute.replace(':slug', item.slug);
                 
                 const itemElement = `
-                    <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg" data-item-id="${item.id}">
+                    <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg" data-item-id="${item.key || item.id}">
                         <!-- Product Image -->
                         <div class="flex-shrink-0">
                             <div class="w-16 h-16 bg-gray-200 rounded-lg overflow-hidden">
@@ -1179,11 +1179,12 @@
                         <div class="flex-1">
                             <h4 class="font-medium text-gray-900 text-sm line-clamp-1">
                                 <a href="${productUrl}" class="hover:text-emerald-600">
-                                    ${item.name}
+                                    ${item.display_name || item.name}
                                 </a>
                             </h4>
                             
                             <!-- Price -->
+                            <div class="text-xs text-gray-500 mt-1">${item.variant_label || ''}</div>
                             <div class="flex items-center justify-between mt-2">
                                 <div>
                                     ${item.has_discount ? 
@@ -1203,7 +1204,7 @@
                                 <div class="flex items-center space-x-2">
                                     <button type="button" 
                                             data-action="decrease" 
-                                            data-product-id="${item.id}"
+                                            data-product-id="${item.key || item.id}"
                                             class="w-4 h-4 lg:w-6 lg:h-6 flex items-center justify-center bg-gray-200 rounded hover:bg-gray-300 transition-colors">
                                         <i class="fas fa-minus text-xs"></i>
                                     </button>
@@ -1212,7 +1213,7 @@
                                     
                                     <button type="button" 
                                             data-action="increase" 
-                                            data-product-id="${item.id}"
+                                            data-product-id="${item.key || item.id}"
                                             class="w-4 h-4 lg:w-6 lg:h-6 flex items-center justify-center bg-gray-200 rounded hover:bg-gray-300 transition-colors">
                                         <i class="fas fa-plus text-xs"></i>
                                     </button>
@@ -1222,7 +1223,7 @@
                         
                         <!-- Remove Button -->
                         <button type="button" 
-                                data-product-id="${item.id}"
+                                data-product-id="${item.key || item.id}"
                                 class="remove-from-cart-btn text-red-400 hover:text-red-600 transition-colors">
                             <i class="fas fa-trash"></i>
                         </button>
@@ -1387,13 +1388,15 @@
                 
                 const productId = button.getAttribute('data-product-id');
                 const productName = button.getAttribute('data-product-name');
+                const variantInput = document.getElementById('selectedVariantId');
+                const variantId = variantInput ? variantInput.value : '';
                 
-                addToCart(productId, productName, button);
+                addToCart(productId, productName, button, variantId);
             }
         });    
         
         // Function to handle add to cart
-        async function addToCart(productId, productName, button) {
+        async function addToCart(productId, productName, button, variantId = null) {
             const originalContent = button.innerHTML;
             
             button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
@@ -1402,7 +1405,10 @@
             try {
                 const formData = new FormData();
                 formData.append('_token', '{{ csrf_token() }}');
-                
+                if (variantId) {
+                    formData.append('variant_id', variantId);
+                }
+
                 const response = await fetch('{{ route("cart.add", ":id") }}'.replace(':id', productId), {
                     method: 'POST',
                     headers: {

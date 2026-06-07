@@ -17,9 +17,9 @@ class HomeController extends Controller
         
         $categories = Category::withCount('products')->get();
         
-        $featuredProducts = Product::with(['category', 'primaryImage', 'activeDiscount'])
+        $featuredProducts = Product::with(['category', 'primaryImage', 'activeDiscount', 'variants'])
             ->where('is_featured', true)
-            ->where('stock_quantity', '>', 0)
+            ->available()
             ->limit(8)
             ->get();
             

@@ -10,4 +10,13 @@ return [
     'only_stock_available' => 'عذرًا، المتوفر في المخزون فقط :stock وحدات.',
     'invalid_quantity' => 'يرجى اختيار كمية صالحة.',
     'redirecting_checkout' => 'جارٍ التحويل إلى الدفع...',
+    'select_variant' => 'اختر المتغير',
+    'choose_option' => 'اختر خيارًا متاحًا',
+    'out_of_stock' => 'نفد المخزون',
+    'color' => 'اللون',
+    'size' => 'المقاس',
+    'weight' => 'الوزن',
+    'volume' => 'الحجم',
+    'attributes' => 'الخصائص',
+    'attribute_values' => 'قيم الخصائص',
 ];

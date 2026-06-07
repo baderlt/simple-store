@@ -10,4 +10,13 @@ return [
     'only_stock_available' => 'Sorry, only :stock units are available in stock.',
     'invalid_quantity' => 'Please select a valid quantity.',
     'redirecting_checkout' => 'Redirecting to checkout...',
+    'select_variant' => 'Select variant',
+    'choose_option' => 'Choose an available option',
+    'out_of_stock' => 'Out of stock',
+    'color' => 'Color',
+    'size' => 'Size',
+    'weight' => 'Weight',
+    'volume' => 'Volume',
+    'attributes' => 'Attributes',
+    'attribute_values' => 'Attribute values',
 ];

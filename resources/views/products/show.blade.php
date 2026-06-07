@@ -3,6 +3,33 @@
 @section('title', $product->name)
 
 @section('content')
+@php
+    $usesVariants = $product->usesVariants();
+    $defaultVariant = $usesVariants ? ($product->variants->firstWhere('is_default', true) ?: $product->variants->first()) : null;
+    $currentPrice = $product->getCurrentPrice($defaultVariant);
+    $currentFinalPrice = $product->getDiscountedPrice($currentPrice);
+    $currentStock = $product->getCurrentStock($defaultVariant);
+    $variantAttributes = $usesVariants ? $product->variants->flatMap(fn ($variant) => $variant->items)->groupBy('product_attribute_id')->map(function ($items) {
+        $first = $items->first();
+        return [
+            'id' => $first->attribute->id,
+            'name' => $first->attribute->name,
+            'values' => $items->map(fn ($item) => ['id' => $item->value->id, 'value' => $item->value->value])->unique('id')->values()->all(),
+        ];
+    })->values() : collect();
+    $variantPayload = $usesVariants ? $product->variants->map(function ($variant) use ($product) {
+        return [
+            'id' => $variant->id,
+            'sku' => $variant->sku,
+            'price' => (float) $variant->price,
+            'final_price' => (float) $product->getDiscountedPrice((float) $variant->price),
+            'stock_quantity' => $variant->stock_quantity,
+            'image' => $variant->image_path ? asset('storage/' . $variant->image_path) : null,
+            'is_default' => $variant->is_default,
+            'values' => $variant->items->mapWithKeys(fn ($item) => [$item->attribute->id => $item->value->id])->all(),
+        ];
+    })->values() : collect();
+@endphp
 <div class="min-h-screen bg-gradient-to-b from-gray-50 to-white">
     <div class="container mx-auto px-4 py-8">
         <div class="grid lg:grid-cols-2 gap-8 lg:gap-12">
@@ -38,11 +65,11 @@
                         @endif
                         
                         <!-- Stock Warning -->
-                        @if($product->isLowStock() && $product->stock_quantity > 0)
+                        @if($product->isLowStock() && $currentStock > 0)
                             <div class="absolute top-6 right-6">
                                 <span class="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-lg backdrop-blur-sm">
                                     <i class="fas fa-exclamation-triangle mr-2"></i>
-                                    {{ $product->stock_quantity }} restant(s)
+                                    {{ $currentStock }} restant(s)
                                 </span>
                             </div>
                         @endif
@@ -146,8 +173,8 @@
                 <div class="py-6 border-y border-gray-200">
                     @if($product->hasDiscount())
                         <div class="flex items-baseline space-x-4 mb-3">
-                            <span class="text-5xl font-bold text-gray-900">{{ number_format($product->final_price, 2) }} DH</span>
-                            <span class="text-2xl text-gray-400 line-through">{{ number_format($product->price, 2) }} DH</span>
+                            <span class="text-5xl font-bold text-gray-900"><span id="variantFinalPrice">{{ number_format($currentFinalPrice, 2) }}</span> DH</span>
+                            <span class="text-2xl text-gray-400 line-through"><span id="variantBasePrice">{{ number_format($currentPrice, 2) }}</span> DH</span>
                         </div>
                         <div class="flex items-center space-x-3">
                             <span class="bg-rose-50 text-rose-700 px-3 py-1.5 rounded-lg font-bold text-sm">
@@ -161,7 +188,7 @@
                             @endif
                         </div>
                     @else
-                        <span class="text-5xl font-bold text-gray-900">{{ number_format($product->price, 2) }} DH</span>
+                        <span class="text-5xl font-bold text-gray-900"><span id="variantBasePrice">{{ number_format($currentPrice, 2) }}</span> DH</span>
                     @endif
                 </div>
 
@@ -169,7 +196,7 @@
                 <div class="p-5 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200">
                     <div class="flex items-center justify-between mb-3">
                         <div class="flex items-center space-x-3">
-                            @if($product->stock_quantity > 0)
+                            @if($currentStock > 0)
                                 <div class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
                                 <span class="font-semibold text-emerald-700">Disponible en stock</span>
                             @else
@@ -177,18 +204,18 @@
                                 <span class="font-semibold text-red-700">Rupture de stock</span>
                             @endif
                         </div>
-                        @if($product->stock_quantity > 0)
+                        @if($currentStock > 0)
                             <span class="text-sm text-gray-600 font-medium">
-                                {{ $product->stock_quantity }} unités disponibles
+                                {{ $currentStock }} unités disponibles
                             </span>
                         @endif
                     </div>
                     
-                    @if($product->stock_quantity > 0)
+                    @if($currentStock > 0)
                         <div class="space-y-2">
                             <div class="h-1.5 bg-gray-200 rounded-full overflow-hidden">
                                 <div class="h-full bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full" 
-                                     style="width: {{ min(($product->stock_quantity / 100) * 100, 100) }}%"></div>
+                                     style="width: {{ min(($currentStock / 100) * 100, 100) }}%"></div>
                             </div>
                             <div class="flex justify-between text-xs text-gray-500">
                                 <span>Stock limité</span>
@@ -198,8 +225,35 @@
                     @endif
                 </div>
 
+
+                @if($usesVariants)
+                    <div class="p-5 bg-white rounded-xl border border-gray-200 space-y-4" id="variantChooser"
+                         data-variants='@json($variantPayload)' data-default-id="{{ $defaultVariant?->id }}">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-bold text-gray-900">{{ __('product.select_variant') }}</h3>
+                            <span id="variantSku" class="text-xs text-gray-500">{{ $defaultVariant?->sku }}</span>
+                        </div>
+                        @foreach($variantAttributes as $attribute)
+                            <div class="space-y-2" data-attribute="{{ $attribute['id'] }}">
+                                <p class="text-sm font-semibold text-gray-700">{{ $attribute['name'] }}</p>
+                                <div class="flex flex-wrap gap-2">
+                                    @foreach($attribute['values'] as $value)
+                                        <button type="button"
+                                                class="variant-option px-4 py-2 border border-gray-300 rounded-xl text-sm font-semibold hover:border-emerald-500 hover:bg-emerald-50 transition"
+                                                data-attribute-id="{{ $attribute['id'] }}"
+                                                data-value-id="{{ $value['id'] }}">
+                                            {{ $value['value'] }}
+                                        </button>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endforeach
+                        <p id="variantMessage" class="text-sm text-red-600 hidden">{{ __('product.choose_option') }}</p>
+                    </div>
+                @endif
+
                 <!-- Quantity Selector -->
-                @if($product->stock_quantity > 0)
+                @if($currentStock > 0)
                     <div class="space-y-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-3">Quantité</label>
@@ -212,7 +266,7 @@
                                        id="quantity" 
                                        value="1" 
                                        min="1" 
-                                       max="{{ $product->stock_quantity }}"
+                                       max="{{ $currentStock }}"
                                        class="w-24 h-12 text-center border border-gray-300 rounded-lg text-lg font-semibold focus:ring-2 focus:ring-emerald-300 focus:border-emerald-400">
                                 <button type="button" onclick="updateQuantity(1)" 
                                         class="w-12 h-12 border border-gray-300 rounded-lg hover:border-emerald-500 hover:bg-emerald-50 transition-colors flex items-center justify-center">
@@ -224,10 +278,11 @@
                         <!-- Action Buttons -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <input type="hidden" name="quantity" id="formQuantity" value="1">
+                            <input type="hidden" name="variant_id" id="selectedVariantId" value="{{ $defaultVariant?->id }}">
                             <button type="button" 
                                     data-product-id="{{ $product->id }}"
                                     data-product-name="{{ $product->name }}"
-                                    data-product-stock="{{ $product->stock_quantity }}"
+                                    data-product-stock="{{ $currentStock }}"
                                     class="add-to-cart-btn w-full bg-green-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-green-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group">
                                 <i class="fas fa-shopping-cart mr-3 group-hover:rotate-12 transition-transform"></i>
                                 Ajouter au panier
@@ -235,6 +290,7 @@
 
                             <form action="{{ route('checkout.direct', $product->id) }}" method="GET" id="buyNowForm">
                                 <input type="hidden" name="quantity" id="buyNowQuantity" value="1">
+                                    <input type="hidden" name="variant_id" class="selectedVariantInput" value="{{ $defaultVariant?->id }}">
                                 <button type="submit" 
                                         class="w-full bg-gray-900 text-white py-4 rounded-xl font-bold text-lg hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group">
                                     <i class="fas fa-bolt mr-3 group-hover:scale-125 transition-transform"></i>
@@ -248,6 +304,7 @@
                              class="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur border-t border-gray-200 shadow-2xl p-3 transform translate-y-full opacity-0 pointer-events-none transition-all duration-300">
                             <form action="{{ route('checkout.direct', $product->id) }}" method="GET" id="fixedBuyNowForm">
                                 <input type="hidden" name="quantity" id="fixedBuyNowQuantity" value="1">
+                                    <input type="hidden" name="variant_id" class="selectedVariantInput" value="{{ $defaultVariant?->id }}">
                                 <button type="submit"
                                         class="w-full bg-gray-900 text-white py-3 rounded-xl font-bold text-sm hover:bg-gray-800 transition-all duration-300 shadow flex items-center justify-center">
                                     <i class="fas fa-bolt mr-2"></i>
@@ -677,7 +734,7 @@ function updateQuantity(change) {
     const fixedBuyNowQuantity = document.getElementById('fixedBuyNowQuantity');
     
     let newValue = parseInt(input.value) + change;
-    newValue = Math.max(1, Math.min(newValue, {{ $product->stock_quantity }}));
+    newValue = Math.max(1, Math.min(newValue, parseInt(input.max || 1)));
     
     input.value = newValue;
     formQuantity.value = newValue;
@@ -720,6 +777,88 @@ function shareProduct() {
         navigator.clipboard.writeText(window.location.href).then(() => {
             alert('Lien copié dans le presse-papier !');
         });
+    }
+}
+
+
+const variantChooser = document.getElementById('variantChooser');
+if (variantChooser) {
+    const variants = JSON.parse(variantChooser.dataset.variants || '[]');
+    const selected = {};
+    const selectedVariantId = document.getElementById('selectedVariantId');
+    const quantityInput = document.getElementById('quantity');
+    const mainImage = document.getElementById('mainImage');
+    const basePrice = document.getElementById('variantBasePrice');
+    const finalPrice = document.getElementById('variantFinalPrice');
+    const sku = document.getElementById('variantSku');
+    const message = document.getElementById('variantMessage');
+    const addButton = document.querySelector('.add-to-cart-btn[data-product-id="{{ $product->id }}"]');
+    const defaultVariant = variants.find(v => String(v.id) === String(variantChooser.dataset.defaultId)) || variants[0];
+
+    function matchingVariant() {
+        const attributeIds = [...variantChooser.querySelectorAll('[data-attribute]')].map(el => el.dataset.attribute);
+        if (!attributeIds.every(id => selected[id])) return null;
+        return variants.find(variant => attributeIds.every(id => String(variant.values[id]) === String(selected[id])));
+    }
+
+    function possible(attributeId, valueId) {
+        return variants.some(variant => {
+            if (variant.stock_quantity < 1) return false;
+            return Object.entries(selected).every(([attr, val]) => attr === String(attributeId) || String(variant.values[attr]) === String(val))
+                && String(variant.values[attributeId]) === String(valueId);
+        });
+    }
+
+    function applyVariant(variant) {
+        if (!variant) {
+            selectedVariantId.value = '';
+            document.querySelectorAll('.selectedVariantInput').forEach(input => input.value = '');
+            if (addButton) addButton.disabled = true;
+            if (message) message.classList.remove('hidden');
+            return;
+        }
+
+        selectedVariantId.value = variant.id;
+        document.querySelectorAll('.selectedVariantInput').forEach(input => input.value = variant.id);
+        if (basePrice) basePrice.textContent = Number(variant.price).toFixed(2);
+        if (finalPrice) finalPrice.textContent = Number(variant.final_price).toFixed(2);
+        if (sku) sku.textContent = variant.sku || '';
+        if (quantityInput) {
+            quantityInput.max = variant.stock_quantity;
+            quantityInput.value = Math.min(Number(quantityInput.value || 1), Math.max(1, variant.stock_quantity));
+            updateQuantity(0);
+        }
+        if (variant.image && mainImage) mainImage.src = variant.image;
+        if (addButton) addButton.disabled = variant.stock_quantity < 1;
+        if (message) message.classList.toggle('hidden', variant.stock_quantity > 0);
+    }
+
+    function refreshOptions() {
+        document.querySelectorAll('.variant-option').forEach(button => {
+            const isSelected = String(selected[button.dataset.attributeId]) === String(button.dataset.valueId);
+            button.classList.toggle('bg-emerald-600', isSelected);
+            button.classList.toggle('text-white', isSelected);
+            button.classList.toggle('border-emerald-600', isSelected);
+            const enabled = possible(button.dataset.attributeId, button.dataset.valueId) || isSelected;
+            button.disabled = !enabled;
+            button.classList.toggle('opacity-40', !enabled);
+            button.classList.toggle('cursor-not-allowed', !enabled);
+        });
+    }
+
+    document.querySelectorAll('.variant-option').forEach(button => {
+        button.addEventListener('click', () => {
+            if (button.disabled) return;
+            selected[button.dataset.attributeId] = button.dataset.valueId;
+            refreshOptions();
+            applyVariant(matchingVariant());
+        });
+    });
+
+    if (defaultVariant) {
+        Object.entries(defaultVariant.values).forEach(([attributeId, valueId]) => selected[attributeId] = valueId);
+        refreshOptions();
+        applyVariant(defaultVariant);
     }
 }
 

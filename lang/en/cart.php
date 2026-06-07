@@ -24,4 +24,5 @@ return [
     'adding' => 'Adding...',
     'added_short' => 'Added!',
     'error' => 'Error',
+    'select_variant' => 'Please select a valid variant before adding this product.',
 ];

@@ -49,7 +49,7 @@
                     <tbody>
                         @foreach($orderItems as $item)
                             <tr>
-                                <td>{{ $item->product_name }}</td>
+                                <td>{{ $item->display_name }}</td>
                                 <td>{{ $item->quantity }}</td>
                                 <td>{{ $item->discount_price ?? $item->price }} Dhs</td>
                                 <td>{{ $item->subtotal }} Dhs</td>
