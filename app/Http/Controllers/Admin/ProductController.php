@@ -82,6 +82,18 @@ class ProductController extends Controller
             ->get();
 
         $cancelledOrderItems = $allOrderItems->filter(fn ($item) => $item->order && $item->order->status === 'cancelled');
+        $statusStats = $allOrderItems
+            ->filter(fn ($item) => $item->order)
+            ->groupBy(fn ($item) => $item->order->status)
+            ->map(function ($items, $status) {
+                return (object) [
+                    'status' => $status,
+                    'order_count' => $items->count(),
+                    'total_quantity' => $items->sum('quantity'),
+                    'total_revenue' => $items->sum('subtotal'),
+                ];
+            })
+            ->values();
 
         $ordersData = [
             'total_orders' => $orderItems->count(),
@@ -90,6 +102,7 @@ class ProductController extends Controller
             'average_order_value' => $orderItems->avg('subtotal'),
             'last_order_date' => $orderItems->max('created_at'),
             'recent_orders' => $recentOrders,
+            'status_stats' => $statusStats,
             'cancelled_orders_count' => $cancelledOrderItems->count(),
             'cancelled_quantity' => $cancelledOrderItems->sum('quantity'),
             'cancelled_revenue' => $cancelledOrderItems->sum('subtotal'),

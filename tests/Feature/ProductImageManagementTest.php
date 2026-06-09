@@ -15,6 +15,19 @@ class ProductImageManagementTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_create_form_keeps_selected_images_attached_for_submission(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        Category::create(['name' => 'General', 'slug' => 'general', 'is_active' => true]);
+
+        $response = $this->actingAs($admin)->get(route('admin.products.create'));
+
+        $response->assertOk();
+        $response->assertSee('enctype="multipart/form-data"', false);
+        $response->assertSee('updateHiddenFields();', false);
+        $response->assertDontSee("event.target.value = '';", false);
+    }
+
     public function test_admin_can_upload_multiple_images_and_choose_the_primary_image(): void
     {
         Storage::fake('public');

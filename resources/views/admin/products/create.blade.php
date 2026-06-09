@@ -583,7 +583,6 @@ function updateCheckboxIcon(checkboxId, isChecked) {
 function handleImageUpload(event) {
     const files = Array.from(event.target.files);
     handleNewFiles(files);
-    event.target.value = ''; // Reset l'input
 }
 
 // Traiter les nouveaux fichiers
@@ -866,6 +865,8 @@ function showAlert(message, type = 'info') {
 
 // Validation du formulaire
 document.getElementById('productForm')?.addEventListener('submit', function(e) {
+    updateHiddenFields();
+
     const requiredFields = this.querySelectorAll('[required]');
     let isValid = true;
     
