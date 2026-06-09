@@ -69,7 +69,7 @@ class Product extends Model
 
     public function defaultVariant(): HasOne
     {
-        return $this->hasOne(ProductVariant::class)->where('is_default', true)->with(['items.attribute', 'items.value']);
+        return $this->hasOne(ProductVariant::class)->where('is_default', true)->where('is_active', true)->with(['items.attribute', 'items.value']);
     }
 
     public function usesVariants(): bool
@@ -90,7 +90,7 @@ class Product extends Model
         if ($this->usesVariants()) {
             $defaultVariant = $this->relationLoaded('defaultVariant') ? $this->defaultVariant : $this->defaultVariant()->first();
             if (!$defaultVariant && $this->relationLoaded('variants')) {
-                $defaultVariant = $this->variants->first();
+                $defaultVariant = $this->variants->firstWhere('is_active', true);
             }
             if ($defaultVariant) {
                 return (float) $defaultVariant->price;
@@ -109,7 +109,7 @@ class Product extends Model
         if ($this->usesVariants()) {
             $defaultVariant = $this->relationLoaded('defaultVariant') ? $this->defaultVariant : $this->defaultVariant()->first();
             if (!$defaultVariant && $this->relationLoaded('variants')) {
-                $defaultVariant = $this->variants->first();
+                $defaultVariant = $this->variants->firstWhere('is_active', true);
             }
             if ($defaultVariant) {
                 return (int) $defaultVariant->stock_quantity;
@@ -181,8 +181,11 @@ class Product extends Model
     public function scopeAvailable($query)
     {
         return $query->where(function ($stockQuery) {
-            $stockQuery->where('stock_quantity', '>', 0)
-                ->orWhereHas('variants', fn ($variantQuery) => $variantQuery->where('stock_quantity', '>', 0));
+            $stockQuery->where(function ($simpleProductQuery) {
+                $simpleProductQuery->whereDoesntHave('variants')->where('stock_quantity', '>', 0);
+            })->orWhereHas('variants', fn ($variantQuery) => $variantQuery
+                ->where('is_active', true)
+                ->where('stock_quantity', '>', 0));
         });
     }
 

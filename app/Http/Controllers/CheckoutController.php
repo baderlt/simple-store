@@ -49,7 +49,7 @@ class CheckoutController extends Controller
         ]);
 
         $product = Product::with(['activeDiscount', 'primaryImage', 'category.activeDiscounts', 'variants.items.attribute', 'variants.items.value'])->findOrFail($id);
-        $variant = $request->filled('variant_id') ? $product->variants->firstWhere('id', (int) $request->variant_id) : null;
+        $variant = $request->filled('variant_id') ? $product->variants->first(fn ($variant) => $variant->id === (int) $request->variant_id && $variant->is_active) : null;
 
         if ($product->usesVariants() && !$variant) {
             return redirect()->route('products.show', $product->slug)->with('error', __('checkout.select_variant'));
@@ -123,14 +123,41 @@ class CheckoutController extends Controller
 
         DB::beginTransaction();
         try {
-            // Calculate totals using final_price
+            // Re-resolve products, variants, prices, and stock inside the transaction.
+            // Session prices are display-only and must never be trusted at order time.
             $subtotal = 0;
+            $resolvedItems = [];
             foreach ($cart as $item) {
-                $subtotal += $item['final_price'] * $item['quantity'];
+                $product = Product::with(['category.activeDiscounts', 'activeDiscount', 'variants'])
+                    ->lockForUpdate()
+                    ->find($item['id']);
+
+                if (!$product) {
+                    throw new \Exception(__('checkout.product_not_found'));
+                }
+
+                $variant = !empty($item['variant_id'])
+                    ? ProductVariant::where('product_id', $product->id)->where('is_active', true)->lockForUpdate()->find($item['variant_id'])
+                    : null;
+
+                if ($product->usesVariants() && !$variant) {
+                    throw new \Exception(__('checkout.invalid_variant'));
+                }
+
+                if ($product->getCurrentStock($variant) < $item['quantity']) {
+                    throw new \Exception(__('checkout.insufficient_stock_for_product', ['product' => $item['display_name'] ?? $product->name]));
+                }
+
+                $basePrice = $product->getCurrentPrice($variant);
+                $finalPrice = $product->getDiscountedPrice($basePrice);
+                $subtotal += $finalPrice * $item['quantity'];
+                $resolvedItems[] = compact('item', 'product', 'variant', 'basePrice', 'finalPrice');
             }
 
-            $deliveryFee = settings('delivery_fee', 30);
-            $total = $subtotal;
+            $configuredDeliveryFee = (float) settings('delivery_fee', 30);
+            $freeDeliveryThreshold = (float) settings('free_delivery_threshold', 0);
+            $deliveryFee = $freeDeliveryThreshold > 0 && $subtotal > $freeDeliveryThreshold ? 0 : $configuredDeliveryFee;
+            $total = $subtotal + $deliveryFee;
 
             // Create order
             $orderData = [
@@ -155,33 +182,16 @@ class CheckoutController extends Controller
 
             $order = Order::create($orderData);
 
-            // Create order items and update stock
-            foreach ($cart as $item) {
-                $product = Product::with(['category.activeDiscounts', 'activeDiscount', 'variants'])->find($item['id']);
-
-                if (!$product) {
-                    throw new \Exception(__('checkout.product_not_found'));
-                }
-
-                $variant = !empty($item['variant_id']) ? ProductVariant::where('product_id', $product->id)->find($item['variant_id']) : null;
-                if ($product->usesVariants() && !$variant) {
-                    throw new \Exception(__('checkout.invalid_variant'));
-                }
-
-                $stock = $product->getCurrentStock($variant);
-                if ($stock < $item['quantity']) {
-                    throw new \Exception(__('checkout.insufficient_stock_for_product', ['product' => $item['display_name'] ?? $product->name]));
-                }
-
-                $basePrice = $product->getCurrentPrice($variant);
-                $finalPrice = $product->getDiscountedPrice($basePrice);
+            // Create order items and update the exact selected stock record.
+            foreach ($resolvedItems as $resolved) {
+                ['item' => $item, 'product' => $product, 'variant' => $variant, 'basePrice' => $basePrice, 'finalPrice' => $finalPrice] = $resolved;
 
                 OrderItem::create([
                     'order_id' => $order->id,
                     'product_id' => $product->id,
                     'product_variant_id' => $variant?->id,
                     'product_name' => $product->name,
-                    'variant_snapshot' => $item['selected_attributes'] ?? null,
+                    'variant_snapshot' => $variant?->option_values ?: null,
                     'price' => $basePrice,
                     'discount_price' => $product->hasDiscount() ? $finalPrice : null,
                     'quantity' => $item['quantity'],

@@ -4,10 +4,14 @@
             'id' => $variant->id,
             'key' => 'existing_' . $variant->id,
             'sku' => $variant->sku,
+            'unit' => $variant->unit,
+            'price_type' => $variant->price_type,
+            'price_adjustment' => (float) $variant->price_adjustment,
             'price' => (float) $variant->price,
             'stock_quantity' => $variant->stock_quantity,
             'image_path' => $variant->image_path,
             'is_default' => $variant->is_default,
+            'is_active' => $variant->is_active,
             'values' => $variant->items->mapWithKeys(fn ($item) => [$item->attribute->name => $item->value->value])->all(),
         ];
     })->values() : collect();
@@ -143,14 +147,15 @@ document.addEventListener('DOMContentLoaded', () => {
                             {{ __('admin.default_variant') }}
                         </label>
                     </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 flex-1">
-                        <input type="text" value="${esc(variant.sku)}" placeholder="SKU" data-variant-field="sku" data-variant-index="${index}" class="px-3 py-2 border rounded-lg">
-                        <input type="number" min="0" step="0.01" value="${esc(variant.price)}" placeholder="{{ __('admin.price') }}" data-variant-field="price" data-variant-index="${index}" class="px-3 py-2 border rounded-lg" required>
-                        <input type="number" min="0" step="1" value="${esc(variant.stock_quantity)}" placeholder="{{ __('admin.stock') }}" data-variant-field="stock_quantity" data-variant-index="${index}" class="px-3 py-2 border rounded-lg" required>
-                        <div class="flex items-center gap-2">
-                            ${image}
-                            <input type="file" name="variant_images[${esc(variant.key)}]" accept="image/*" class="text-sm w-full">
-                        </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 flex-1">
+                        <label class="text-xs font-semibold text-gray-600">SKU<input type="text" value="${esc(variant.sku)}" placeholder="SKU" data-variant-field="sku" data-variant-index="${index}" class="mt-1 w-full px-3 py-2 border rounded-lg"></label>
+                        <label class="text-xs font-semibold text-gray-600">{{ __('admin.unit') }}<input type="text" value="${esc(variant.unit)}" placeholder="kg, g, ml, litre..." data-variant-field="unit" data-variant-index="${index}" class="mt-1 w-full px-3 py-2 border rounded-lg"></label>
+                        <label class="text-xs font-semibold text-gray-600">{{ __('admin.price_type') }}<select data-variant-field="price_type" data-variant-index="${index}" class="mt-1 w-full px-3 py-2 border rounded-lg"><option value="fixed" ${variant.price_type !== 'adjustment' ? 'selected' : ''}>{{ __('admin.fixed_price') }}</option><option value="adjustment" ${variant.price_type === 'adjustment' ? 'selected' : ''}>{{ __('admin.extra_price') }}</option></select></label>
+                        <label class="text-xs font-semibold text-gray-600">{{ __('admin.price') }}<input type="number" min="0" step="0.01" value="${esc(variant.price)}" data-variant-field="price" data-variant-index="${index}" class="mt-1 w-full px-3 py-2 border rounded-lg" required></label>
+                        <label class="text-xs font-semibold text-gray-600">{{ __('admin.price_adjustment') }}<input type="number" step="0.01" value="${esc(variant.price_adjustment || 0)}" data-variant-field="price_adjustment" data-variant-index="${index}" class="mt-1 w-full px-3 py-2 border rounded-lg"></label>
+                        <label class="text-xs font-semibold text-gray-600">{{ __('admin.stock') }}<input type="number" min="0" step="1" value="${esc(variant.stock_quantity)}" data-variant-field="stock_quantity" data-variant-index="${index}" class="mt-1 w-full px-3 py-2 border rounded-lg" required></label>
+                        <label class="inline-flex items-center gap-2 text-sm font-semibold text-gray-700"><input type="checkbox" ${variant.is_active !== false ? 'checked' : ''} data-variant-field="is_active" data-variant-index="${index}" class="rounded text-purple-600">{{ __('admin.active') }}</label>
+                        <div class="flex items-center gap-2">${image}<input type="file" name="variant_images[${esc(variant.key)}]" accept="image/*" class="text-sm w-full"></div>
                     </div>
                     <button type="button" class="px-3 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200" data-remove-variant="${index}"><i class="fas fa-trash"></i></button>
                 </div>
@@ -178,10 +183,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 id: null,
                 key: `new_${Date.now()}_${index}`,
                 sku: '',
+                unit: '',
+                price_type: 'fixed',
+                price_adjustment: 0,
                 price: document.querySelector('input[name="price"]')?.value || 0,
                 stock_quantity: 0,
                 image_path: null,
                 is_default: index === 0 && !state.variants.some(variant => variant.is_default),
+                is_active: true,
                 values,
             };
         });
@@ -210,10 +219,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const index = event.target.dataset.variantIndex;
         const field = event.target.dataset.variantField;
         if (index === undefined || !field) return;
-        state.variants[index][field] = event.target.value;
+        state.variants[index][field] = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
         syncPayload();
     });
     variantsList.addEventListener('change', event => {
+        const fieldIndex = event.target.dataset.variantIndex;
+        const field = event.target.dataset.variantField;
+        if (fieldIndex !== undefined && field) {
+            state.variants[fieldIndex][field] = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+            syncPayload();
+        }
         const index = event.target.dataset.defaultVariant;
         if (index === undefined) return;
         state.variants.forEach((variant, variantIndex) => variant.is_default = variantIndex === Number(index));

@@ -4,12 +4,14 @@
 
 @section('content')
 @php
-    $usesVariants = $product->usesVariants();
-    $defaultVariant = $usesVariants ? ($product->variants->firstWhere('is_default', true) ?: $product->variants->first()) : null;
+    $activeVariants = $product->variants->where('is_active', true)->values();
+    $hasConfiguredVariants = $product->variants->isNotEmpty();
+    $usesVariants = $activeVariants->isNotEmpty();
+    $defaultVariant = $usesVariants ? ($activeVariants->firstWhere('is_default', true) ?: $activeVariants->first()) : null;
     $currentPrice = $product->getCurrentPrice($defaultVariant);
     $currentFinalPrice = $product->getDiscountedPrice($currentPrice);
-    $currentStock = $product->getCurrentStock($defaultVariant);
-    $variantAttributes = $usesVariants ? $product->variants->flatMap(fn ($variant) => $variant->items)->groupBy('product_attribute_id')->map(function ($items) {
+    $currentStock = $hasConfiguredVariants && !$defaultVariant ? 0 : $product->getCurrentStock($defaultVariant);
+    $variantAttributes = $usesVariants ? $activeVariants->flatMap(fn ($variant) => $variant->items)->groupBy('product_attribute_id')->map(function ($items) {
         $first = $items->first();
         return [
             'id' => $first->attribute->id,
@@ -17,10 +19,11 @@
             'values' => $items->map(fn ($item) => ['id' => $item->value->id, 'value' => $item->value->value])->unique('id')->values()->all(),
         ];
     })->values() : collect();
-    $variantPayload = $usesVariants ? $product->variants->map(function ($variant) use ($product) {
+    $variantPayload = $usesVariants ? $activeVariants->map(function ($variant) use ($product) {
         return [
             'id' => $variant->id,
             'sku' => $variant->sku,
+            'unit' => $variant->unit,
             'price' => (float) $variant->price,
             'final_price' => (float) $product->getDiscountedPrice((float) $variant->price),
             'stock_quantity' => $variant->stock_quantity,
@@ -231,7 +234,7 @@
                          data-variants='@json($variantPayload)' data-default-id="{{ $defaultVariant?->id }}">
                         <div class="flex items-center justify-between">
                             <h3 class="font-bold text-gray-900">{{ __('product.select_variant') }}</h3>
-                            <span id="variantSku" class="text-xs text-gray-500">{{ $defaultVariant?->sku }}</span>
+                            <span class="text-xs text-gray-500"><span id="variantSku">{{ $defaultVariant?->sku }}</span><span id="variantUnit" class="ml-2">{{ $defaultVariant?->unit }}</span></span>
                         </div>
                         @foreach($variantAttributes as $attribute)
                             <div class="space-y-2" data-attribute="{{ $attribute['id'] }}">
@@ -790,6 +793,7 @@ if (variantChooser) {
     const basePrice = document.getElementById('variantBasePrice');
     const finalPrice = document.getElementById('variantFinalPrice');
     const sku = document.getElementById('variantSku');
+    const unit = document.getElementById('variantUnit');
     const message = document.getElementById('variantMessage');
     const addButton = document.querySelector('.add-to-cart-btn[data-product-id="{{ $product->id }}"]');
     const defaultVariant = variants.find(v => String(v.id) === String(variantChooser.dataset.defaultId)) || variants[0];
@@ -822,6 +826,7 @@ if (variantChooser) {
         if (basePrice) basePrice.textContent = Number(variant.price).toFixed(2);
         if (finalPrice) finalPrice.textContent = Number(variant.final_price).toFixed(2);
         if (sku) sku.textContent = variant.sku || '';
+        if (unit) unit.textContent = variant.unit || '';
         if (quantityInput) {
             quantityInput.max = variant.stock_quantity;
             quantityInput.value = Math.min(Number(quantityInput.value || 1), Math.max(1, variant.stock_quantity));
