@@ -53,19 +53,21 @@
         </div>
     </div>
 
-    <div class="bg-amber-50 rounded-xl p-4 sm:p-6 border border-amber-200 mb-5">
-        <div class="flex items-center justify-between gap-4">
-            <div>
-                <label for="has_variants" class="font-semibold text-gray-800 cursor-pointer text-sm sm:text-base">{{ __('admin.product_has_variants') }}</label>
-                <p class="text-xs sm:text-sm text-gray-600 mt-1">{{ __('admin.variants_toggle_help') }}</p>
+    @if($showVariantToggle ?? true)
+        <div class="bg-amber-50 rounded-xl p-4 sm:p-6 border border-amber-200 mb-5">
+            <div class="flex items-center justify-between gap-4">
+                <div>
+                    <label for="has_variants" class="font-semibold text-gray-800 cursor-pointer text-sm sm:text-base">{{ __('admin.product_has_variants') }}</label>
+                    <p class="text-xs sm:text-sm text-gray-600 mt-1">{{ __('admin.variants_toggle_help') }}</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                    <input type="checkbox" name="has_variants" value="1" id="has_variants" class="sr-only peer" {{ old('has_variants', $variantRows->isNotEmpty()) ? 'checked' : '' }}>
+                    <span class="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-amber-500 transition-colors"></span>
+                    <span class="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform peer-checked:translate-x-5 shadow"></span>
+                </label>
             </div>
-            <label class="relative inline-flex items-center cursor-pointer shrink-0">
-                <input type="checkbox" name="has_variants" value="1" id="has_variants" class="sr-only peer" {{ old('has_variants', $variantRows->isNotEmpty()) ? 'checked' : '' }}>
-                <span class="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-amber-500 transition-colors"></span>
-                <span class="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform peer-checked:translate-x-5 shadow"></span>
-            </label>
         </div>
-    </div>
+    @endif
 
     <div id="variantSection" class="space-y-6 {{ old('has_variants', $variantRows->isNotEmpty()) ? '' : 'hidden' }}">
         @error('variants_payload')
@@ -399,6 +401,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     hasVariants?.addEventListener('change', () => {
         section.classList.toggle('hidden', !hasVariants.checked);
+        const toggleIcon = document.getElementById('has_variants_icon');
+        toggleIcon?.classList.toggle('text-amber-500', hasVariants.checked);
+        toggleIcon?.classList.toggle('text-gray-400', !hasVariants.checked);
+        document.getElementById('productVariantsToggleCard')?.classList.toggle('ring-2', hasVariants.checked);
+        document.getElementById('productVariantsToggleCard')?.classList.toggle('ring-amber-300', hasVariants.checked);
         if (hasVariants.checked && !state.attributes.length) {
             state.attributes.push({name: '', values: ['']});
             renderAttributes();

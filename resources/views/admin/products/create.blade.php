@@ -380,7 +380,7 @@
                         <h3 class="text-base sm:text-lg font-bold text-gray-800">Options</h3>
                     </div>
                     
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
                         <!-- Produit Actif -->
                         <div class="bg-gray-50 rounded-xl p-4 sm:p-6 border border-gray-200 hover:border-green-300 transition-all duration-200">
                             <div class="flex items-center justify-between">
@@ -430,10 +430,35 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Variantes du produit -->
+                        <div id="productVariantsToggleCard" class="bg-amber-50 rounded-xl p-4 sm:p-6 border border-amber-200 hover:border-amber-400 transition-all duration-200 {{ old('has_variants') ? 'ring-2 ring-amber-300' : '' }}">
+                            <div class="flex items-center justify-between gap-3">
+                                <div class="flex items-center space-x-3 sm:space-x-4 min-w-0">
+                                    <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                                        <input type="checkbox"
+                                               name="has_variants"
+                                               value="1"
+                                               id="has_variants"
+                                               {{ old('has_variants') ? 'checked' : '' }}
+                                               class="sr-only peer">
+                                        <span class="w-10 h-5 sm:w-12 sm:h-6 bg-gray-300 rounded-full peer peer-checked:bg-amber-500 transition-all duration-200"></span>
+                                        <span class="absolute left-0.5 top-0.5 sm:left-1 sm:top-1 bg-white w-4 h-4 rounded-full transition-all duration-200 peer-checked:translate-x-5 sm:peer-checked:translate-x-6 shadow"></span>
+                                    </label>
+                                    <div class="min-w-0">
+                                        <label for="has_variants" class="font-semibold text-gray-800 cursor-pointer text-sm sm:text-base">{{ __('admin.product_has_variants') }}</label>
+                                        <p class="text-xs sm:text-sm text-gray-600 mt-1">{{ __('admin.variants_toggle_help') }}</p>
+                                    </div>
+                                </div>
+                                <div id="has_variants_icon" class="{{ old('has_variants') ? 'text-amber-500' : 'text-gray-400' }} shrink-0">
+                                    <i class="fas fa-layer-group text-xl sm:text-2xl"></i>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                @include('admin.products.partials.variants')
+                @include('admin.products.partials.variants', ['showVariantToggle' => false])
 
                 <!-- Actions -->
                 <div class="pt-6 sm:pt-8 border-t border-gray-200">
