@@ -224,6 +224,7 @@ class ProductController extends Controller
         $seenSkus = [];
         $defaultCount = 0;
         $keptVariantIds = [];
+        $activeVariantIds = [];
 
         foreach ($payload['variants'] as $variantData) {
             $values = $variantData['values'] ?? [];
@@ -262,14 +263,20 @@ class ProductController extends Controller
             }
 
             $data = [
-                'sku' => $variantData['sku'] ?: null,
-                'price' => (float) $variantData['price'],
+                'sku' => !empty($variantData['sku']) ? trim($variantData['sku']) : null,
+                'unit' => !empty($variantData['unit']) ? trim($variantData['unit']) : null,
+                'price_type' => ($variantData['price_type'] ?? 'fixed') === 'adjustment' ? 'adjustment' : 'fixed',
+                'price_adjustment' => (float) ($variantData['price_adjustment'] ?? 0),
+                'price' => ($variantData['price_type'] ?? 'fixed') === 'adjustment'
+                    ? max(0, (float) $product->price + (float) ($variantData['price_adjustment'] ?? 0))
+                    : (float) $variantData['price'],
                 'stock_quantity' => (int) $variantData['stock_quantity'],
                 'image_path' => $imagePath,
                 'is_default' => $isDefault,
+                'is_active' => array_key_exists('is_active', $variantData) ? (bool) $variantData['is_active'] : true,
             ];
 
-            if ($data['price'] < 0 || $data['stock_quantity'] < 0) {
+            if ($data['price'] < 0 || $data['stock_quantity'] < 0 || !in_array($data['price_type'], ['fixed', 'adjustment'], true)) {
                 throw ValidationException::withMessages(['variants_payload' => __('admin.variant_invalid_values')]);
             }
 
@@ -278,6 +285,9 @@ class ProductController extends Controller
             $variant->product_id = $product->id;
             $variant->save();
             $keptVariantIds[] = $variant->id;
+            if ($variant->is_active) {
+                $activeVariantIds[] = $variant->id;
+            }
 
             $variant->items()->delete();
             foreach ($values as $attributeName => $valueName) {
@@ -297,9 +307,11 @@ class ProductController extends Controller
             }
         }
 
-        if ($defaultCount !== 1) {
+        if ($defaultCount !== 1 || !collect($payload['variants'])->contains(fn ($variant) => !empty($variant['is_default']) && ($variant['is_active'] ?? true))) {
             ProductVariant::whereIn('id', $keptVariantIds)->update(['is_default' => false]);
-            ProductVariant::whereKey($keptVariantIds[0])->update(['is_default' => true]);
+            if (!empty($activeVariantIds)) {
+                ProductVariant::whereKey($activeVariantIds[0])->update(['is_default' => true]);
+            }
         }
 
         $deleteIds = $product->variants()->whereNotIn('id', $keptVariantIds)->pluck('id')->all();
