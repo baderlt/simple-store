@@ -580,7 +580,6 @@
     </div>
 </div>
 
-<script src="{{asset("js/product.js")}}"></script>
 <script>
 // Gallery functionality
 let currentImageIndex = 1;

@@ -7,8 +7,8 @@
 .hero-swiper .swiper-button-prev {
     color: white;
     background: rgba(0, 0, 0, 0.3);
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     backdrop-filter: blur(4px);
     transition: all 0.3s ease;
@@ -42,18 +42,26 @@
 /* Categories Swiper Navigation */
 .categories-next,
 .categories-prev {
-    color: #059669; /* green-600 */
-    background: white;
-    width: 44px;
-    height: 44px;
+    color: #000000; /* green-600 */
+    background: rgba(249, 205, 154, 0.088);
+    width: 35px;
+    height: 35px;
     border-radius: 50%;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    border: 2px solid #d1fae5; /* green-100 */
+    border: 2px solid #f69014d3; /* green-100 */
     transition: all 0.3s ease;
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
     z-index: 10;
+}
+.categories-next{
+       transform: translateX(115%);
+ 
+}
+.categories-prev{
+       transform: translateX(-115%);
+ 
 }
 
 .categories-next {
@@ -66,10 +74,9 @@
 
 .categories-next:hover,
 .categories-prev:hover {
-    background: #059669;
+    background: #efa209cc;
     color: white;
-    border-color: #059669;
-    transform: translateY(-50%) scale(1.1);
+    border-color: #ffffff;
 }
 
 .categories-next:after,
@@ -85,6 +92,7 @@
         display: none;
     }
 }
+
 
 /* Desktop - Show navigation arrows */
 @media (min-width: 769px) {

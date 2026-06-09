@@ -11,7 +11,7 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $query = Product::where('is_active', true)
-            ->with(['primaryImage', 'activeDiscount', 'category']);
+            ->with(['primaryImage', 'activeDiscount', 'category', 'variants']);
 
         // Search
         if ($request->has('search')) {

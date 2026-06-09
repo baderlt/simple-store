@@ -143,11 +143,16 @@
                         </a>
                         
                         <!-- Stock Status Overlay -->
-                        @if($product->stock_quantity <= 5 && $product->stock_quantity > 0)
+                        @php
+                            $displayStock = $product->usesVariants()
+                                ? ($product->variants->sum('stock_quantity'))
+                                : $product->stock_quantity;
+                        @endphp
+                        @if($displayStock <= 5 && $displayStock > 0)
                             <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-amber-500/90 to-transparent text-white p-3 text-center">
                                 <div class="flex items-center justify-center space-x-2 text-sm font-semibold">
                                     <i class="fas fa-bolt"></i>
-                                    <span>Seulement {{ $product->stock_quantity }} restant(s)</span>
+                                    <span>Plus que {{ $displayStock }} en stock</span>
                                 </div>
                             </div>
                         @endif
@@ -157,13 +162,13 @@
                     <div class="p-2 md:p-5">
                         <!-- Category -->
                         <div class="mb-3">
-                            <a href="{{ route('products.index', ['category' => $product->category_id]) }}" 
+                            <a href="{{ route('products.index', ['category' => $product->category_id]) }}"
                                class="inline-flex items-center text-[10px] text-emerald-600 font-semibold uppercase tracking-wider hover:text-emerald-700">
                                 <i class="fas fa-tag mr-1.5"></i>
                                 {{ $product->category->name ?? 'Catégorie' }}
                             </a>
                         </div>
-                        
+
                         <!-- Product Name -->
                         <h3 class="font-bold text-gray-900 text-sm sm:text-base mb-2 sm:mb-3 line-clamp-2 group-hover:text-emerald-700 transition-colors leading-tight sm:px-0">
                             <a href="{{ route('products.show', $product->slug) }}" class="hover:text-emerald-700">
@@ -172,37 +177,61 @@
                         </h3>
                         <!-- Price -->
                         <div class="flex items-center justify-between mb-3 lg:mb-5">
-                            @if($product->hasDiscount())
-                                <div class="flex ">
-                                    <span class="text-red-400 text-x line-through mr-2">{{ number_format($product->price, 0) }} DH</span>
+                            @php
+                                $displayPrice = $product->usesVariants()
+                                    ? $product->getCurrentPrice($product->defaultVariant ?? $product->variants->first())
+                                    : $product->price;
+                                $hasVariantDiscount = $product->usesVariants() ? false : $product->hasDiscount();
+                            @endphp
+                            @if($hasVariantDiscount)
+                                <div class="flex">
+                                    <span class="text-red-400 text-xs line-through mr-2">{{ number_format($product->price, 0) }} DH</span>
                                     <span class="text-xl font-bold text-gray-900">{{ number_format($product->final_price, 0) }} DH</span>
-                               
-                            
                                 </div>
+                            @elseif($product->usesVariants())
+                                @php
+                                    $defaultVariant = $product->defaultVariant ?? $product->variants->first();
+                                    $variantDiscount = $defaultVariant ? $product->getDiscountedPrice($defaultVariant->price) : $displayPrice;
+                                @endphp
+                                @if($variantDiscount < $displayPrice)
+                                    <div class="flex">
+                                        <span class="text-red-400 text-xs line-through mr-2">{{ number_format($displayPrice, 0) }} DH</span>
+                                        <span class="text-xl font-bold text-gray-900">{{ number_format($variantDiscount, 0) }} DH</span>
+                                    </div>
+                                @else
+                                    <div class="text-xl font-bold text-gray-900">{{ number_format($displayPrice, 2) }} DH</div>
+                                @endif
                             @else
                                 <div class="text-xl font-bold text-gray-900">{{ number_format($product->price, 2) }} DH</div>
                             @endif
                         </div>
-                        
+
                         <!-- Action Buttons -->
                         <div class="flex items-center space-x-2">
                             <!-- View Details -->
-                            <a href="{{ route('products.show', $product->slug) }}" 
+                            <a href="{{ route('products.show', $product->slug) }}"
                                class="flex-1 text-center bg-gray-100 text-gray-700 hover:bg-gray-200 py-2 rounded-xl font-medium text-sm transition-colors duration-300">
                                 <i class="fas fa-eye mr-2"></i>Détails
                             </a>
-                            
-                            <!-- Add to Cart -->
-                            @if($product->stock_quantity > 0)
-                               <button type="button" 
-                    data-product-id="{{ $product->id }}"
-                    data-product-name="{{ $product->name }}"
-                    data-product-stock="{{ $product->stock_quantity }}"
-                    class="add-to-cart-btn w-10 h-10   bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center group/btn">
-                <i class="fas fa-shopping-cart group-hover/btn:scale-110 transition-transform"></i>
-            </button>
+
+                            <!-- Add to Cart / Select Options -->
+                            @if($product->usesVariants())
+                                <!-- Product with variants - go to product page to select -->
+                                <a href="{{ route('products.show', $product->slug) }}"
+                                   class="w-10 h-10 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center"
+                                   title="Sélectionner les options">
+                                    <i class="fas fa-cog"></i>
+                                </a>
+                            @elseif($product->stock_quantity > 0)
+                                <button type="button"
+                                    data-product-id="{{ $product->id }}"
+                                    data-product-name="{{ $product->name }}"
+                                    data-product-stock="{{ $product->stock_quantity }}"
+                                    class="add-to-cart-btn w-10 h-10 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center group/btn">
+                                    <i class="fas fa-shopping-cart group-hover/btn:scale-110 transition-transform"></i>
+                                </button>
                             @else
-                                <button disabled 
+                                <button disabled
                                         class="w-6 h-6 md:w-12 md:h-12 bg-gray-200 text-gray-400 rounded-xl cursor-not-allowed flex items-center justify-center">
                                     <i class="fas fa-ban"></i>
                                 </button>
