@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     {{-- SEO Meta Tags --}}
-    <title>@yield('title', settings('store_name', 'Parapharmacy')) - {{ settings('store_slogan', 'Votre santé, notre priorité') }}</title>
-    <meta name="description" content="@yield('description', settings('store_description', 'Votre parapharmacie en ligne au Maroc. Large choix de produits de santé, beauté et bien-être. Livraison rapide partout au Maroc.'))">
-    <meta name="keywords" content="@yield('keywords', 'parapharmacie Maroc, produits santé, médicaments, beauté, bien-être, pharmacie en ligne, livraison Maroc')">
-    <meta name="author" content="{{ settings('store_name', 'Parapharmacy') }}">
+    <title>@yield('title', settings('seo_title', settings('store_name', 'Simple Store'))) - {{ settings('store_slogan', 'Premium products, beautifully presented') }}</title>
+    <meta name="description" content="@yield('description', settings('seo_description', settings('store_description', 'Discover carefully selected products from our store.')))">
+    <meta name="keywords" content="@yield('keywords', settings('seo_keywords', 'online store, premium products, delivery'))">
+    <meta name="author" content="{{ settings('store_name', 'Simple Store') }}">
     
     {{-- Canonical --}}
     <link rel="canonical" href="{{ url()->current() }}">
@@ -16,10 +16,10 @@
     {{-- Open Graph --}}
     <meta property="og:locale" content="fr_FR">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="@yield('title', settings('store_name', 'Parapharmacy'))">
-    <meta property="og:description" content="@yield('description', settings('store_description', 'Votre parapharmacie en ligne au Maroc'))">
+    <meta property="og:title" content="@yield('title', settings('store_name', 'Simple Store'))">
+    <meta property="og:description" content="@yield('description', settings('seo_description', settings('store_description', 'Discover carefully selected products from our store.')))">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:site_name" content="{{ settings('store_name', 'Parapharmacy') }}">
+    <meta property="og:site_name" content="{{ settings('store_name', 'Simple Store') }}">
     @php
         $ogImage = $ogImage ?? (settings('logo') ? asset('storage/' . settings('logo')) : asset('img/default-og.jpg'));
     @endphp
@@ -27,12 +27,12 @@
     <meta property="og:image:secure_url" content="{{ $ogImage }}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="{{ settings('store_name', 'Parapharmacy') }}">
+    <meta property="og:image:alt" content="{{ settings('store_name', 'Simple Store') }}">
     
     {{-- Twitter Card --}}
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="@yield('title', settings('store_name', 'Parapharmacy'))">
-    <meta name="twitter:description" content="@yield('description', settings('store_description', 'Votre parapharmacie en ligne au Maroc'))">
+    <meta name="twitter:title" content="@yield('title', settings('store_name', 'Simple Store'))">
+    <meta name="twitter:description" content="@yield('description', settings('seo_description', settings('store_description', 'Discover carefully selected products from our store.')))">
     <meta name="twitter:image" content="{{ $ogImage }}">
     
     {{-- Robots --}}
@@ -56,13 +56,14 @@
     {{-- Favicon --}}
     @php
         $logoPath = settings('logo');
+        $faviconPath = settings('favicon', $logoPath);
     @endphp
-    @if($logoPath && file_exists(public_path('storage/'.$logoPath)))
-        <link rel="icon" type="image/x-icon" href="{{ asset('storage/' . $logoPath) }}">
-        <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('storage/' . $logoPath) }}">
-        <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('storage/' . $logoPath) }}">
-        <link rel="apple-touch-icon" href="{{ asset('storage/' . $logoPath) }}">
-        <meta name="msapplication-TileImage" content="{{ asset('storage/' . $logoPath) }}">
+    @if($faviconPath && file_exists(public_path('storage/'.$faviconPath)))
+        <link rel="icon" type="image/x-icon" href="{{ asset('storage/' . $faviconPath) }}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('storage/' . $faviconPath) }}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('storage/' . $faviconPath) }}">
+        <link rel="apple-touch-icon" href="{{ asset('storage/' . $faviconPath) }}">
+        <meta name="msapplication-TileImage" content="{{ asset('storage/' . $faviconPath) }}">
     @else
         <link rel="icon" type="image/x-icon" href="{{ asset('img/favicon.ico') }}">
         <link rel="apple-touch-icon" href="{{ asset('img/apple-touch-icon.png') }}">
@@ -74,8 +75,11 @@
         }
 
         :root {
-            --primary-color: {{ settings('primary_color', '#22c55e') }};
-            --secondary-color: {{ settings('secondary_color', '#16a34a') }};
+            --primary-color: {{ settings('primary_color', '#B7791F') }};
+            --secondary-color: {{ settings('secondary_color', '#3D2B1F') }};
+            --accent-color: {{ settings('accent_color', '#F4B400') }};
+            --background-color: {{ settings('background_color', '#FFFCF5') }};
+            --button-color: {{ settings('button_color', settings('primary_color', '#B7791F')) }};
         }
 
         
@@ -111,7 +115,7 @@
         .hover\:bg-emerald-700:hover,
         .hover\:bg-teal-600:hover,
         .hover\:bg-teal-700:hover {
-            background-color: var(--primary-color) !important;
+            background-color: var(--button-color) !important;
         }
 
         .bg-green-50,
@@ -341,7 +345,7 @@
         }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
+<body style="background-color: var(--background-color)" class="bg-gray-50 min-h-screen flex flex-col">
      {{-- Top Bar --}}
    {{--  <div class="gradient-bg text-white text-sm py-2">
         <div class="container mx-auto px-4">
@@ -374,7 +378,7 @@
             <div class="header-container flex items-center justify-between pt-2 lg:pt-4">
                 @php
                     $logoPath = settings('logo');
-                    $storeName = settings('store_name', 'Parapharmacy');
+                    $storeName = settings('store_name', 'Simple Store');
                 @endphp
                 
                 {{-- Logo --}}
@@ -676,7 +680,7 @@
                         @endif
                         <span class="text-2xl font-bold">{{ $storeName }}</span>
                     </div>
-                    <p class="text-gray-300">Votre partenaire santé de confiance depuis 2024.</p>
+                    <p class="text-gray-300">{{ settings('footer_text', settings('store_slogan', 'Premium products for every lifestyle.')) }}</p>
                     <div class="flex space-x-4 pt-2">
                         <a href="{{ settings('facebook_url', '#') }}" target="_blank" 
                            class="bg-gray-800 hover:bg-green-600 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
@@ -686,6 +690,11 @@
                            class="bg-gray-800 hover:bg-green-600 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
                             <i class="fab fa-instagram"></i>
                         </a>
+                        @foreach(['twitter_url' => 'fa-x-twitter', 'tiktok_url' => 'fa-tiktok', 'youtube_url' => 'fa-youtube'] as $socialKey => $icon)
+                            @if(settings($socialKey))
+                                <a href="{{ settings($socialKey) }}" target="_blank" rel="noopener" class="bg-gray-800 hover:bg-green-600 w-10 h-10 rounded-full flex items-center justify-center transition-colors"><i class="fab {{ $icon }}"></i></a>
+                            @endif
+                        @endforeach
                     </div>
                 </div>
 

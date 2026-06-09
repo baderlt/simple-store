@@ -54,4 +54,10 @@ return [
     'variant_invalid_values' => 'يجب أن يكون سعر ومخزون المتغير صالحين.',
     'price' => 'السعر',
     'stock' => 'المخزون',
+    'unit' => 'الوحدة',
+    'price_type' => 'طريقة السعر',
+    'fixed_price' => 'السعر النهائي',
+    'extra_price' => 'تعديل السعر الأساسي',
+    'price_adjustment' => 'التعديل (+/-)',
+    'active' => 'نشط',
 ];

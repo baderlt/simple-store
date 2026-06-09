@@ -54,4 +54,10 @@ return [
     'variant_invalid_values' => 'Le prix et le stock de la variante doivent être valides.',
     'price' => 'Prix',
     'stock' => 'Stock',
+    'unit' => 'Unité',
+    'price_type' => 'Mode de prix',
+    'fixed_price' => 'Prix final',
+    'extra_price' => 'Ajustement du prix de base',
+    'price_adjustment' => 'Ajustement (+/-)',
+    'active' => 'Actif',
 ];

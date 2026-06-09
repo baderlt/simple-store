@@ -54,4 +54,10 @@ return [
     'variant_invalid_values' => 'Variant price and stock must be valid positive values.',
     'price' => 'Price',
     'stock' => 'Stock',
+    'unit' => 'Unit',
+    'price_type' => 'Price mode',
+    'fixed_price' => 'Final price',
+    'extra_price' => 'Base price adjustment',
+    'price_adjustment' => 'Adjustment (+/-)',
+    'active' => 'Active',
 ];

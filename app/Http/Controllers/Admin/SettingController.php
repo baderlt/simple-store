@@ -46,9 +46,16 @@ class SettingController extends Controller
             'free_delivery_threshold' => 'nullable|numeric|min:0',
 
             // Logo
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048',
-            'primary_color' => 'nullable|string|max:20',
-            'secondary_color' => 'nullable|string|max:20',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,svg,webp|max:2048',
+            'favicon' => 'nullable|image|mimes:png,jpg,jpeg,svg,webp,ico|max:1024',
+            'primary_color' => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'secondary_color' => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'accent_color' => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'background_color' => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'button_color' => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'seo_title' => 'nullable|string|max:70',
+            'seo_description' => 'nullable|string|max:170',
+            'footer_text' => 'nullable|string|max:500',
             'hero_title_prefix' => 'nullable|string|max:255',
             'hero_title_emphasis' => 'nullable|string|max:255',
             'hero_title_suffix' => 'nullable|string|max:255',
@@ -70,7 +77,7 @@ class SettingController extends Controller
                 $image = $request->file('logo');
                 $dimensions = getimagesize($image->getPathname());
 
-                if ($dimensions[0] < 100 || $dimensions[1] < 100) {
+                if ($dimensions !== false && ($dimensions[0] < 100 || $dimensions[1] < 100)) {
                     $validator->errors()->add(
                         'logo', 'Le logo doit avoir au moins 100x100 pixels.'
                     );
@@ -101,12 +108,22 @@ class SettingController extends Controller
             'maps_link' => 'text',
             "instagram_url"=>"text",
             "facebook_url"=>"text",
+            "twitter_url"=>"text",
+            "tiktok_url"=>"text",
+            "youtube_url"=>"text",
             'delivery_zone' => 'text',
             'delivery_time' => 'text',
             'free_delivery_threshold' => 'number',
             'logo' => 'image',
+            'favicon' => 'image',
             'primary_color' => 'text',
             'secondary_color' => 'text',
+            'accent_color' => 'text',
+            'background_color' => 'text',
+            'button_color' => 'text',
+            'seo_title' => 'text',
+            'seo_description' => 'textarea',
+            'footer_text' => 'textarea',
             'hero_title_prefix' => 'text',
             'hero_title_emphasis' => 'text',
             'hero_title_suffix' => 'text',
@@ -124,10 +141,18 @@ class SettingController extends Controller
             Setting::set('logo', $logoPath, 'image');
         }
 
+        if ($request->hasFile('favicon')) {
+            $oldFavicon = Setting::get('favicon');
+            if ($oldFavicon) {
+                Storage::disk('public')->delete($oldFavicon);
+            }
+            Setting::set('favicon', $request->file('favicon')->store('settings/favicons', 'public'), 'image');
+        }
+
         // Handle other fields
         foreach ($validated as $key => $value) {
             // Skip logo as it's already handled
-            if ($key === 'logo') {
+            if (in_array($key, ['logo', 'favicon'], true)) {
                 continue;
             }
 

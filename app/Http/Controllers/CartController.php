@@ -155,7 +155,7 @@ class CartController extends Controller
         $quantity = max(1, (int) $request->quantity);
         $item = $cart[$key];
         $product = Product::with(['variants'])->find($item['id']);
-        $variant = !empty($item['variant_id']) && $product ? ProductVariant::where('product_id', $product->id)->find($item['variant_id']) : null;
+        $variant = !empty($item['variant_id']) && $product ? ProductVariant::where('product_id', $product->id)->where('is_active', true)->find($item['variant_id']) : null;
         $stock = $product ? $product->getCurrentStock($variant) : 0;
 
         if ($quantity > $stock) {
@@ -188,7 +188,7 @@ class CartController extends Controller
             return null;
         }
 
-        return $product->variants->firstWhere('id', (int) $variantId);
+        return $product->variants->first(fn ($variant) => $variant->id === (int) $variantId && $variant->is_active);
     }
 
     private function buildCartItem(Product $product, ?ProductVariant $variant, int $quantity): array
