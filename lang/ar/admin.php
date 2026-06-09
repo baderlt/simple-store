@@ -81,4 +81,5 @@ return [
     'variant_count' => ':count متغيرات',
     'confirm_remove_variant_group' => 'هل تريد حذف هذه المجموعة وخيارات المتغيرات المرتبطة بها؟',
     'confirm_remove_variant' => 'هل تريد حذف هذا المتغير؟ سيتم حذفه عند حفظ المنتج.',
+    'product_images_limit' => 'يمكن أن يحتوي المنتج على :count صور كحد أقصى.',
 ];

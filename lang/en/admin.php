@@ -81,4 +81,5 @@ return [
     'variant_count' => ':count variants',
     'confirm_remove_variant_group' => 'Remove this group and its related variant choices?',
     'confirm_remove_variant' => 'Remove this variant? It will be deleted when you save the product.',
+    'product_images_limit' => 'A product can have a maximum of :count images.',
 ];

@@ -81,4 +81,5 @@ return [
     'variant_count' => ':count variantes',
     'confirm_remove_variant_group' => 'Supprimer ce groupe et les choix de variantes associés ?',
     'confirm_remove_variant' => 'Supprimer cette variante ? Elle sera supprimée lors de l’enregistrement du produit.',
+    'product_images_limit' => 'Un produit peut contenir au maximum :count images.',
 ];
