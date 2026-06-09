@@ -404,7 +404,7 @@
                             <input type="file" 
                                    name="images[]" 
                                    multiple 
-                                   accept="image/*"
+                                   accept="image/jpeg,image/png,image/gif,image/webp"
                                    id="imageUpload"
                                    class="hidden"
                                    onchange="previewImages(event)">
@@ -421,6 +421,13 @@
                             Vous pouvez conserver jusqu'à 10 images au total. Vous pouvez aussi choisir une nouvelle image principale.
                         </p>
                         
+                        @error('images')
+                            <div class="flex items-center text-red-600 text-sm mt-2">
+                                <i class="fas fa-exclamation-circle mr-2"></i>
+                                {{ $message }}
+                            </div>
+                        @enderror
+
                         @error('images.*')
                             <div class="flex items-center text-red-600 text-sm mt-2">
                                 <i class="fas fa-exclamation-circle mr-2"></i>

@@ -288,7 +288,7 @@
                             <input type="file" 
                                    name="images[]" 
                                    multiple 
-                                   accept="image/*"
+                                   accept="image/jpeg,image/png,image/gif,image/webp"
                                    id="multiImageUpload"
                                    class="hidden"
                                    onchange="handleImageUpload(event)">
@@ -604,9 +604,9 @@ function handleNewFiles(newFiles) {
         }
         
         // Vérifier le type MIME
-        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+        const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
         if (!validTypes.includes(file.type)) {
-            showAlert(`Le format de "${file.name}" n'est pas supporté. Utilisez JPG, PNG ou WEBP.`, 'error');
+            showAlert(`Le format de "${file.name}" n'est pas supporté. Utilisez JPG, PNG, GIF ou WEBP.`, 'error');
             return false;
         }
         

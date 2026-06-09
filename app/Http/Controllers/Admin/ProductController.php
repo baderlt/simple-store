@@ -10,6 +10,7 @@ use App\Models\ProductAttributeValue;
 use App\Models\ProductImage;
 use App\Models\ProductVariant;
 use App\Models\ProductVariantItem;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -157,7 +158,7 @@ class ProductController extends Controller
             'variant_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'primary_image_index' => 'nullable|integer|min:0',
-            'new_primary_image_index' => 'nullable|integer|min:0',
+            'new_primary_image_index' => 'nullable|integer|min:-1',
             'image_order' => 'nullable|string'
         ]);
     }
@@ -167,6 +168,8 @@ class ProductController extends Controller
         if (!$request->hasFile('images')) {
             return;
         }
+
+        $this->ensurePublicStorageLink();
 
         $images = collect($request->file('images'))->filter()->values();
         $existingCount = $product->images()->count();
@@ -186,6 +189,9 @@ class ProductController extends Controller
         try {
             foreach ($images as $index => $image) {
                 $path = $image->store('products', 'public');
+                if (!$path) {
+                    throw new \RuntimeException('The product image could not be written to the public disk.');
+                }
                 $storedPaths[] = $path;
                 $makePrimary = $appendOnly
                     ? ($primaryIndex === $index || ($existingCount === 0 && $index === 0 && $primaryIndex < 0))
@@ -200,11 +206,37 @@ class ProductController extends Controller
             }
         } catch (\Throwable $exception) {
             Storage::disk('public')->delete($storedPaths);
-            throw $exception;
+            report($exception);
+
+            throw ValidationException::withMessages([
+                'images' => __('admin.image_upload_failed'),
+            ]);
         }
 
         if (!$product->images()->where('is_primary', true)->exists()) {
             $product->images()->orderBy('order')->orderBy('id')->first()?->update(['is_primary' => true]);
+        }
+    }
+
+    private function ensurePublicStorageLink(): void
+    {
+        if (app()->environment('testing')) {
+            return;
+        }
+
+        $link = public_path('storage');
+        if (is_link($link) || file_exists($link)) {
+            return;
+        }
+
+        try {
+            app(Filesystem::class)->link(storage_path('app/public'), $link);
+        } catch (\Throwable $exception) {
+            report($exception);
+
+            throw ValidationException::withMessages([
+                'images' => __('admin.public_storage_unavailable'),
+            ]);
         }
     }
 
@@ -213,6 +245,10 @@ class ProductController extends Controller
         if (!$request->boolean('has_variants')) {
             $this->deleteVariants($product, $product->variants()->pluck('id')->all());
             return;
+        }
+
+        if ($request->hasFile('variant_images')) {
+            $this->ensurePublicStorageLink();
         }
 
         $payload = json_decode($request->input('variants_payload', ''), true);
@@ -260,6 +296,11 @@ class ProductController extends Controller
                     Storage::disk('public')->delete($imagePath);
                 }
                 $imagePath = $request->file("variant_images.$key")->store('products/variants', 'public');
+                if (!$imagePath) {
+                    throw ValidationException::withMessages([
+                        'variant_images' => __('admin.image_upload_failed'),
+                    ]);
+                }
             }
 
             $data = [

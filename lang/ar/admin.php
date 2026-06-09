@@ -81,5 +81,7 @@ return [
     'variant_count' => ':count متغيرات',
     'confirm_remove_variant_group' => 'هل تريد حذف هذه المجموعة وخيارات المتغيرات المرتبطة بها؟',
     'confirm_remove_variant' => 'هل تريد حذف هذا المتغير؟ سيتم حذفه عند حفظ المنتج.',
+    'image_upload_failed' => 'تعذر رفع الصورة. تحقق من صيغة الملف وحجمه وصلاحيات التخزين على الخادم.',
+    'public_storage_unavailable' => 'تخزين الصور العام غير متاح. شغّل php artisan storage:link على الخادم وتحقق من صلاحيات الكتابة.',
     'product_images_limit' => 'يمكن أن يحتوي المنتج على :count صور كحد أقصى.',
 ];

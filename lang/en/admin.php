@@ -81,5 +81,7 @@ return [
     'variant_count' => ':count variants',
     'confirm_remove_variant_group' => 'Remove this group and its related variant choices?',
     'confirm_remove_variant' => 'Remove this variant? It will be deleted when you save the product.',
+    'image_upload_failed' => 'The image could not be uploaded. Check the file format, size, and server storage permissions.',
+    'public_storage_unavailable' => 'Public image storage is not available. Run php artisan storage:link on the server and verify write permissions.',
     'product_images_limit' => 'A product can have a maximum of :count images.',
 ];
