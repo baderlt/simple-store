@@ -20,11 +20,12 @@ class ProductVariantFlowTest extends TestCase
     {
         [$product, $variant] = $this->variantProduct();
 
-        $response = $this->post(route('cart.add', $product), ['variant_id' => $variant->id]);
+        $response = $this->post(route('cart.add', $product), ['variant_id' => $variant->id, 'quantity' => 2]);
 
         $response->assertRedirect();
         $item = session('cart')["product_{$product->id}_variant_{$variant->id}"];
         $this->assertSame($variant->id, $item['variant_id']);
+        $this->assertSame(2, $item['quantity']);
         $this->assertSame(120.0, $item['price']);
         $this->assertSame(['Weight' => '1kg'], $item['selected_attributes']);
         $this->assertSame('Pure Honey - 1kg', $item['display_name']);
@@ -60,6 +61,42 @@ class ProductVariantFlowTest extends TestCase
         $this->assertSame('150.00', $orderItem->order->total);
         $this->assertSame(4, $variant->fresh()->stock_quantity);
         $this->assertSame(99, $product->fresh()->stock_quantity);
+    }
+
+
+    public function test_product_page_uses_an_in_stock_variant_when_saved_default_is_out_of_stock(): void
+    {
+        [$product, $outOfStockVariant] = $this->variantProduct(['stock_quantity' => 0]);
+        $attribute = ProductAttribute::where('slug', 'weight')->firstOrFail();
+        $value = ProductAttributeValue::create([
+            'product_attribute_id' => $attribute->id,
+            'value' => '500g',
+            'slug' => '500g',
+        ]);
+        $availableVariant = ProductVariant::create([
+            'product_id' => $product->id,
+            'sku' => 'HONEY-500G',
+            'unit' => 'g',
+            'price_type' => 'fixed',
+            'price' => 70,
+            'price_adjustment' => 0,
+            'stock_quantity' => 3,
+            'is_default' => false,
+            'is_active' => true,
+        ]);
+        ProductVariantItem::create([
+            'product_variant_id' => $availableVariant->id,
+            'product_attribute_id' => $attribute->id,
+            'product_attribute_value_id' => $value->id,
+        ]);
+
+        $response = $this->get(route('products.show', $product->slug));
+
+        $response->assertOk()
+            ->assertSee('id="variantChooser"', false)
+            ->assertSee('id="purchaseActions"', false)
+            ->assertSee('data-default-id="' . $availableVariant->id . '"', false)
+            ->assertDontSee('data-default-id="' . $outOfStockVariant->id . '"', false);
     }
 
     private function variantProduct(array $variantOverrides = []): array

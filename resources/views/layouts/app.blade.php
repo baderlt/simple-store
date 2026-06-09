@@ -1398,14 +1398,17 @@
                 const productId = button.getAttribute('data-product-id');
                 const productName = button.getAttribute('data-product-name');
                 const variantInput = document.getElementById('selectedVariantId');
-                const variantId = variantInput ? variantInput.value : '';
+                const isCurrentProduct = variantInput?.dataset.productId === String(productId);
+                const variantId = isCurrentProduct ? variantInput.value : '';
+                const quantityInput = isCurrentProduct ? document.getElementById('quantity') : null;
+                const quantity = quantityInput ? Math.max(1, Number(quantityInput.value || 1)) : 1;
                 
-                addToCart(productId, productName, button, variantId);
+                addToCart(productId, productName, button, variantId, quantity);
             }
         });    
         
         // Function to handle add to cart
-        async function addToCart(productId, productName, button, variantId = null) {
+        async function addToCart(productId, productName, button, variantId = null, quantity = 1) {
             const originalContent = button.innerHTML;
             
             button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
@@ -1417,6 +1420,7 @@
                 if (variantId) {
                     formData.append('variant_id', variantId);
                 }
+                formData.append('quantity', quantity);
 
                 const response = await fetch('{{ route("cart.add", ":id") }}'.replace(':id', productId), {
                     method: 'POST',

@@ -27,16 +27,19 @@ class CartController extends Controller
             return $this->errorResponse($request, __('cart.out_of_stock'));
         }
 
+        $quantity = max(1, (int) $request->input('quantity', 1));
         $cart = session()->get('cart', []);
         $key = $this->cartKey($product->id, $variant?->id);
+        $newQuantity = ($cart[$key]['quantity'] ?? 0) + $quantity;
+
+        if ($newQuantity > $stock) {
+            return $this->errorResponse($request, __('cart.max_quantity_available', ['stock' => $stock]));
+        }
 
         if (isset($cart[$key])) {
-            if ($cart[$key]['quantity'] >= $stock) {
-                return $this->errorResponse($request, __('cart.max_quantity_reached'));
-            }
-            $cart[$key]['quantity']++;
+            $cart[$key]['quantity'] = $newQuantity;
         } else {
-            $cart[$key] = $this->buildCartItem($product, $variant, 1);
+            $cart[$key] = $this->buildCartItem($product, $variant, $quantity);
         }
 
         session()->put('cart', $cart);
