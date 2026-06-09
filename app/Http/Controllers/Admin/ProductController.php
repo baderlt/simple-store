@@ -10,6 +10,7 @@ use App\Models\ProductAttributeValue;
 use App\Models\ProductImage;
 use App\Models\ProductVariant;
 use App\Models\ProductVariantItem;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -95,20 +96,6 @@ class ProductController extends Controller
             'total_all_orders' => $allOrderItems->count(),
             'total_all_quantity' => $allOrderItems->sum('quantity'),
             'total_all_revenue' => $allOrderItems->sum('subtotal'),
-            'monthly_stats' => OrderItem::where('product_id', $product->id)
-                ->whereHas('order', fn ($query) => $query->where('status', '!=', 'cancelled'))
-                ->selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, SUM(quantity) as total_quantity, SUM(subtotal) as total_revenue')
-                ->groupBy('year', 'month')
-                ->orderBy('year', 'desc')
-                ->orderBy('month', 'desc')
-                ->take(12)
-                ->get(),
-            'status_stats' => OrderItem::where('product_id', $product->id)
-                ->whereHas('order')
-                ->selectRaw('orders.status, COUNT(*) as order_count, SUM(order_items.quantity) as total_quantity, SUM(order_items.subtotal) as total_revenue')
-                ->join('orders', 'order_items.order_id', '=', 'orders.id')
-                ->groupBy('orders.status')
-                ->get(),
             'avg_quantity_per_order' => $orderItems->count() > 0 ? round($orderItems->sum('quantity') / $orderItems->count(), 2) : 0,
             'activity_period' => $orderItems->isNotEmpty() ? $orderItems->min('created_at')->format('d/m/Y') . ' - ' . $orderItems->max('created_at')->format('d/m/Y') : 'Aucune commande valide',
             'cancellation_rate' => $allOrderItems->count() > 0 ? round(($cancelledOrderItems->count() / $allOrderItems->count()) * 100, 2) : 0
@@ -170,7 +157,8 @@ class ProductController extends Controller
             'variants_payload' => 'nullable|string',
             'variant_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
-            'primary_image_index' => 'nullable|integer',
+            'primary_image_index' => 'nullable|integer|min:0',
+            'new_primary_image_index' => 'nullable|integer|min:-1',
             'image_order' => 'nullable|string'
         ]);
     }
@@ -181,29 +169,73 @@ class ProductController extends Controller
             return;
         }
 
-        $images = $request->file('images');
-        $primaryIndex = (int) $request->input('primary_image_index', 0);
-        $imageOrder = json_decode($request->input('image_order', '[]'), true);
+        $this->ensurePublicStorageLink();
 
-        if (!$appendOnly && !empty($imageOrder) && count($imageOrder) === count($images)) {
-            $orderedImages = [];
-            foreach ($imageOrder as $index) {
-                if (isset($images[$index])) {
-                    $orderedImages[] = $images[$index];
-                }
-            }
-            $images = $orderedImages;
+        $images = collect($request->file('images'))->filter()->values();
+        $existingCount = $product->images()->count();
+        $maximumImages = 10;
+
+        if ($existingCount + $images->count() > $maximumImages) {
+            throw ValidationException::withMessages([
+                'images' => __('admin.product_images_limit', ['count' => $maximumImages]),
+            ]);
         }
 
-        $currentImagesCount = $product->images()->count();
+        $primaryIndex = $appendOnly
+            ? $request->integer('new_primary_image_index', -1)
+            : $request->integer('primary_image_index', 0);
+        $storedPaths = [];
 
-        foreach ($images as $index => $image) {
-            $path = $image->store('products', 'public');
-            ProductImage::create([
-                'product_id' => $product->id,
-                'image_path' => $path,
-                'is_primary' => $appendOnly ? ($currentImagesCount === 0 && $index === 0) : ($index === $primaryIndex),
-                'order' => $currentImagesCount + $index,
+        try {
+            foreach ($images as $index => $image) {
+                $path = $image->store('products', 'public');
+                if (!$path) {
+                    throw new \RuntimeException('The product image could not be written to the public disk.');
+                }
+                $storedPaths[] = $path;
+                $makePrimary = $appendOnly
+                    ? ($primaryIndex === $index || ($existingCount === 0 && $index === 0 && $primaryIndex < 0))
+                    : $index === $primaryIndex;
+
+                ProductImage::create([
+                    'product_id' => $product->id,
+                    'image_path' => $path,
+                    'is_primary' => $makePrimary,
+                    'order' => $existingCount + $index,
+                ]);
+            }
+        } catch (\Throwable $exception) {
+            Storage::disk('public')->delete($storedPaths);
+            report($exception);
+
+            throw ValidationException::withMessages([
+                'images' => __('admin.image_upload_failed'),
+            ]);
+        }
+
+        if (!$product->images()->where('is_primary', true)->exists()) {
+            $product->images()->orderBy('order')->orderBy('id')->first()?->update(['is_primary' => true]);
+        }
+    }
+
+    private function ensurePublicStorageLink(): void
+    {
+        if (app()->environment('testing')) {
+            return;
+        }
+
+        $link = public_path('storage');
+        if (is_link($link) || file_exists($link)) {
+            return;
+        }
+
+        try {
+            app(Filesystem::class)->link(storage_path('app/public'), $link);
+        } catch (\Throwable $exception) {
+            report($exception);
+
+            throw ValidationException::withMessages([
+                'images' => __('admin.public_storage_unavailable'),
             ]);
         }
     }
@@ -213,6 +245,10 @@ class ProductController extends Controller
         if (!$request->boolean('has_variants')) {
             $this->deleteVariants($product, $product->variants()->pluck('id')->all());
             return;
+        }
+
+        if ($request->hasFile('variant_images')) {
+            $this->ensurePublicStorageLink();
         }
 
         $payload = json_decode($request->input('variants_payload', ''), true);
@@ -260,6 +296,11 @@ class ProductController extends Controller
                     Storage::disk('public')->delete($imagePath);
                 }
                 $imagePath = $request->file("variant_images.$key")->store('products/variants', 'public');
+                if (!$imagePath) {
+                    throw ValidationException::withMessages([
+                        'variant_images' => __('admin.image_upload_failed'),
+                    ]);
+                }
             }
 
             $data = [
@@ -333,36 +374,39 @@ class ProductController extends Controller
         }
     }
 
-    public function setPrimaryImage(Request $request, $imageId)
+    public function setPrimaryImage(Product $product, ProductImage $image)
     {
-        try {
-            $image = ProductImage::findOrFail($imageId);
-            $product = $image->product;
-            ProductImage::where('product_id', $product->id)->update(['is_primary' => false]);
+        abort_unless($image->product_id === $product->id, 404);
+
+        DB::transaction(function () use ($product, $image) {
+            $product->images()->update(['is_primary' => false]);
             $image->update(['is_primary' => true]);
-            return response()->json(['success' => true, 'message' => __('admin.primary_image_updated')]);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => __('admin.error_with_message', ['message' => $e->getMessage()])], 500);
-        }
+        });
+
+        return response()->json(['success' => true, 'message' => __('admin.primary_image_updated')]);
     }
 
-    public function deleteImage($imageId)
+    public function deleteImage(Product $product, ProductImage $image)
     {
-        try {
-            $image = ProductImage::findOrFail($imageId);
-            $product = $image->product;
-            $isPrimary = $image->is_primary;
-            Storage::disk('public')->delete($image->image_path);
+        abort_unless($image->product_id === $product->id, 404);
+
+        $wasPrimary = $image->is_primary;
+        $path = $image->image_path;
+
+        DB::transaction(function () use ($product, $image, $wasPrimary) {
             $image->delete();
 
-            if ($isPrimary && $product->images()->count() > 0) {
-                $newPrimaryImage = $product->images()->orderBy('order')->first();
-                $newPrimaryImage->update(['is_primary' => true]);
-                return response()->json(['success' => true, 'message' => __('admin.image_deleted_new_primary'), 'new_primary_id' => $newPrimaryImage->id]);
+            if ($wasPrimary) {
+                $product->images()->orderBy('order')->orderBy('id')->first()?->update(['is_primary' => true]);
             }
-            return response()->json(['success' => true, 'message' => __('admin.image_deleted')]);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => __('admin.image_delete_failed')], 500);
-        }
+        });
+
+        Storage::disk('public')->delete($path);
+
+        return response()->json([
+            'success' => true,
+            'message' => __('admin.image_deleted'),
+        ]);
     }
+
 }

@@ -282,13 +282,13 @@
                                     <span class="px-2 sm:px-3 py-1 bg-gray-100 rounded-full text-gray-600">WEBP</span>
                                 </div>
                                 <p class="text-xs sm:text-sm text-red-500 mt-2 sm:mt-3 font-medium" id="fileCountMessage">
-                                    Maximum 4 images
+                                    Maximum 10 images
                                 </p>
                             </div>
                             <input type="file" 
                                    name="images[]" 
                                    multiple 
-                                   accept="image/*"
+                                   accept="image/jpeg,image/png,image/gif,image/webp"
                                    id="multiImageUpload"
                                    class="hidden"
                                    onchange="handleImageUpload(event)">
@@ -297,17 +297,12 @@
                         <!-- Bouton d'ajout d'image unique pour mobile -->
                         <div class="block sm:hidden">
                             <button type="button" 
-                                    onclick="document.getElementById('singleImageUpload').click()"
+                                    onclick="document.getElementById('multiImageUpload').click()"
                                     class="w-full bg-blue-50 text-blue-600 border border-blue-200 rounded-xl py-3 px-4 font-medium hover:bg-blue-100 transition-colors flex items-center justify-center">
                                 <i class="fas fa-plus-circle mr-2"></i>
                                 Ajouter une image
                             </button>
-                            <input type="file" 
-                                   name="images[]" 
-                                   accept="image/*"
-                                   id="singleImageUpload"
-                                   class="hidden"
-                                   onchange="handleImageUpload(event)">
+
                         </div>
                         
                         <!-- Instructions et compteur -->
@@ -320,7 +315,7 @@
                                     </p>
                                 </div>
                                 <div class="text-sm font-medium text-gray-700 whitespace-nowrap">
-                                    <span id="selectedCount">0</span> / 4 images
+                                    <span id="selectedCount">0</span> / 10 images
                                 </div>
                             </div>
                             
@@ -593,7 +588,7 @@ function handleImageUpload(event) {
 
 // Traiter les nouveaux fichiers
 function handleNewFiles(newFiles) {
-    const maxFiles = 4;
+    const maxFiles = 10;
     
     if (uploadedImages.length + newFiles.length > maxFiles) {
         showAlert(`Vous ne pouvez ajouter que ${maxFiles} images maximum. Vous avez déjà ${uploadedImages.length} image(s).`, 'error');
@@ -609,9 +604,9 @@ function handleNewFiles(newFiles) {
         }
         
         // Vérifier le type MIME
-        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+        const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
         if (!validTypes.includes(file.type)) {
-            showAlert(`Le format de "${file.name}" n'est pas supporté. Utilisez JPG, PNG ou WEBP.`, 'error');
+            showAlert(`Le format de "${file.name}" n'est pas supporté. Utilisez JPG, PNG, GIF ou WEBP.`, 'error');
             return false;
         }
         
@@ -796,11 +791,11 @@ function updateImageCount() {
     }
     
     if (messageElement) {
-        if (uploadedImages.length >= 4) {
-            messageElement.textContent = 'Limite de 4 images atteinte';
+        if (uploadedImages.length >= 10) {
+            messageElement.textContent = 'Limite de 10 images atteinte';
             messageElement.className = 'text-xs sm:text-sm text-red-500 mt-2 sm:mt-3 font-medium';
         } else {
-            messageElement.textContent = `Maximum 4 images (${uploadedImages.length}/4)`;
+            messageElement.textContent = `Maximum 10 images (${uploadedImages.length}/10)`;
             messageElement.className = 'text-xs sm:text-sm text-gray-500 mt-2 sm:mt-3 font-medium';
         }
     }

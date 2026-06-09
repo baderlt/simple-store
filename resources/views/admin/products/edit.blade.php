@@ -404,10 +404,11 @@
                             <input type="file" 
                                    name="images[]" 
                                    multiple 
-                                   accept="image/*"
+                                   accept="image/jpeg,image/png,image/gif,image/webp"
                                    id="imageUpload"
                                    class="hidden"
                                    onchange="previewImages(event)">
+                            <input type="hidden" name="new_primary_image_index" id="newPrimaryImageIndex" value="-1">
                         </div>
                         
                         <!-- Image preview container -->
@@ -417,9 +418,16 @@
                         
                         <p class="text-sm text-gray-500 flex items-center">
                             <i class="fas fa-info-circle mr-2"></i>
-                            Vous pouvez ajouter jusqu'à 10 images supplémentaires. La première sera l'image principale si aucune n'est définie.
+                            Vous pouvez conserver jusqu'à 10 images au total. Vous pouvez aussi choisir une nouvelle image principale.
                         </p>
                         
+                        @error('images')
+                            <div class="flex items-center text-red-600 text-sm mt-2">
+                                <i class="fas fa-exclamation-circle mr-2"></i>
+                                {{ $message }}
+                            </div>
+                        @enderror
+
                         @error('images.*')
                             <div class="flex items-center text-red-600 text-sm mt-2">
                                 <i class="fas fa-exclamation-circle mr-2"></i>
@@ -605,49 +613,67 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Prévisualisation des images
+// Prévisualisation et validation des nouvelles images
 function previewImages(event) {
+    const input = document.getElementById('imageUpload');
     const preview = document.getElementById('imagePreview');
-    
-    const files = event.target.files;
-    const maxFiles = 10;
-    
-    if (files.length > maxFiles) {
-        alert(`Vous ne pouvez ajouter que ${maxFiles} images maximum.`);
-        event.target.value = '';
+    const maximumNewImages = Math.max(0, 10 - {{ $product->images->count() }});
+    const selectedFiles = Array.from(event.target.files || []);
+
+    if (selectedFiles.length > maximumNewImages) {
+        alert(`Vous pouvez encore ajouter ${maximumNewImages} image(s) maximum pour ce produit.`);
+        input.value = '';
+        preview.innerHTML = '';
         return;
     }
-    
-    for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        
-        // Vérifier la taille (5MB max)
+
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    const validFiles = selectedFiles.filter(file => {
         if (file.size > 5 * 1024 * 1024) {
-            alert(`L'image "${file.name}" dépasse la taille maximale de 5MB`);
-            continue;
+            alert(`L'image "${file.name}" dépasse la taille maximale de 5MB.`);
+            return false;
         }
-        
+        if (!validTypes.includes(file.type)) {
+            alert(`Le format de "${file.name}" n'est pas supporté.`);
+            return false;
+        }
+        return true;
+    });
+
+    const transfer = new DataTransfer();
+    validFiles.forEach(file => transfer.items.add(file));
+    input.files = transfer.files;
+    preview.innerHTML = '';
+
+    const primaryInput = document.getElementById('newPrimaryImageIndex');
+    if (Number(primaryInput.value) >= validFiles.length) primaryInput.value = '-1';
+
+    validFiles.forEach((file, index) => {
         const reader = new FileReader();
-        
-        reader.onload = function(e) {
-            const img = document.createElement('div');
-            img.className = 'relative group';
-            img.innerHTML = `
-                <div class="aspect-square rounded-xl overflow-hidden border border-gray-200 bg-gray-100">
-                    <img src="${e.target.result}" class="w-full h-full object-cover" alt="Preview">
-                    <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                        <button type="button" onclick="removeNewImage(${i})" class="bg-red-500 text-white p-2 rounded-full hover:bg-red-600">
-                            <i class="fas fa-trash"></i>
-                        </button>
+        reader.onload = function(loadEvent) {
+            const item = document.createElement('div');
+            item.className = 'relative group';
+            const isPrimary = Number(primaryInput.value) === index;
+            item.innerHTML = `
+                <div class="aspect-square rounded-xl overflow-hidden border ${isPrimary ? 'border-amber-500 ring-2 ring-amber-200' : 'border-gray-200'} bg-gray-100">
+                    <img src="${loadEvent.target.result}" class="w-full h-full object-cover" alt="Preview">
+                    <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+                        <button type="button" onclick="setNewImagePrimary(${index})" class="bg-amber-500 text-white p-2 rounded-full hover:bg-amber-600" title="Définir comme principale"><i class="fas fa-star"></i></button>
+                        <button type="button" onclick="removeNewImage(${index})" class="bg-red-500 text-white p-2 rounded-full hover:bg-red-600" title="Supprimer"><i class="fas fa-trash"></i></button>
                     </div>
+                    <div class="new-primary-badge absolute top-2 left-2 ${isPrimary ? '' : 'hidden'} bg-amber-500 text-white text-xs px-2 py-1 rounded-lg"><i class="fas fa-crown mr-1"></i>Principale</div>
                 </div>
-                <p class="text-xs text-gray-500 mt-2 truncate">${file.name}</p>
-            `;
-            preview.appendChild(img);
-        }
-        
+                <p class="text-xs text-gray-500 mt-2 truncate">${file.name}</p>`;
+            preview.appendChild(item);
+        };
         reader.readAsDataURL(file);
-    }
+    });
+}
+
+function setNewImagePrimary(index) {
+    document.getElementById('newPrimaryImageIndex').value = index;
+    const input = document.getElementById('imageUpload');
+    previewImages({ target: { files: input.files } });
 }
 
 // Supprimer une nouvelle image de la prévisualisation
@@ -663,6 +689,10 @@ function removeNewImage(index) {
     });
     
     input.files = dt.files;
+    const primaryInput = document.getElementById('newPrimaryImageIndex');
+    const selectedPrimary = Number(primaryInput.value);
+    if (selectedPrimary === index) primaryInput.value = '-1';
+    else if (selectedPrimary > index) primaryInput.value = String(selectedPrimary - 1);
     
     // Recharger la prévisualisation
     const preview = document.getElementById('imagePreview');
@@ -759,8 +789,8 @@ function setAsPrimary(event, imageId) {
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
         
         // Make the request
-        fetch(`/admin/products/images/${imageId}/set-primary`, {
-            method: 'POST',
+        fetch(`{{ route('admin.products.images.set-primary', [$product, '__IMAGE__']) }}`.replace('__IMAGE__', imageId), {
+            method: 'PATCH',
             headers: {
                 'X-CSRF-TOKEN': csrfToken || '{{ csrf_token() }}',
                 'Content-Type': 'application/json',
@@ -812,8 +842,8 @@ function deleteImage(event, imageId) {
         // Get CSRF token
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
         
-        fetch(`/admin/products/${imageId}/images`, {
-            method: 'POST',
+        fetch(`{{ route('admin.products.images.delete', [$product, '__IMAGE__']) }}`.replace('__IMAGE__', imageId), {
+            method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': csrfToken || '{{ csrf_token() }}',
                 'Content-Type': 'application/json',

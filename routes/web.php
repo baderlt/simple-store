@@ -98,9 +98,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     
     // Products
     Route::resource('products', AdminProductController::class);
-    Route::post('products/{id}/images', [AdminProductController::class, 'deleteImage'])->name('products.images.delete');
-    Route::post('/products/images/{image}/set-primary', [AdminProductController::class, 'setPrimaryImage'])
-    ->name('products.images.set-primary');
+    Route::delete('products/{product}/images/{image}', [AdminProductController::class, 'deleteImage'])->name('products.images.delete');
+    Route::patch('products/{product}/images/{image}/primary', [AdminProductController::class, 'setPrimaryImage'])->name('products.images.set-primary');
     
     // Categories
     Route::resource('categories', AdminCategoryController::class);

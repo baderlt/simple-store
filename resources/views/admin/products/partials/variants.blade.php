@@ -76,6 +76,18 @@
             </div>
         @enderror
 
+        @error('variant_images')
+            <div class="rounded-xl border border-red-200 bg-red-50 text-red-700 px-4 py-3 text-sm flex items-center">
+                <i class="fas fa-exclamation-circle mr-2"></i>{{ $message }}
+            </div>
+        @enderror
+
+        @error('variant_images.*')
+            <div class="rounded-xl border border-red-200 bg-red-50 text-red-700 px-4 py-3 text-sm flex items-center">
+                <i class="fas fa-exclamation-circle mr-2"></i>{{ $message }}
+            </div>
+        @enderror
+
         <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 sm:p-6 border-b border-gray-100">
                 <div>
@@ -340,7 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <input type="number" min="0" step="1" value="${escapeHtml(variant.stock_quantity)}" data-variant-field="stock_quantity" data-variant-index="${index}" class="mt-1 w-full px-3 py-2 border rounded-lg bg-white" required>
                         </label>
                         <label class="sm:col-span-2 text-xs font-semibold text-gray-600">${escapeHtml(copy.image)}
-                            <div class="mt-1 flex items-center gap-2">${image}<input type="file" name="variant_images[${escapeHtml(variant.key)}]" accept="image/*" class="text-sm w-full bg-white border rounded-lg px-3 py-2"></div>
+                            <div class="mt-1 flex items-center gap-2">${image}<input type="file" name="variant_images[${escapeHtml(variant.key)}]" accept="image/jpeg,image/png,image/gif,image/webp" class="text-sm w-full bg-white border rounded-lg px-3 py-2"></div>
                         </label>
                     </div>
                 </div>`;
