@@ -1,24 +1,22 @@
-extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'À Propos')
 
 @section('content')
 <div class="container mx-auto px-4 py-16">
     <div class="max-w-4xl mx-auto">
-        <h1 class="text-4xl font-bold mb-8 text-center">À Propos de Notre Parapharmacie</h1>
+        <h1 class="text-4xl font-bold mb-8 text-center">À Propos de Notre Boutique</h1>
         
         <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
             <div class="prose max-w-none">
-                <h2 class="text-2xl font-bold mb-4">{{ settings('store_name', 'Parapharmacie Santé') }}</h2>
+                <h2 class="text-2xl font-bold mb-4">{{ settings('store_name', 'Simple Store') }}</h2>
                 
                 <p class="text-gray-700 mb-4">
-                    Bienvenue dans notre parapharmacie en ligne ! Nous sommes spécialisés dans la vente de produits de parapharmacie 
-                    de qualité pour prendre soin de votre santé et de votre bien-être au quotidien.
+                    Bienvenue dans notre boutique en ligne. Nous sélectionnons des produits de qualité pour la maison, la beauté, les parfums, l’alimentation et tous les styles de vie.
                 </p>
 
                 <p class="text-gray-700 mb-4">
-                    Nous proposons une large gamme de produits soigneusement sélectionnés : soins du visage et du corps, 
-                    produits capillaires, hygiène, articles pour bébé et maman, ainsi que des vitamines et compléments alimentaires.
+                    Notre catalogue est conçu pour évoluer avec votre marque : chaque collection met en avant des produits authentiques, une présentation élégante et une expérience d’achat simple.
                 </p>
 
                 <h3 class="text-xl font-bold mb-3 mt-6">Nos Services</h3>
@@ -37,7 +35,7 @@ extends('layouts.app')
                 <h3 class="font-bold text-xl mb-4 flex items-center">
                     <i class="fas fa-map-marker-alt text-green-600 mr-3"></i> Notre Adresse
                 </h3>
-                <p class="text-gray-700">{{ settings('address', 'Adresse de la parapharmacie') }}</p>
+                <p class="text-gray-700">{{ settings('address', 'Adresse de la boutique') }}</p>
             </div>
 
             <div class="bg-white rounded-lg shadow p-6">
@@ -58,7 +56,7 @@ extends('layouts.app')
                 <h3 class="font-bold text-xl mb-4 flex items-center">
                     <i class="fas fa-envelope text-green-600 mr-3"></i> Email
                 </h3>
-                <p class="text-gray-700">{{ settings('email', 'contact@parapharmacie.ma') }}</p>
+                <p class="text-gray-700">{{ settings('email', 'contact@example.com') }}</p>
             </div>
         </div>
     </div>

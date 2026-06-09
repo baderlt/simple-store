@@ -282,13 +282,13 @@
                                     <span class="px-2 sm:px-3 py-1 bg-gray-100 rounded-full text-gray-600">WEBP</span>
                                 </div>
                                 <p class="text-xs sm:text-sm text-red-500 mt-2 sm:mt-3 font-medium" id="fileCountMessage">
-                                    Maximum 4 images
+                                    Maximum 10 images
                                 </p>
                             </div>
                             <input type="file" 
                                    name="images[]" 
                                    multiple 
-                                   accept="image/*"
+                                   accept="image/jpeg,image/png,image/gif,image/webp"
                                    id="multiImageUpload"
                                    class="hidden"
                                    onchange="handleImageUpload(event)">
@@ -297,17 +297,12 @@
                         <!-- Bouton d'ajout d'image unique pour mobile -->
                         <div class="block sm:hidden">
                             <button type="button" 
-                                    onclick="document.getElementById('singleImageUpload').click()"
+                                    onclick="document.getElementById('multiImageUpload').click()"
                                     class="w-full bg-blue-50 text-blue-600 border border-blue-200 rounded-xl py-3 px-4 font-medium hover:bg-blue-100 transition-colors flex items-center justify-center">
                                 <i class="fas fa-plus-circle mr-2"></i>
                                 Ajouter une image
                             </button>
-                            <input type="file" 
-                                   name="images[]" 
-                                   accept="image/*"
-                                   id="singleImageUpload"
-                                   class="hidden"
-                                   onchange="handleImageUpload(event)">
+
                         </div>
                         
                         <!-- Instructions et compteur -->
@@ -320,7 +315,7 @@
                                     </p>
                                 </div>
                                 <div class="text-sm font-medium text-gray-700 whitespace-nowrap">
-                                    <span id="selectedCount">0</span> / 4 images
+                                    <span id="selectedCount">0</span> / 10 images
                                 </div>
                             </div>
                             
@@ -380,7 +375,7 @@
                         <h3 class="text-base sm:text-lg font-bold text-gray-800">Options</h3>
                     </div>
                     
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
                         <!-- Produit Actif -->
                         <div class="bg-gray-50 rounded-xl p-4 sm:p-6 border border-gray-200 hover:border-green-300 transition-all duration-200">
                             <div class="flex items-center justify-between">
@@ -430,10 +425,35 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Variantes du produit -->
+                        <div id="productVariantsToggleCard" class="bg-amber-50 rounded-xl p-4 sm:p-6 border border-amber-200 hover:border-amber-400 transition-all duration-200 {{ old('has_variants') ? 'ring-2 ring-amber-300' : '' }}">
+                            <div class="flex items-center justify-between gap-3">
+                                <div class="flex items-center space-x-3 sm:space-x-4 min-w-0">
+                                    <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                                        <input type="checkbox"
+                                               name="has_variants"
+                                               value="1"
+                                               id="has_variants"
+                                               {{ old('has_variants') ? 'checked' : '' }}
+                                               class="sr-only peer">
+                                        <span class="w-10 h-5 sm:w-12 sm:h-6 bg-gray-300 rounded-full peer peer-checked:bg-amber-500 transition-all duration-200"></span>
+                                        <span class="absolute left-0.5 top-0.5 sm:left-1 sm:top-1 bg-white w-4 h-4 rounded-full transition-all duration-200 peer-checked:translate-x-5 sm:peer-checked:translate-x-6 shadow"></span>
+                                    </label>
+                                    <div class="min-w-0">
+                                        <label for="has_variants" class="font-semibold text-gray-800 cursor-pointer text-sm sm:text-base">{{ __('admin.product_has_variants') }}</label>
+                                        <p class="text-xs sm:text-sm text-gray-600 mt-1">{{ __('admin.variants_toggle_help') }}</p>
+                                    </div>
+                                </div>
+                                <div id="has_variants_icon" class="{{ old('has_variants') ? 'text-amber-500' : 'text-gray-400' }} shrink-0">
+                                    <i class="fas fa-layer-group text-xl sm:text-2xl"></i>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                @include('admin.products.partials.variants')
+                @include('admin.products.partials.variants', ['showVariantToggle' => false])
 
                 <!-- Actions -->
                 <div class="pt-6 sm:pt-8 border-t border-gray-200">
@@ -568,7 +588,7 @@ function handleImageUpload(event) {
 
 // Traiter les nouveaux fichiers
 function handleNewFiles(newFiles) {
-    const maxFiles = 4;
+    const maxFiles = 10;
     
     if (uploadedImages.length + newFiles.length > maxFiles) {
         showAlert(`Vous ne pouvez ajouter que ${maxFiles} images maximum. Vous avez déjà ${uploadedImages.length} image(s).`, 'error');
@@ -584,9 +604,9 @@ function handleNewFiles(newFiles) {
         }
         
         // Vérifier le type MIME
-        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+        const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
         if (!validTypes.includes(file.type)) {
-            showAlert(`Le format de "${file.name}" n'est pas supporté. Utilisez JPG, PNG ou WEBP.`, 'error');
+            showAlert(`Le format de "${file.name}" n'est pas supporté. Utilisez JPG, PNG, GIF ou WEBP.`, 'error');
             return false;
         }
         
@@ -771,11 +791,11 @@ function updateImageCount() {
     }
     
     if (messageElement) {
-        if (uploadedImages.length >= 4) {
-            messageElement.textContent = 'Limite de 4 images atteinte';
+        if (uploadedImages.length >= 10) {
+            messageElement.textContent = 'Limite de 10 images atteinte';
             messageElement.className = 'text-xs sm:text-sm text-red-500 mt-2 sm:mt-3 font-medium';
         } else {
-            messageElement.textContent = `Maximum 4 images (${uploadedImages.length}/4)`;
+            messageElement.textContent = `Maximum 10 images (${uploadedImages.length}/10)`;
             messageElement.className = 'text-xs sm:text-sm text-gray-500 mt-2 sm:mt-3 font-medium';
         }
     }

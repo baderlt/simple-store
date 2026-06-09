@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
         // Create admin user
         User::create([
             'name' => 'Admin',
-            'email' => 'admin@parapharmacie.ma',
+            'email' => 'admin@store.test',
             'password' => bcrypt('password'),
             'is_admin' => true,
         ]);
@@ -154,13 +154,21 @@ class DatabaseSeeder extends Seeder
         }
 
         // Settings
-        Setting::set('store_name', 'Parapharmacie Santé');
+        Setting::set('store_name', 'Maison Dorée');
         Setting::set('phone', '+212 5XX-XXXXXX');
-        Setting::set('email', 'contact@parapharmacie.ma');
+        Setting::set('email', 'contact@store.test');
         Setting::set('address', '123 Avenue Mohammed V, Casablanca');
         Setting::set('working_hours', 'Lun-Sam: 9h00-20h00 | Dim: 10h00-18h00');
         Setting::set('delivery_fee', '30');
-        Setting::set('facebook_url', '#');
-        Setting::set('instagram_url', '#');
+        Setting::set('primary_color', '#B7791F');
+        Setting::set('secondary_color', '#3D2B1F');
+        Setting::set('accent_color', '#F4B400');
+        Setting::set('background_color', '#FFFCF5');
+        Setting::set('button_color', '#B7791F');
+        Setting::set('seo_title', 'Maison Dorée | Premium Products');
+        Setting::set('seo_description', 'Discover elegant honey, perfume, beauty, food, and lifestyle products.');
+        Setting::set('footer_text', 'Premium products selected with care and presented with elegance.');
+        Setting::set('facebook_url', null);
+        Setting::set('instagram_url', null);
     }
 }
