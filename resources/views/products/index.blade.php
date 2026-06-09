@@ -218,8 +218,8 @@
                             @if($product->usesVariants())
                                 <!-- Product with variants - go to product page to select -->
                                 <a href="{{ route('products.show', $product->slug) }}"
-                                   class="w-10 h-10 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center"
-                                   title="Sélectionner les options">
+                                   class="w-10 h-10 bg-orange-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center"
+                                   title="Sélectionner les options" style="background-color: rgb(238, 164, 26)">
                                     <i class="fas fa-cog"></i>
                                 </a>
                             @elseif($product->stock_quantity > 0)

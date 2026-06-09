@@ -5,6 +5,40 @@
 @section('subheader', 'Informations complètes et statistiques')
 
 @section('content')
+<style>
+    .aspect-square {
+    aspect-ratio: 1 / 1;
+}
+
+/* Animation pour les images */
+.group:hover .group-hover\:scale-110 {
+    transform: scale(1.1);
+}
+
+/* Style pour les liens */
+a:hover {
+    transition: color 0.2s ease;
+}
+
+/* Style pour les tableaux */
+table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+table th {
+    font-weight: 600;
+}
+
+table tr {
+    transition: background-color 0.2s ease;
+}
+
+/* Barre de progression */
+.h-2 {
+    height: 0.5rem;
+}
+</style>
 <div class="max-w-7xl mx-auto">
     <!-- En-tête avec actions -->
     <div class="mb-6">
@@ -935,39 +969,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<style>
-/* Styles personnalisés */
-.aspect-square {
-    aspect-ratio: 1 / 1;
-}
 
-/* Animation pour les images */
-.group:hover .group-hover\:scale-110 {
-    transform: scale(1.1);
-}
-
-/* Style pour les liens */
-a:hover {
-    transition: color 0.2s ease;
-}
-
-/* Style pour les tableaux */
-table {
-    border-collapse: separate;
-    border-spacing: 0;
-}
-
-table th {
-    font-weight: 600;
-}
-
-table tr {
-    transition: background-color 0.2s ease;
-}
-
-/* Barre de progression */
-.h-2 {
-    height: 0.5rem;
-}
-</style>
-@endsection
