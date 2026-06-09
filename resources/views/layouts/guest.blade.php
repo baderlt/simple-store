@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ settings('store_name', config('app.name', 'Parapharmacy')) }}</title>
+        <title>{{ settings('store_name', config('app.name', 'Simple Store')) }}</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -133,7 +133,7 @@
                 <div class="text-center mt-2">
                     @php
                         $logoPath = settings('logo');
-                        $storeName = settings('store_name', 'Parapharmacy');
+                        $storeName = settings('store_name', 'Simple Store');
                     @endphp
                     
                     <a href="{{ route('home') }}" class="inline-flex items-center space-x-3 hover-lift">
@@ -147,7 +147,7 @@
                                 </div>
                                 <div class="text-left">
                                     <h1 class="text-3xl font-bold text-gray-800">{{ $storeName }}</h1>
-                                    <p class="text-gray-600 text-sm mt-1">Votre santé, notre priorité</p>
+                                    <p class="text-gray-600 text-sm mt-1">Des produits choisis avec élégance</p>
                                 </div>
                             </div>
                         @endif 

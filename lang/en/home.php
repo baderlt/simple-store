@@ -1,7 +1,7 @@
 <?php
 
 return array (
-  'featured_title' => 'Pharmacist’s Selection',
+  'featured_title' => 'Store Selection',
   'featured_products' => 'Recommended Products',
   'featured_description' => 'Discover our exclusive selection of health and wellness products',
   'none_featured' => 'No featured products',
@@ -14,7 +14,7 @@ return array (
     'expert_advice' => 
     array (
       'title' => 'Expert Advice',
-      'description' => 'Qualified pharmacists ready to provide personalized advice',
+      'description' => 'A helpful team ready to provide personalized advice',
     ),
     'certified_products' => 
     array (

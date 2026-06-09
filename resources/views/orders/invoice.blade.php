@@ -32,8 +32,8 @@
 
     <div class="info-section">
         <div class="info-box">
-            <h3>PARAPHARMACIE</h3>
-            <p><strong>{{ settings('store_name', 'Parapharmacie Santé') }}</strong></p>
+            <h3>BOUTIQUE</h3>
+            <p><strong>{{ settings('store_name', 'Simple Store') }}</strong></p>
             <p>{{ settings('address', 'Adresse') }}</p>
             <p>Tél: {{ settings('phone', 'N/A') }}</p>
             <p>Email: {{ settings('email', 'N/A') }}</p>
@@ -114,7 +114,7 @@
 
     <div class="footer">
         <p>Merci pour votre confiance !</p>
-        <p>{{ settings('store_name', 'Parapharmacie Santé') }} - {{ settings('phone', '') }}</p>
+        <p>{{ settings('store_name', 'Simple Store') }} - {{ settings('phone', '') }}</p>
     </div>
 
     <div class="no-print" style="text-align: center; margin-top: 30px;">

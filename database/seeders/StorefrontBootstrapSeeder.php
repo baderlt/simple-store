@@ -11,11 +11,16 @@ class StorefrontBootstrapSeeder extends Seeder
     public function run(): void
     {
         $settings = [
-            ['key' => 'store_name', 'value' => 'Simple Store', 'type' => 'text'],
-            ['key' => 'tagline', 'value' => 'Premium products for every lifestyle', 'type' => 'text'],
-            ['key' => 'primary_color', 'value' => '#2563EB', 'type' => 'text'],
-            ['key' => 'secondary_color', 'value' => '#0F172A', 'type' => 'text'],
-            ['key' => 'accent_color', 'value' => '#F59E0B', 'type' => 'text'],
+            ['key' => 'store_name', 'value' => 'Maison Dorée', 'type' => 'text'],
+            ['key' => 'tagline', 'value' => 'Natural elegance, crafted for every lifestyle', 'type' => 'text'],
+            ['key' => 'primary_color', 'value' => '#B7791F', 'type' => 'text'],
+            ['key' => 'secondary_color', 'value' => '#3D2B1F', 'type' => 'text'],
+            ['key' => 'accent_color', 'value' => '#F4B400', 'type' => 'text'],
+            ['key' => 'background_color', 'value' => '#FFFCF5', 'type' => 'text'],
+            ['key' => 'button_color', 'value' => '#B7791F', 'type' => 'text'],
+            ['key' => 'seo_title', 'value' => 'Maison Dorée | Premium Products', 'type' => 'text'],
+            ['key' => 'seo_description', 'value' => 'Discover elegant honey, perfume, beauty, food, and lifestyle products.', 'type' => 'text'],
+            ['key' => 'footer_text', 'value' => 'Premium products selected with care and presented with elegance.', 'type' => 'text'],
             ['key' => 'currency', 'value' => 'USD', 'type' => 'text'],
             ['key' => 'default_locale', 'value' => 'en', 'type' => 'text'],
             ['key' => 'supported_locales', 'value' => json_encode(['en', 'fr', 'es', 'ar']), 'type' => 'json'],

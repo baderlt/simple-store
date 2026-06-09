@@ -27,16 +27,19 @@ class CartController extends Controller
             return $this->errorResponse($request, __('cart.out_of_stock'));
         }
 
+        $quantity = max(1, (int) $request->input('quantity', 1));
         $cart = session()->get('cart', []);
         $key = $this->cartKey($product->id, $variant?->id);
+        $newQuantity = ($cart[$key]['quantity'] ?? 0) + $quantity;
+
+        if ($newQuantity > $stock) {
+            return $this->errorResponse($request, __('cart.max_quantity_available', ['stock' => $stock]));
+        }
 
         if (isset($cart[$key])) {
-            if ($cart[$key]['quantity'] >= $stock) {
-                return $this->errorResponse($request, __('cart.max_quantity_reached'));
-            }
-            $cart[$key]['quantity']++;
+            $cart[$key]['quantity'] = $newQuantity;
         } else {
-            $cart[$key] = $this->buildCartItem($product, $variant, 1);
+            $cart[$key] = $this->buildCartItem($product, $variant, $quantity);
         }
 
         session()->put('cart', $cart);
@@ -155,7 +158,7 @@ class CartController extends Controller
         $quantity = max(1, (int) $request->quantity);
         $item = $cart[$key];
         $product = Product::with(['variants'])->find($item['id']);
-        $variant = !empty($item['variant_id']) && $product ? ProductVariant::where('product_id', $product->id)->find($item['variant_id']) : null;
+        $variant = !empty($item['variant_id']) && $product ? ProductVariant::where('product_id', $product->id)->where('is_active', true)->find($item['variant_id']) : null;
         $stock = $product ? $product->getCurrentStock($variant) : 0;
 
         if ($quantity > $stock) {
@@ -188,7 +191,7 @@ class CartController extends Controller
             return null;
         }
 
-        return $product->variants->firstWhere('id', (int) $variantId);
+        return $product->variants->first(fn ($variant) => $variant->id === (int) $variantId && $variant->is_active);
     }
 
     private function buildCartItem(Product $product, ?ProductVariant $variant, int $quantity): array
