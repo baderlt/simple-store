@@ -5,6 +5,71 @@
 @section('subheader', $product->name)
 
 @section('content')
+<style>
+    .aspect-square {
+    aspect-ratio: 1 / 1;
+}
+
+/* Animation pour les images */
+.group:hover .group-hover\:scale-110 {
+    transform: scale(1.1);
+}
+
+/* Style pour les liens */
+a:hover {
+    transition: color 0.2s ease;
+}
+
+/* Style pour les tableaux */
+table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+table th {
+    font-weight: 600;
+}
+
+table tr {
+    transition: background-color 0.2s ease;
+}
+
+/* Barre de progression */
+.h-2 {
+    height: 0.5rem;
+}
+</style>
+<div class="max-w-7xl mx-auto">
+    <!-- En-tête avec actions -->
+    <div class="mb-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <nav class="flex mb-4" aria-label="Breadcrumb">
+                    <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                        <li class="inline-flex items-center">
+                            <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600">
+                                <i class="fas fa-home mr-2"></i>
+                                Tableau de bord
+                            </a>
+                        </li>
+                        <li>
+                            <div class="flex items-center">
+                                <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                                <a href="{{ route('admin.products.index') }}" class="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600">
+                                    Produits
+                                </a>
+                            </div>
+                        </li>
+                        <li aria-current="page">
+                            <div class="flex items-center">
+                                <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                                <span class="ml-1 text-sm font-medium text-gray-500">{{ $product->name }}</span>
+                            </div>
+                        </li>
+                    </ol>
+                </nav>
+                <h1 class="text-3xl font-bold text-gray-900">{{ $product->name }}</h1>
+                <p class="text-gray-600 mt-2">Gestion et suivi des performances du produit</p>
 @php
     $primaryImage = $product->images->firstWhere('is_primary', true) ?: $product->images->first();
     $activeVariants = $product->variants->where('is_active', true);
@@ -150,6 +215,102 @@
                 <div class="aspect-square bg-gray-100">
                     @if($primaryImage)
                         <img src="{{ asset('storage/' . $primaryImage->image_path) }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
+                </div>
+            </div>
+
+            <!-- Dernières commandes -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200">
+                <div class="border-b border-gray-200 px-6 py-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-gray-900">
+                            <i class="fas fa-receipt mr-2 text-green-500"></i>
+                            Dernières commandes
+                        </h3>
+                        @if($ordersData['total_orders'] > 0)
+                            <span class="text-sm text-gray-500">{{ $ordersData['total_orders'] }} commande(s) au total</span>
+                        @endif
+                    </div>
+                </div>
+                <div class="p-6">
+                    @if($ordersData['recent_orders']->count() > 0)
+                        <div class="overflow-hidden rounded-lg border border-gray-200">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">N° Commande</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Qty</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prix</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    @foreach($ordersData['recent_orders'] as $orderItem)
+                                        @php
+                                            $order = $orderItem->order;
+                                        @endphp
+                                        <tr class="hover:bg-gray-50 transition-colors duration-150">
+                                            <td class="px-4 py-3 whitespace-nowrap">
+                                                @if($order)
+                                                    <a href="{{ route('admin.orders.show', $order->id) }}" 
+                                                       class="text-blue-600 hover:text-blue-900 font-medium inline-flex items-center">
+                                                        {{ $order->order_number }}
+                                                        <i class="fas fa-external-link-alt ml-2 text-xs"></i>
+                                                    </a>
+                                                @else
+                                                    <span class="text-gray-400">N/A</span>
+                                                @endif
+                                            </td>
+                                            <td class="px-4 py-3 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900">{{ $orderItem->created_at->format('d/m/Y') }}</div>
+                                                <div class="text-xs text-gray-500">{{ $orderItem->created_at->format('H:i') }}</div>
+                                            </td>
+                                            <td class="px-4 py-3 whitespace-nowrap">
+                                                <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+                                                    {{ $orderItem->quantity }}
+                                                </span>
+                                            </td>
+                                            <td class="px-4 py-3 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900">{{ number_format($orderItem->price, 2) }} DH</div>
+                                                @if($orderItem->discount_price && $orderItem->discount_price < $orderItem->price)
+                                                    <div class="text-xs text-green-600">
+                                                        <s>{{ number_format($orderItem->price, 2) }} DH</s>
+                                                        → {{ number_format($orderItem->discount_price, 2) }} DH
+                                                    </div>
+                                                @endif
+                                            </td>
+                                            <td class="px-4 py-3 whitespace-nowrap">
+                                                <div class="text-sm font-medium text-gray-900">
+                                                    {{ number_format($orderItem->subtotal, 2) }} DH
+                                                </div>
+                                            </td>
+                                            <td class="px-4 py-3 whitespace-nowrap">
+                                                @if($order)
+                                                    <span class="px-2 py-1 text-xs font-medium rounded-full {{ $order->status_color }}">
+                                                        {{ $order->status_label }}
+                                                    </span>
+                                                @else
+                                                    <span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">
+                                                        N/A
+                                                    </span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        @if($ordersData['total_orders'] > 10)
+                            <div class="mt-4 text-center">
+                                <a href="{{ route('admin.orders.index', ['product_id' => $product->id]) }}" 
+                                   class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition">
+                                    <i class="fas fa-list mr-2"></i>
+                                    Voir toutes les commandes ({{ $ordersData['total_orders'] }})
+                                </a>
+                            </div>
+                        @endif
                     @else
                         <div class="w-full h-full flex items-center justify-center text-gray-300"><i class="fas fa-image text-6xl"></i></div>
                     @endif
