@@ -8,12 +8,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ProductVariant extends Model
 {
-    protected $fillable = ['product_id', 'sku', 'price', 'stock_quantity', 'image_path', 'is_default'];
+    protected $fillable = ['product_id', 'sku', 'unit', 'price_type', 'price', 'price_adjustment', 'stock_quantity', 'image_path', 'is_default', 'is_active'];
 
     protected $casts = [
         'price' => 'decimal:2',
+        'price_adjustment' => 'decimal:2',
         'stock_quantity' => 'integer',
         'is_default' => 'boolean',
+        'is_active' => 'boolean',
     ];
 
     public function product(): BelongsTo

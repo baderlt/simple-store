@@ -4,12 +4,18 @@
 
 @section('content')
 @php
-    $usesVariants = $product->usesVariants();
-    $defaultVariant = $usesVariants ? ($product->variants->firstWhere('is_default', true) ?: $product->variants->first()) : null;
+    $activeVariants = $product->variants->where('is_active', true)->values();
+    $hasConfiguredVariants = $product->variants->isNotEmpty();
+    $usesVariants = $activeVariants->isNotEmpty();
+    $inStockVariants = $activeVariants->where('stock_quantity', '>', 0)->values();
+    $defaultVariant = $usesVariants
+        ? ($inStockVariants->firstWhere('is_default', true) ?: $inStockVariants->first() ?: $activeVariants->firstWhere('is_default', true) ?: $activeVariants->first())
+        : null;
+    $productAvailable = $hasConfiguredVariants ? $inStockVariants->isNotEmpty() : $product->stock_quantity > 0;
     $currentPrice = $product->getCurrentPrice($defaultVariant);
     $currentFinalPrice = $product->getDiscountedPrice($currentPrice);
-    $currentStock = $product->getCurrentStock($defaultVariant);
-    $variantAttributes = $usesVariants ? $product->variants->flatMap(fn ($variant) => $variant->items)->groupBy('product_attribute_id')->map(function ($items) {
+    $currentStock = $hasConfiguredVariants && !$defaultVariant ? 0 : $product->getCurrentStock($defaultVariant);
+    $variantAttributes = $usesVariants ? $activeVariants->flatMap(fn ($variant) => $variant->items)->groupBy('product_attribute_id')->map(function ($items) {
         $first = $items->first();
         return [
             'id' => $first->attribute->id,
@@ -17,10 +23,11 @@
             'values' => $items->map(fn ($item) => ['id' => $item->value->id, 'value' => $item->value->value])->unique('id')->values()->all(),
         ];
     })->values() : collect();
-    $variantPayload = $usesVariants ? $product->variants->map(function ($variant) use ($product) {
+    $variantPayload = $usesVariants ? $activeVariants->map(function ($variant) use ($product) {
         return [
             'id' => $variant->id,
             'sku' => $variant->sku,
+            'unit' => $variant->unit,
             'price' => (float) $variant->price,
             'final_price' => (float) $product->getDiscountedPrice((float) $variant->price),
             'stock_quantity' => $variant->stock_quantity,
@@ -193,26 +200,22 @@
                 </div>
 
                 <!-- Stock Status -->
-                <div class="p-5 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200">
+                <div id="variantStockPanel" class="p-5 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200">
                     <div class="flex items-center justify-between mb-3">
                         <div class="flex items-center space-x-3">
                             @if($currentStock > 0)
-                                <div class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
-                                <span class="font-semibold text-emerald-700">Disponible en stock</span>
+                                <div id="variantStockDot" class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
+                                <span id="variantStockLabel" class="font-semibold text-emerald-700">Disponible en stock</span>
                             @else
-                                <div class="w-3 h-3 bg-red-500 rounded-full"></div>
-                                <span class="font-semibold text-red-700">Rupture de stock</span>
+                                <div id="variantStockDot" class="w-3 h-3 bg-red-500 rounded-full"></div>
+                                <span id="variantStockLabel" class="font-semibold text-red-700">Rupture de stock</span>
                             @endif
                         </div>
-                        @if($currentStock > 0)
-                            <span class="text-sm text-gray-600 font-medium">
-                                {{ $currentStock }} unités disponibles
-                            </span>
-                        @endif
+                        <span id="variantStockCount" class="text-sm text-gray-600 font-medium {{ $currentStock > 0 ? '' : 'hidden' }}">{{ $currentStock }} unités disponibles</span>
                     </div>
                     
                     @if($currentStock > 0)
-                        <div class="space-y-2">
+                        <div id="variantStockDetails" class="space-y-2">
                             <div class="h-1.5 bg-gray-200 rounded-full overflow-hidden">
                                 <div class="h-full bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full" 
                                      style="width: {{ min(($currentStock / 100) * 100, 100) }}%"></div>
@@ -231,7 +234,7 @@
                          data-variants='@json($variantPayload)' data-default-id="{{ $defaultVariant?->id }}">
                         <div class="flex items-center justify-between">
                             <h3 class="font-bold text-gray-900">{{ __('product.select_variant') }}</h3>
-                            <span id="variantSku" class="text-xs text-gray-500">{{ $defaultVariant?->sku }}</span>
+                            <span class="text-xs text-gray-500"><span id="variantSku">{{ $defaultVariant?->sku }}</span><span id="variantUnit" class="ml-2">{{ $defaultVariant?->unit }}</span></span>
                         </div>
                         @foreach($variantAttributes as $attribute)
                             <div class="space-y-2" data-attribute="{{ $attribute['id'] }}">
@@ -253,8 +256,8 @@
                 @endif
 
                 <!-- Quantity Selector -->
-                @if($currentStock > 0)
-                    <div class="space-y-6">
+                @if($productAvailable)
+                    <div class="space-y-6" id="purchaseActions">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-3">Quantité</label>
                             <div class="flex items-center space-x-3">
@@ -278,7 +281,7 @@
                         <!-- Action Buttons -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <input type="hidden" name="quantity" id="formQuantity" value="1">
-                            <input type="hidden" name="variant_id" id="selectedVariantId" value="{{ $defaultVariant?->id }}">
+                            <input type="hidden" name="variant_id" id="selectedVariantId" data-product-id="{{ $product->id }}" value="{{ $defaultVariant?->id }}">
                             <button type="button" 
                                     data-product-id="{{ $product->id }}"
                                     data-product-name="{{ $product->name }}"
@@ -292,7 +295,7 @@
                                 <input type="hidden" name="quantity" id="buyNowQuantity" value="1">
                                     <input type="hidden" name="variant_id" class="selectedVariantInput" value="{{ $defaultVariant?->id }}">
                                 <button type="submit" 
-                                        class="w-full bg-gray-900 text-white py-4 rounded-xl font-bold text-lg hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group">
+                                        class="buy-now-btn w-full bg-gray-900 text-white py-4 rounded-xl font-bold text-lg hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group">
                                     <i class="fas fa-bolt mr-3 group-hover:scale-125 transition-transform"></i>
                                     Commander maintenant
                                 </button>
@@ -306,7 +309,7 @@
                                 <input type="hidden" name="quantity" id="fixedBuyNowQuantity" value="1">
                                     <input type="hidden" name="variant_id" class="selectedVariantInput" value="{{ $defaultVariant?->id }}">
                                 <button type="submit"
-                                        class="w-full bg-gray-900 text-white py-3 rounded-xl font-bold text-sm hover:bg-gray-800 transition-all duration-300 shadow flex items-center justify-center">
+                                        class="buy-now-btn w-full bg-gray-900 text-white py-3 rounded-xl font-bold text-sm hover:bg-gray-800 transition-all duration-300 shadow flex items-center justify-center">
                                     <i class="fas fa-bolt mr-2"></i>
                                     Commander maintenant
                                 </button>
@@ -790,8 +793,14 @@ if (variantChooser) {
     const basePrice = document.getElementById('variantBasePrice');
     const finalPrice = document.getElementById('variantFinalPrice');
     const sku = document.getElementById('variantSku');
+    const unit = document.getElementById('variantUnit');
     const message = document.getElementById('variantMessage');
+    const stockDot = document.getElementById('variantStockDot');
+    const stockLabel = document.getElementById('variantStockLabel');
+    const stockCount = document.getElementById('variantStockCount');
+    const stockDetails = document.getElementById('variantStockDetails');
     const addButton = document.querySelector('.add-to-cart-btn[data-product-id="{{ $product->id }}"]');
+    const buyNowButtons = document.querySelectorAll('.buy-now-btn');
     const defaultVariant = variants.find(v => String(v.id) === String(variantChooser.dataset.defaultId)) || variants[0];
 
     function matchingVariant() {
@@ -808,11 +817,44 @@ if (variantChooser) {
         });
     }
 
+    function setPurchaseAvailability(isAvailable) {
+        if (addButton) {
+            addButton.disabled = !isAvailable;
+            addButton.classList.toggle('opacity-50', !isAvailable);
+            addButton.classList.toggle('cursor-not-allowed', !isAvailable);
+        }
+        buyNowButtons.forEach(button => {
+            button.disabled = !isAvailable;
+            button.classList.toggle('opacity-50', !isAvailable);
+            button.classList.toggle('cursor-not-allowed', !isAvailable);
+        });
+    }
+
+    function updateStockDisplay(stock) {
+        const isAvailable = stock > 0;
+        if (stockDot) {
+            stockDot.classList.toggle('bg-emerald-500', isAvailable);
+            stockDot.classList.toggle('animate-pulse', isAvailable);
+            stockDot.classList.toggle('bg-red-500', !isAvailable);
+        }
+        if (stockLabel) {
+            stockLabel.textContent = isAvailable ? 'Disponible en stock' : 'Rupture de stock';
+            stockLabel.classList.toggle('text-emerald-700', isAvailable);
+            stockLabel.classList.toggle('text-red-700', !isAvailable);
+        }
+        if (stockCount) {
+            stockCount.textContent = `${stock} unités disponibles`;
+            stockCount.classList.toggle('hidden', !isAvailable);
+        }
+        stockDetails?.classList.toggle('hidden', !isAvailable);
+        setPurchaseAvailability(isAvailable);
+    }
+
     function applyVariant(variant) {
         if (!variant) {
             selectedVariantId.value = '';
             document.querySelectorAll('.selectedVariantInput').forEach(input => input.value = '');
-            if (addButton) addButton.disabled = true;
+            setPurchaseAvailability(false);
             if (message) message.classList.remove('hidden');
             return;
         }
@@ -822,13 +864,14 @@ if (variantChooser) {
         if (basePrice) basePrice.textContent = Number(variant.price).toFixed(2);
         if (finalPrice) finalPrice.textContent = Number(variant.final_price).toFixed(2);
         if (sku) sku.textContent = variant.sku || '';
+        if (unit) unit.textContent = variant.unit || '';
         if (quantityInput) {
             quantityInput.max = variant.stock_quantity;
             quantityInput.value = Math.min(Number(quantityInput.value || 1), Math.max(1, variant.stock_quantity));
             updateQuantity(0);
         }
         if (variant.image && mainImage) mainImage.src = variant.image;
-        if (addButton) addButton.disabled = variant.stock_quantity < 1;
+        updateStockDisplay(variant.stock_quantity);
         if (message) message.classList.toggle('hidden', variant.stock_quantity > 0);
     }
 
@@ -851,6 +894,17 @@ if (variantChooser) {
             selected[button.dataset.attributeId] = button.dataset.valueId;
             refreshOptions();
             applyVariant(matchingVariant());
+        });
+    });
+
+
+    document.querySelectorAll('#buyNowForm, #fixedBuyNowForm').forEach(form => {
+        form.addEventListener('submit', event => {
+            if (!selectedVariantId.value) {
+                event.preventDefault();
+                if (message) message.classList.remove('hidden');
+                variantChooser.scrollIntoView({behavior: 'smooth', block: 'center'});
+            }
         });
     });
 

@@ -33,7 +33,7 @@
         <div class="logo-container">
             @php
                 $logoPath = settings('logo');
-                $storeName = settings('store_name', 'Parapharmacie Santé');
+                $storeName = settings('store_name', 'Simple Store');
             @endphp
             @if($logoPath && file_exists(public_path('storage/'.$logoPath)))
                 <img src="{{ asset('storage/'.$logoPath) }}" width="50" alt="{{ $storeName }}">
@@ -49,8 +49,8 @@
 
     <div class="info-section">
         <div class="info-box">
-            <h3>PARAPHARMACIE</h3>
-            <p><strong>{{ settings('store_name', 'Parapharmacie Santé') }}</strong></p>
+            <h3>BOUTIQUE</h3>
+            <p><strong>{{ settings('store_name', 'Simple Store') }}</strong></p>
             <p>{{ settings('address', 'Adresse') }}</p>
             <p>Tél: {{ settings('phone', 'N/A') }}</p>
             <p>Email: {{ settings('email', 'N/A') }}</p>
@@ -162,7 +162,7 @@
     <div class="footer">
         <p>Merci pour votre confiance !</p>
         <p>Pour toute question concernant cette facture, veuillez contacter notre service client.</p>
-        <p>{{ settings('store_name', 'Parapharmacie Santé') }} &copy; {{ date('Y') }}</p>
+        <p>{{ settings('store_name', 'Simple Store') }} &copy; {{ date('Y') }}</p>
     </div>
 </body>
 </html>
