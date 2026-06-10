@@ -32,7 +32,7 @@
                                             @endif
                                             @if($banner->cta_text && $banner->cta_link)
                                                 <a href="{{ $banner->cta_link }}" 
-                                                   class="inline-block bg-white text-green-700 hover:bg-green-50 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 animate-fade-in-up animation-delay-400 shadow-lg">
+                                                   class="inline-block bg-white text-amber-800 hover:bg-amber-50 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 animate-fade-in-up animation-delay-400 shadow-lg">
                                                     {{ $banner->cta_text }}
                                                 </a>
                                             @endif
@@ -50,28 +50,28 @@
         </section>
     @else
         {{-- Default Hero Section --}}
-        <section class="relative bg-gradient-to-br from-green-700 via-teal-600 to-blue-600 text-white py-20 md:py-28 overflow-hidden">
+        <section class="relative bg-gradient-to-br from-amber-700 via-yellow-600 to-orange-700 text-white py-20 md:py-28 overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-full overflow-hidden">
                 <div class="absolute top-10 left-10 w-72 h-72 bg-white/10 rounded-full blur-3xl"></div>
-                <div class="absolute bottom-10 right-10 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
-                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-teal-400/10 rounded-full blur-3xl"></div>
+                <div class="absolute bottom-10 right-10 w-96 h-96 bg-amber-900/20 rounded-full blur-3xl"></div>
+                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-yellow-300/10 rounded-full blur-3xl"></div>
             </div>
             
             <div class="container mx-auto px-4 relative z-10">
                 <div class="max-w-3xl mx-auto text-center">
                     <span class="inline-block bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-semibold mb-6 animate-pulse">
-                        <i class="fas fa-star mr-2"></i> {{ __('messages.trusted_pharmacy') }}
+                        <i class="fas fa-star mr-2"></i> {{ __('messages.trusted_store') }}
                     </span>
                     <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-                        {{ settings('hero_title_prefix', 'Your') }} <span class="text-yellow-300">{{ settings('hero_title_emphasis', 'Store') }}</span> {{ settings('hero_title_suffix', 'Your Priority') }}
+                        {{ settings('hero_title_prefix', 'Saveurs') }} <span class="text-yellow-300">{{ settings('hero_title_emphasis', 'authentiques') }}</span> {{ settings('hero_title_suffix', '& senteurs raffinées') }}
                     </h1>
                     <p class="text-xl md:text-2xl mb-10 text-white/90 max-w-2xl mx-auto">
                         {{ settings('hero_subtitle', __('messages.hero_subtitle_default')) }}
                     </p>
                     <div class="flex flex-col sm:flex-row gap-4 justify-center">
                         <a href="{{ route('products.index') }}" 
-                           class="group bg-white text-green-700 hover:bg-green-50 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
-                            <i class="fas fa-pills group-hover:rotate-12 transition-transform"></i>
+                           class="group bg-white text-amber-800 hover:bg-amber-50 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
+                            <i class="fas fa-basket-shopping group-hover:rotate-12 transition-transform"></i>
                             {{ __('messages.discover_products') }}
                         </a>
                         <a href="#categories" 
@@ -114,14 +114,14 @@
                             @foreach($categories as $category)
                                 @php
                                     $icons = [
-                                        'médicament' => 'pills', 'soins' => 'band-aid', 'bien-être' => 'heartbeat',
+                                        'miel' => 'jar', 'thé' => 'mug-hot', 'parfum' => 'spray-can-sparkles',
                                         'beauté' => 'spa', 'bébé' => 'baby', 'hygiène' => 'hands-wash',
-                                        'vitamines' => 'capsules', 'sport' => 'dumbbell', 'naturel' => 'leaf',
-                                        'première' => 'first-aid', 'diététique' => 'apple-alt',
-                                        'hommes' => 'male', 'femmes' => 'female', 'seniors' => 'wheelchair',
+                                        'bio' => 'leaf', 'naturel' => 'seedling', 'cadeau' => 'gift',
+                                        'gourmand' => 'cookie-bite', 'épicerie' => 'bottle-droplet',
+                                        'coffret' => 'gift', 'huile' => 'bottle-droplet', 'savon' => 'soap',
                                     ];
                                     
-                                    $icon = 'box-medical';
+                                    $icon = 'basket-shopping';
                                     foreach($icons as $key => $value) {
                                         if(stripos($category->name, $key) !== false) {
                                             $icon = $value;
@@ -465,7 +465,7 @@
                         <i class="fas fa-map-marker-alt mr-2"></i> {{ __('home.location.title') }}
                     </span>
                     <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
-                        {{ __('home.location.visit') }} <span class="text-green-400">Parapharmacie</span>
+                        {{ __('home.location.visit') }} <span class="text-amber-400">{{ settings('store_name', 'Maison Dorée') }}</span>
                     </h2>
                     
                     <div class="space-y-6 mb-8">
@@ -484,7 +484,7 @@
                         
                         <!-- Hours -->
                         <div class="flex items-start gap-4">
-                            <div class="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <div class="w-12 h-12 bg-amber-900/20 rounded-lg flex items-center justify-center flex-shrink-0">
                                 <i class="fas fa-clock text-xl text-blue-400"></i>
                             </div>
                             <div>
@@ -607,7 +607,7 @@
             <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
                 <div class="text-center p-8 rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 border border-green-100 hover:border-green-300 transition-all duration-300 group">
                     <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-500 text-white rounded-2xl mb-6 group-hover:scale-110 transition-transform duration-300">
-                        <i class="fas fa-user-md text-2xl"></i>
+                        <i class="fas fa-seedling text-2xl"></i>
                     </div>
                     <h3 class="font-bold text-xl mb-3">{{ __('home.features.expert_advice.title') }}</h3>
                     <p class="text-gray-600">{{ __('home.features.expert_advice.description') }}</p>
@@ -631,10 +631,10 @@
                 
                 <div class="text-center p-8 rounded-2xl bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-100 hover:border-orange-300 transition-all duration-300 group">
                     <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-orange-500 to-amber-500 text-white rounded-2xl mb-6 group-hover:scale-110 transition-transform duration-300">
-                        <i class="fas fa-hand-holding-medical text-2xl"></i>
+                        <i class="fas fa-hand-holding-heart text-2xl"></i>
                     </div>
                     <h3 class="font-bold text-xl mb-3">Service Personnalisé</h3>
-                    <p class="text-gray-600">Accompagnement personnalisé et suivi de votre traitement</p>
+                    <p class="text-gray-600">Accompagnement personnalisé pour choisir vos saveurs, senteurs et cadeaux</p>
                 </div>
             </div>
         </div>
@@ -646,7 +646,7 @@
             <div class="max-w-3xl mx-auto text-center">
                 <h2 class="text-3xl md:text-4xl font-bold mb-4">Restez Informé</h2>
                 <p class="text-xl mb-8 text-green-100">
-                    Inscrivez-vous à notre newsletter pour recevoir nos offres spéciales et conseils santé
+                    Inscrivez-vous à notre newsletter pour recevoir nos offres spéciales et découvertes gourmandes
                 </p>
                 
                 <form class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
@@ -811,15 +811,15 @@ document.addEventListener('DOMContentLoaded', function() {
         maxZoom: 19,
     }).addTo(map);
     
-    const pharmacyIcon = L.divIcon({
-        html: '<div class="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center border-4 border-white shadow-lg"><i class="fas fa-plus text-white text-lg"></i></div>',
+    const storeIcon = L.divIcon({
+        html: '<div class="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center border-4 border-white shadow-lg"><i class="fas fa-store text-white text-lg"></i></div>',
         className: 'custom-div-icon',
         iconSize: [48, 48],
         iconAnchor: [24, 48],
         popupAnchor: [0, -48]
     });
-        const pharmacy = {
-        name: @json(settings('store_name', 'Parapharmacie SantéPlus')),
+        const store = {
+        name: @json(settings('store_name', 'Maison Dorée')),
         address: @json(settings('address', 'Casablanca')),
         phone_raw: @json(settings('phone')),
         phone_link: "{{ preg_replace('/[^0-9+]/', '', settings('phone')) }}",
@@ -828,45 +828,45 @@ document.addEventListener('DOMContentLoaded', function() {
         lat: {{ settings('latitude', 33.5731) }},
         lng: {{ settings('longitude', -7.5898) }},
     };
-    const marker = L.marker(casablanca, { icon: pharmacyIcon }).addTo(map);
+    const marker = L.marker(casablanca, { icon: storeIcon }).addTo(map);
     
     marker.bindPopup(`
         <div class="p-2 min-w-[220px]">
             <h3 class="font-bold text-lg text-gray-800">
-                ${pharmacy.name}
+                ${store.name}
             </h3>
 
             <p class="text-sm text-gray-600">
-                ${pharmacy.address}
+                ${store.address}
             </p>
 
             <div class="mt-2 space-y-1 text-sm">
 
-                ${pharmacy.phone_raw ? `
+                ${store.phone_raw ? `
                 <div class="flex items-center gap-2">
                     <i class="fas fa-phone text-green-600"></i>
-                    <a href="tel:${pharmacy.phone_link}" class="hover:underline">
-                        ${pharmacy.phone_raw}
+                    <a href="tel:${store.phone_link}" class="hover:underline">
+                        ${store.phone_raw}
                     </a>
                 </div>` : ''}
 
-                ${pharmacy.email ? `
+                ${store.email ? `
                 <div class="flex items-center gap-2">
                     <i class="fas fa-envelope text-green-600"></i>
-                    <a href="mailto:${pharmacy.email}" class="hover:underline">
-                        ${pharmacy.email}
+                    <a href="mailto:${store.email}" class="hover:underline">
+                        ${store.email}
                     </a>
                 </div>` : ''}
 
-                ${pharmacy.working_hours ? `
+                ${store.working_hours ? `
                 <div class="flex items-center gap-2">
                     <i class="fas fa-clock text-green-600"></i>
-                    <span>${pharmacy.working_hours}</span>
+                    <span>${store.working_hours}</span>
                 </div>` : ''}
 
             </div>
 
-            <a href="https://www.google.com/maps/dir/?api=1&destination=${pharmacy.lat},${pharmacy.lng}"
+            <a href="https://www.google.com/maps/dir/?api=1&destination=${store.lat},${store.lng}"
                target="_blank"
                class="mt-3 inline-flex items-center justify-center gap-1 w-full
                       bg-green-600 text-white px-3 py-1.5 rounded text-sm

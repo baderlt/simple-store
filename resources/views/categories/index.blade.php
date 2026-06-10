@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Catégories - ' . settings('store_name', 'Parapharmacy'))
+@section('title', 'Catégories - ' . settings('store_name', 'Maison Dorée'))
 
 @section('content')
 <div class="min-h-screen bg-gradient-to-b from-gray-50 to-white">
@@ -49,14 +49,13 @@
                     @php
                         // Définir des icônes basées sur le nom de la catégorie
                         $icons = [
-                            'médicament' => 'pills', 'soins' => 'band-aid', 'bien-être' => 'heartbeat',
-                            'beauté' => 'spa', 'bébé' => 'baby', 'hygiène' => 'hands-wash',
-                            'vitamines' => 'capsules', 'sport' => 'dumbbell', 'naturel' => 'leaf',
-                            'première' => 'first-aid', 'diététique' => 'apple-alt',
-                            'hommes' => 'male', 'femmes' => 'female', 'seniors' => 'wheelchair',
+                            'miel' => 'jar', 'thé' => 'mug-hot', 'parfum' => 'spray-can-sparkles',
+                            'beauté' => 'spa', 'bio' => 'leaf', 'naturel' => 'seedling',
+                            'cadeau' => 'gift', 'coffret' => 'gift', 'gourmand' => 'cookie-bite',
+                            'épicerie' => 'bottle-droplet', 'huile' => 'bottle-droplet', 'savon' => 'soap',
                         ];
                         
-                        $icon = 'box-medical';
+                        $icon = 'basket-shopping';
                         foreach($icons as $key => $value) {
                             if(stripos($category->name, $key) !== false) {
                                 $icon = $value;
@@ -198,7 +197,7 @@
                         <i class="fas fa-crown mr-2"></i> Catégories en Vedette
                     </span>
                     <h2 class="text-3xl md:text-4xl font-bold mb-4">Découvrez Nos Spécialités</h2>
-                    <p class="text-xl text-white/90 max-w-2xl mx-auto">Les catégories les plus populaires de notre pharmacie</p>
+                    <p class="text-xl text-white/90 max-w-2xl mx-auto">Les collections préférées de Maison Dorée</p>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">

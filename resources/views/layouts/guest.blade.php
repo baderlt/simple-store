@@ -143,7 +143,7 @@
                         @else 
                             <div class="flex items-center space-x-3">
                                 <div class="bg-green-600 text-white p-3 rounded-lg">
-                                    <i class="fas fa-prescription-bottle-alt text-3xl"></i>
+                                    <i class="fas fa-jar text-3xl"></i>
                                 </div>
                                 <div class="text-left">
                                     <h1 class="text-3xl font-bold text-gray-800">{{ $storeName }}</h1>

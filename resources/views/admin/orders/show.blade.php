@@ -82,7 +82,7 @@
                                          class="w-full sm:w-24 h-32 sm:h-24 object-cover rounded-lg shadow-sm">
                                 @else
                                     <div class="w-full sm:w-24 h-32 sm:h-24 bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg flex items-center justify-center shadow-sm">
-                                        <i class="fas fa-pills text-gray-400 text-2xl"></i>
+                                        <i class="fas fa-basket-shopping text-gray-400 text-2xl"></i>
                                     </div>
                                 @endif
 
