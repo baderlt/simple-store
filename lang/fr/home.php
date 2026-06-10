@@ -19,7 +19,7 @@ return array (
     'certified_products' => 
     array (
       'title' => 'Produits Certifiés',
-      'description' => 'Tous nos produits sont authentiques et conformes aux normes sanitaires',
+      'description' => 'Des produits authentiques, sélectionnés pour leur origine et leur qualité',
     ),
     'express_delivery' => 
     array (
@@ -29,7 +29,7 @@ return array (
     'personalized_service' => 
     array (
       'title' => 'Service Personnalisé',
-      'description' => 'Accompagnement personnalisé et suivi de votre traitement',
+      'description' => 'Accompagnement personnalisé pour choisir vos saveurs, senteurs et cadeaux',
     ),
   ),
   'location' => 
