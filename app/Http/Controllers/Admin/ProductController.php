@@ -10,11 +10,13 @@ use App\Models\ProductAttributeValue;
 use App\Models\ProductImage;
 use App\Models\ProductVariant;
 use App\Models\ProductVariantItem;
+use Illuminate\Database\QueryException;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class ProductController extends Controller
@@ -37,16 +39,31 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $validated = $this->validateProduct($request);
+        $variantsPayload = $this->validateVariantsPayload($request, (float) $validated['price']);
+        $this->validateImageLimit($request);
+        $storedPaths = [];
 
-        DB::transaction(function () use ($request, $validated) {
-            $validated['slug'] = Str::slug($validated['name']);
-            $validated['is_active'] = $request->has('is_active');
-            $validated['is_featured'] = $request->has('is_featured');
+        try {
+            DB::transaction(function () use ($request, $validated, $variantsPayload, &$storedPaths) {
+                $validated['slug'] = Str::slug($validated['name']);
+                $validated['is_active'] = $request->has('is_active');
+                $validated['is_featured'] = $request->has('is_featured');
 
-            $product = Product::create($validated);
-            $this->storeProductImages($request, $product);
-            $this->syncVariants($request, $product);
-        });
+                $product = Product::create($validated);
+                $storedPaths = array_merge($storedPaths, $this->storeProductImages($request, $product));
+                $this->syncVariants($request, $product, $variantsPayload, $storedPaths);
+            });
+        } catch (\Throwable $exception) {
+            Storage::disk('public')->delete($storedPaths);
+
+            if ($exception instanceof QueryException && Product::where('name', $validated['name'])->exists()) {
+                throw ValidationException::withMessages([
+                    'name' => __('admin.product_name_unique'),
+                ]);
+            }
+
+            throw $exception;
+        }
 
         return redirect()->route('admin.products.index')
             ->with('success', __('admin.product_created'));
@@ -120,15 +137,18 @@ class ProductController extends Controller
     public function update(Request $request, Product $product)
     {
         $validated = $this->validateProduct($request, $product);
+        $variantsPayload = $this->validateVariantsPayload($request, (float) $validated['price']);
+        $this->validateImageLimit($request, $product);
 
-        DB::transaction(function () use ($request, $product, $validated) {
+        DB::transaction(function () use ($request, $product, $validated, $variantsPayload) {
             $validated['slug'] = Str::slug($validated['name']);
             $validated['is_active'] = $request->has('is_active');
             $validated['is_featured'] = $request->has('is_featured');
 
             $product->update($validated);
             $this->storeProductImages($request, $product, true);
-            $this->syncVariants($request, $product);
+            $storedPaths = [];
+            $this->syncVariants($request, $product, $variantsPayload, $storedPaths);
         });
 
         return redirect()->route('admin.products.index')
@@ -157,7 +177,12 @@ class ProductController extends Controller
         $productId = $product?->id;
 
         return $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('products', 'name')->ignore($productId),
+            ],
             'category_id' => 'required|exists:categories,id',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
@@ -173,26 +198,34 @@ class ProductController extends Controller
             'primary_image_index' => 'nullable|integer|min:0',
             'new_primary_image_index' => 'nullable|integer|min:-1',
             'image_order' => 'nullable|string'
+        ], [
+            'name.unique' => __('admin.product_name_unique'),
         ]);
     }
 
-    private function storeProductImages(Request $request, Product $product, bool $appendOnly = false): void
+    private function validateImageLimit(Request $request, ?Product $product = null): void
+    {
+        $newImageCount = collect($request->file('images', []))->filter()->count();
+        $existingImageCount = $product?->images()->count() ?? 0;
+        $maximumImages = 10;
+
+        if ($existingImageCount + $newImageCount > $maximumImages) {
+            throw ValidationException::withMessages([
+                'images' => __('admin.product_images_limit', ['count' => $maximumImages]),
+            ]);
+        }
+    }
+
+    private function storeProductImages(Request $request, Product $product, bool $appendOnly = false): array
     {
         if (!$request->hasFile('images')) {
-            return;
+            return [];
         }
 
         $this->ensurePublicStorageLink();
 
         $images = collect($request->file('images'))->filter()->values();
         $existingCount = $product->images()->count();
-        $maximumImages = 10;
-
-        if ($existingCount + $images->count() > $maximumImages) {
-            throw ValidationException::withMessages([
-                'images' => __('admin.product_images_limit', ['count' => $maximumImages]),
-            ]);
-        }
 
         $primaryIndex = $appendOnly
             ? $request->integer('new_primary_image_index', -1)
@@ -229,6 +262,8 @@ class ProductController extends Controller
         if (!$product->images()->where('is_primary', true)->exists()) {
             $product->images()->orderBy('order')->orderBy('id')->first()?->update(['is_primary' => true]);
         }
+
+        return $storedPaths;
     }
 
     private function ensurePublicStorageLink(): void
@@ -253,9 +288,73 @@ class ProductController extends Controller
         }
     }
 
-    private function syncVariants(Request $request, Product $product): void
+    private function validateVariantsPayload(Request $request, float $productPrice): ?array
     {
         if (!$request->boolean('has_variants')) {
+            return null;
+        }
+
+        $payload = json_decode($request->input('variants_payload', ''), true);
+        if (!is_array($payload) || empty($payload['variants']) || !is_array($payload['variants'])) {
+            throw ValidationException::withMessages(['variants_payload' => __('admin.variant_required')]);
+        }
+
+        $seenCombinations = [];
+        $seenSkus = [];
+
+        foreach ($payload['variants'] as $variantData) {
+            if (!is_array($variantData)) {
+                throw ValidationException::withMessages(['variants_payload' => __('admin.variant_invalid_values')]);
+            }
+
+            $values = $variantData['values'] ?? [];
+            if (empty($values) || !is_array($values)) {
+                throw ValidationException::withMessages(['variants_payload' => __('admin.variant_missing_attributes')]);
+            }
+
+            foreach ($values as $attribute => $value) {
+                if (!is_string($attribute) || trim($attribute) === '' || !is_string($value) || trim($value) === '') {
+                    throw ValidationException::withMessages(['variants_payload' => __('admin.variant_missing_attributes')]);
+                }
+            }
+
+            ksort($values);
+            $signature = collect($values)
+                ->map(fn ($value, $attribute) => Str::slug($attribute) . ':' . Str::slug($value))
+                ->implode('|');
+            if (isset($seenCombinations[$signature])) {
+                throw ValidationException::withMessages(['variants_payload' => __('admin.variant_duplicate')]);
+            }
+            $seenCombinations[$signature] = true;
+
+            $sku = trim((string) ($variantData['sku'] ?? ''));
+            if ($sku !== '' && isset($seenSkus[$sku])) {
+                throw ValidationException::withMessages(['variants_payload' => __('admin.variant_duplicate_sku')]);
+            }
+            $seenSkus[$sku] = true;
+
+            $priceType = $variantData['price_type'] ?? 'fixed';
+            $priceValue = $priceType === 'adjustment'
+                ? $productPrice + (float) ($variantData['price_adjustment'] ?? 0)
+                : ($variantData['price'] ?? null);
+            $stockQuantity = $variantData['stock_quantity'] ?? null;
+
+            if (!in_array($priceType, ['fixed', 'adjustment'], true)
+                || !is_numeric($priceValue)
+                || (float) $priceValue < 0
+                || !is_numeric($stockQuantity)
+                || (int) $stockQuantity < 0
+                || (float) $stockQuantity !== (float) (int) $stockQuantity) {
+                throw ValidationException::withMessages(['variants_payload' => __('admin.variant_invalid_values')]);
+            }
+        }
+
+        return $payload;
+    }
+
+    private function syncVariants(Request $request, Product $product, ?array $payload, array &$storedPaths): void
+    {
+        if ($payload === null) {
             $this->deleteVariants($product, $product->variants()->pluck('id')->all());
             return;
         }
@@ -264,37 +363,13 @@ class ProductController extends Controller
             $this->ensurePublicStorageLink();
         }
 
-        $payload = json_decode($request->input('variants_payload', ''), true);
-        if (!is_array($payload) || empty($payload['variants'])) {
-            throw ValidationException::withMessages(['variants_payload' => __('admin.variant_required')]);
-        }
-
-        $seenCombinations = [];
-        $seenSkus = [];
         $defaultCount = 0;
         $keptVariantIds = [];
         $activeVariantIds = [];
 
         foreach ($payload['variants'] as $variantData) {
             $values = $variantData['values'] ?? [];
-            if (empty($values) || !is_array($values)) {
-                throw ValidationException::withMessages(['variants_payload' => __('admin.variant_missing_attributes')]);
-            }
-
             ksort($values);
-            $signature = collect($values)->map(fn ($value, $attribute) => Str::slug($attribute) . ':' . Str::slug($value))->implode('|');
-            if (isset($seenCombinations[$signature])) {
-                throw ValidationException::withMessages(['variants_payload' => __('admin.variant_duplicate')]);
-            }
-            $seenCombinations[$signature] = true;
-
-            $skuSignature = trim((string) ($variantData['sku'] ?? ''));
-            if ($skuSignature !== '') {
-                if (isset($seenSkus[$skuSignature])) {
-                    throw ValidationException::withMessages(['variants_payload' => __('admin.variant_duplicate_sku')]);
-                }
-                $seenSkus[$skuSignature] = true;
-            }
 
             $isDefault = !empty($variantData['is_default']);
             $defaultCount += $isDefault ? 1 : 0;
@@ -314,6 +389,7 @@ class ProductController extends Controller
                         'variant_images' => __('admin.image_upload_failed'),
                     ]);
                 }
+                $storedPaths[] = $imagePath;
             }
 
             $data = [
@@ -329,10 +405,6 @@ class ProductController extends Controller
                 'is_default' => $isDefault,
                 'is_active' => array_key_exists('is_active', $variantData) ? (bool) $variantData['is_active'] : true,
             ];
-
-            if ($data['price'] < 0 || $data['stock_quantity'] < 0 || !in_array($data['price_type'], ['fixed', 'adjustment'], true)) {
-                throw ValidationException::withMessages(['variants_payload' => __('admin.variant_invalid_values')]);
-            }
 
             $variant = $variant ?: new ProductVariant(['product_id' => $product->id]);
             $variant->fill($data);

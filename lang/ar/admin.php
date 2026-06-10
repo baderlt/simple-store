@@ -83,5 +83,6 @@ return [
     'confirm_remove_variant' => 'هل تريد حذف هذا المتغير؟ سيتم حذفه عند حفظ المنتج.',
     'image_upload_failed' => 'تعذر رفع الصورة. تحقق من صيغة الملف وحجمه وصلاحيات التخزين على الخادم.',
     'public_storage_unavailable' => 'تخزين الصور العام غير متاح. شغّل php artisan storage:link على الخادم وتحقق من صلاحيات الكتابة.',
+    'product_name_unique' => 'يوجد منتج بهذا الاسم بالفعل. يرجى اختيار اسم آخر.',
     'product_images_limit' => 'يمكن أن يحتوي المنتج على :count صور كحد أقصى.',
 ];

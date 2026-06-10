@@ -83,5 +83,6 @@ return [
     'confirm_remove_variant' => 'Supprimer cette variante ? Elle sera supprimée lors de l’enregistrement du produit.',
     'image_upload_failed' => 'L’image n’a pas pu être téléversée. Vérifiez son format, sa taille et les autorisations de stockage du serveur.',
     'public_storage_unavailable' => 'Le stockage public des images n’est pas disponible. Exécutez php artisan storage:link sur le serveur et vérifiez les autorisations d’écriture.',
+    'product_name_unique' => 'Un produit portant ce nom existe déjà. Veuillez choisir un autre nom.',
     'product_images_limit' => 'Un produit peut contenir au maximum :count images.',
 ];
