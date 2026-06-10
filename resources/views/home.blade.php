@@ -716,6 +716,8 @@ document.addEventListener('DOMContentLoaded', function() {
             spaceBetween: 16,
             loop: false,
             centeredSlides: false,
+             centerInsufficientSlides: true,
+            roundLengths: true,
             autoplay: {
                 delay: 3000,
                 disableOnInteraction: false,
