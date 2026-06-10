@@ -14,14 +14,14 @@
         <!-- Tailwind CSS -->
         <script src="https://cdn.tailwindcss.com"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
         <style>
             * {
-                font-family: 'Poppins', sans-serif;
+                font-family: {{ app()->getLocale() === 'ar' ? "'Tajawal', sans-serif" : "'Poppins', sans-serif" }};
             }
             
             :root {
@@ -143,7 +143,7 @@
                         @else 
                             <div class="flex items-center space-x-3">
                                 <div class="bg-green-600 text-white p-3 rounded-lg">
-                                    <i class="fas fa-prescription-bottle-alt text-3xl"></i>
+                                    <i class="fas fa-jar text-3xl"></i>
                                 </div>
                                 <div class="text-left">
                                     <h1 class="text-3xl font-bold text-gray-800">{{ $storeName }}</h1>

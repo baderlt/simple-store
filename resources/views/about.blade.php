@@ -12,11 +12,11 @@
                 <h2 class="text-2xl font-bold mb-4">{{ settings('store_name', 'Simple Store') }}</h2>
                 
                 <p class="text-gray-700 mb-4">
-                    Bienvenue dans notre boutique en ligne. Nous sélectionnons des produits de qualité pour la maison, la beauté, les parfums, l’alimentation et tous les styles de vie.
+                    Bienvenue chez Maison Dorée, une boutique dédiée aux miels d’exception, aux thés originaux, aux parfums raffinés et aux produits bio.
                 </p>
 
                 <p class="text-gray-700 mb-4">
-                    Notre catalogue est conçu pour évoluer avec votre marque : chaque collection met en avant des produits authentiques, une présentation élégante et une expérience d’achat simple.
+                    Chaque collection met en avant l’origine, l’authenticité et le plaisir de découvrir : saveurs de terroir, senteurs élégantes, rituels naturels et coffrets à offrir.
                 </p>
 
                 <h3 class="text-xl font-bold mb-3 mt-6">Nos Services</h3>

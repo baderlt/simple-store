@@ -6,6 +6,7 @@
     <title>@yield('title', __('admin_panel') . ' - ' . __('dashboard'))</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* Custom scrollbar */
@@ -43,6 +44,14 @@
         }
         
         .sidebar-mobile.active {
+            transform: translateX(0);
+        }
+
+        [dir="rtl"] .sidebar-mobile {
+            transform: translateX(100%);
+        }
+
+        [dir="rtl"] .sidebar-mobile.active {
             transform: translateX(0);
         }
         
@@ -93,14 +102,14 @@
                 <div class="flex items-center space-x-2">
                     @php
                         $logoPath = settings('logo');
-                        $storeName = settings('store_name', 'Parapharmacy');
+                        $storeName = settings('store_name', 'Maison Dorée');
                     @endphp
                     @if($logoPath && file_exists(public_path('storage/'.$logoPath)))
                         <img src="{{ asset('storage/'.$logoPath) }}" alt="{{ $storeName }}" 
                              class="h-8 w-auto object-contain">
                     @else 
                         <div class="bg-gradient-to-r from-green-500 to-emerald-500 p-2 rounded-lg">
-                            <i class="fas fa-prescription-bottle-medical text-white text-sm"></i>
+                            <i class="fas fa-jar text-white text-sm"></i>
                         </div>
                     @endif
                     <span class="font-bold text-gray-800">Admin</span>
@@ -149,12 +158,12 @@
                              class="h-12 w-auto object-contain transition-transform duration-300 hover:scale-105">
                     @else 
                         <div class="bg-gradient-to-r from-green-500 to-emerald-500 p-3 rounded-xl shadow-lg">
-                            <i class="fas fa-prescription-bottle-medical text-white text-lg"></i>
+                            <i class="fas fa-jar text-white text-lg"></i>
                         </div>
                     @endif
                     <div>
                         <h1 class="text-xl font-bold">{{ __('admin_panel') }}</h1>
-                        <p class="text-gray-400 text-sm">{{ __('pharmacy_management') }}</p>
+                        <p class="text-gray-400 text-sm">{{ __('store_management') }}</p>
                     </div>
                 </div>
             </div>
@@ -259,12 +268,12 @@
                              class="h-10 w-auto object-contain">
                     @else 
                         <div class="bg-gradient-to-r from-green-500 to-emerald-500 p-2 rounded-lg">
-                            <i class="fas fa-prescription-bottle-medical text-white"></i>
+                            <i class="fas fa-jar text-white"></i>
                         </div>
                     @endif
                     <div>
                         <h1 class="text-lg font-bold">{{ __('admin_panel') }}</h1>
-                        <p class="text-gray-400 text-xs">{{ __('pharmacy_management') }}</p>
+                        <p class="text-gray-400 text-xs">{{ __('store_management') }}</p>
                     </div>
                 </div>
                 <button id="closeMobileMenu" class="p-2 hover:bg-gray-700/50 rounded-lg">

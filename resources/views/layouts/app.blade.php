@@ -51,7 +51,7 @@
 
     {{-- Styles --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
     
     {{-- Favicon --}}
     @php
@@ -352,7 +352,7 @@
             <div class="flex justify-between items-center">
                 <div class="flex items-center space-x-4">
                     <span><i class="fas fa-phone-alt mr-2"></i> {{ settings('phone', '+212 XXX-XXXXXX') }}</span>
-                    <span><i class="fas fa-envelope mr-2"></i> {{ settings('email', 'contact@parapharmacie.ma') }}</span>
+                    <span><i class="fas fa-envelope mr-2"></i> {{ settings('email', 'contact@maisondoree.ma') }}</span>
                 </div>
                 <div class="flex items-center space-x-4">
                     @auth
@@ -392,7 +392,7 @@
                         @else 
                             <div class="flex items-center space-x-2">
                                 <div class="bg-green-600 text-white p-1 lg:p-2 rounded-lg">
-                                    <i class="fas fa-prescription-bottle-alt text-lg lg:text-2xl"></i>
+                                    <i class="fas fa-jar text-lg lg:text-2xl"></i>
                                 </div>
                                 <span class="text-lg lg:text-2xl font-bold text-gray-800 hidden sm:block">{{ $storeName }}</span>
                             </div>
@@ -560,7 +560,7 @@
                     <i class="fas fa-home mr-2"></i>{{ __('messages.home') }}
                 </a>
                 <a href="{{ route('products.index') }}" class="nav-link text-gray-700 hover:text-green-600 font-medium">
-                    <i class="fas fa-pills mr-2"></i>{{ __('messages.products') }}
+                    <i class="fas fa-basket-shopping mr-2"></i>{{ __('messages.products') }}
                 </a>
                 <a href="{{ route('categories.index') }}" class="nav-link text-gray-700 hover:text-green-600 font-medium">
                     <i class="fas fa-th-large mr-2"></i>{{ __('messages.categories') }}
@@ -590,7 +590,7 @@
                         <i class="fas fa-home mr-3"></i>{{ __('messages.home') }}
                     </a>
                     <a href="{{ route('products.index') }}" class="flex items-center text-gray-700 hover:text-green-600 p-2 rounded-lg hover:bg-gray-50">
-                        <i class="fas fa-pills mr-3"></i>{{ __('messages.products') }}
+                        <i class="fas fa-basket-shopping mr-3"></i>{{ __('messages.products') }}
                     </a>
                     <a href="{{ route('categories.index') }}" class="flex items-center text-gray-700 hover:text-green-600 p-2 rounded-lg hover:bg-gray-50">
                         <i class="fas fa-th-large mr-3"></i>{{ __('messages.categories') }}
@@ -675,7 +675,7 @@
                                  loading="lazy">
                         @else
                             <div class="bg-green-600 text-white p-2 rounded-lg">
-                                <i class="fas fa-prescription-bottle-alt text-2xl"></i>
+                                <i class="fas fa-jar text-2xl"></i>
                             </div>
                         @endif
                         <span class="text-2xl font-bold">{{ $storeName }}</span>
@@ -728,7 +728,7 @@
                         </li>
                         <li class="flex items-center">
                             <i class="fas fa-envelope text-green-400 mr-3"></i>
-                            <span class="text-gray-300">{{ settings('email', 'contact@parapharmacie.ma') }}</span>
+                            <span class="text-gray-300">{{ settings('email', 'contact@maisondoree.ma') }}</span>
                         </li>
                     </ul>
                 </div>

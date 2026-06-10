@@ -203,7 +203,7 @@
                                          class="w-10 h-10 object-cover rounded-lg mr-3">
                                 @else
                                     <div class="w-10 h-10 bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg flex items-center justify-center mr-3">
-                                        <i class="fas fa-pills text-gray-400"></i>
+                                        <i class="fas fa-basket-shopping text-gray-400"></i>
                                     </div>
                                 @endif
                                 <div>

@@ -1,7 +1,7 @@
 @extends('admin.layouts.app')
 
 @section('title', 'Paramètres - Admin')
-@section('header', 'Paramètres de la Parapharmacie')
+@section('header', 'Paramètres de la Boutique')
 
 @section('content')
     <div class="max-w-4xl mx-auto">
@@ -15,7 +15,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <h2 class="text-2xl font-bold text-white">Configuration Générale</h2>
-                        <p class="text-blue-100 mt-1">Gérez les informations de votre parapharmacie</p>
+                        <p class="text-blue-100 mt-1">Gérez les informations de votre boutique</p>
                     </div>
                     <div class="flex space-x-3">
                         <button type="submit" 
@@ -92,7 +92,7 @@
                         </div>
                         <div>
                             <h3 class="text-xl font-bold text-gray-800">Informations Générales</h3>
-                            <p class="text-gray-600">Informations de base de votre parapharmacie</p>
+                            <p class="text-gray-600">Informations de base de votre boutique</p>
                         </div>
                     </div>
 
@@ -100,7 +100,7 @@
                         <div>
                             <label class="block font-semibold text-gray-700 mb-2 flex items-center">
                                 <i class="fas fa-signature text-blue-500 mr-2"></i>
-                                Nom de la Parapharmacie *
+                                Nom de la Boutique *
                             </label>
                             <input type="text" name="store_name" required
                                    value="{{ old('store_name', $settings['store_name'] ?? '') }}"
@@ -153,7 +153,7 @@
                             <input type="email" name="email" required
                                    value="{{ old('email', $settings['email'] ?? '') }}"
                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
-                                   placeholder="contact@votre-parapharmacie.com">
+                                   placeholder="contact@votre-boutique.com">
                         </div>
 
                         <div>
