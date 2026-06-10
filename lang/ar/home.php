@@ -1,25 +1,25 @@
 <?php
 
 return array (
-  'featured_title' => 'اختيار الصيدلي',
+  'featured_title' => 'مختارات المتجر',
   'featured_products' => 'المنتجات الموصى بها',
-  'featured_description' => 'اكتشف اختيارنا الحصري من منتجات الصحة والعافية',
+  'featured_description' => 'اكتشف مختاراتنا من العسل والشاي الأصيل والعطور والمنتجات العضوية',
   'none_featured' => 'لا توجد منتجات مميزة',
   'discover_available' => 'اكتشف جميع المنتجات المتاحة',
   'explore_products' => 'استكشف المنتجات',
   'features' => 
   array (
     'choose_title' => 'اختر',
-    'choose_description' => 'خدمات عالية الجودة لصحتك ورفاهيتك',
+    'choose_description' => 'خدمة راقية لتجربة تسوق أصيلة وأنيقة',
     'expert_advice' => 
     array (
       'title' => 'نصائح خبراء',
-      'description' => 'صيادلة مؤهلون جاهزون لتقديم نصائح شخصية',
+      'description' => 'فريق متعاون جاهز لتقديم نصائح شخصية',
     ),
     'certified_products' => 
     array (
       'title' => 'منتجات معتمدة',
-      'description' => 'جميع منتجاتنا أصلية ومطابقة للمعايير الصحية',
+      'description' => 'منتجات أصلية مختارة بعناية لجودتها ومصدرها',
     ),
     'express_delivery' => 
     array (
@@ -29,13 +29,13 @@ return array (
     'personalized_service' => 
     array (
       'title' => 'خدمة مخصصة',
-      'description' => 'دعم شخصي ومتابعة للعلاج',
+      'description' => 'مساعدة شخصية لاختيار النكهات والعطور والهدايا',
     ),
   ),
   'location' => 
   array (
     'title' => 'موقعنا',
-    'visit' => 'زر صيدليتنا',
+    'visit' => 'زر متجرنا',
     'address' => 'العنوان',
     'hours' => 'ساعات العمل',
     'contact' => 'الاتصال',

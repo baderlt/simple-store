@@ -69,7 +69,7 @@
                                            name="name" 
                                            value="{{ old('name', $category->name) }}" 
                                            required
-                                           placeholder="ex: Médicaments, Produits de beauté..."
+                                           placeholder="ex: Miels, Thés, Parfums..."
                                            class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 @error('name') border-red-500 ring-2 ring-red-200 @enderror">
                                 </div>
                                 @error('name')
@@ -93,7 +93,7 @@
                                     <input type="text" 
                                            name="slug" 
                                            value="{{ old('slug', $category->slug) }}"
-                                           placeholder="ex: medicaments"
+                                           placeholder="ex: miels-artisanaux"
                                            class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 @error('slug') border-red-500 ring-2 ring-red-200 @enderror">
                                 </div>
                                 @error('slug')
