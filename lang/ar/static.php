@@ -59,7 +59,7 @@ return [
     'Produits Certifiés' => 'منتجات معتمدة',
     'Tous nos produits sont authentiques et conformes aux normes sanitaires' => 'كل منتجاتنا أصلية ومطابقة للمعايير الصحية',
     'Livraison Express' => 'توصيل سريع',
-    'Livraison rapide à domicile dans toute la région en 24h maximum' => 'توصيل منزلي سريع في كل المنطقة خلال 24 ساعة كحد أقصى',
+    'Livraison rapide à domicile dans toute la région en 24h maximum' => 'توصيل منزلي سريع في كل المنطقة خلال 48 ساعة كحد أقصى',
     'Service Personnalisé' => 'خدمة مخصصة',
     'Restez Informé' => 'ابقَ على اطلاع',
     'S\'abonner' => 'اشترك',
