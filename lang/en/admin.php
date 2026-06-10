@@ -83,5 +83,6 @@ return [
     'confirm_remove_variant' => 'Remove this variant? It will be deleted when you save the product.',
     'image_upload_failed' => 'The image could not be uploaded. Check the file format, size, and server storage permissions.',
     'public_storage_unavailable' => 'Public image storage is not available. Run php artisan storage:link on the server and verify write permissions.',
+    'product_name_unique' => 'A product with this name already exists. Please choose another name.',
     'product_images_limit' => 'A product can have a maximum of :count images.',
 ];
