@@ -67,7 +67,7 @@
                                        name="name" 
                                        value="{{ old('name', $product->name) }}" 
                                        required
-                                       placeholder="ex: Paracétamol 500mg"
+                                       placeholder="ex: Miel de thym 250g"
                                        class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 @error('name') border-red-500 ring-2 ring-red-200 @enderror">
                             </div>
                             @error('name')

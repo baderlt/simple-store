@@ -100,11 +100,8 @@
                         <div>
                             <label class="block font-semibold text-gray-700 mb-2 flex items-center">
                                 <i class="fas fa-signature text-blue-500 mr-2"></i>
-<<<<<<< HEAD
-                                Nom de la boutique *
-=======
                                 Nom de la Boutique *
->>>>>>> bbcae8b41621a3094aa9ae5dce2a829df1507f0f
+                                Nom de la boutique *
                             </label>
                             <input type="text" name="store_name" required
                                    value="{{ old('store_name', $settings['store_name'] ?? '') }}"

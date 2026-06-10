@@ -6,6 +6,7 @@
     <title>@yield('title', __('admin_panel') . ' - ' . __('dashboard'))</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* Custom scrollbar */
@@ -43,6 +44,14 @@
         }
         
         .sidebar-mobile.active {
+            transform: translateX(0);
+        }
+
+        [dir="rtl"] .sidebar-mobile {
+            transform: translateX(100%);
+        }
+
+        [dir="rtl"] .sidebar-mobile.active {
             transform: translateX(0);
         }
         
