@@ -92,7 +92,7 @@
                         </div>
                         <div>
                             <h3 class="text-xl font-bold text-gray-800">Informations Générales</h3>
-                            <p class="text-gray-600">Informations de base de votre parapharmacie</p>
+                            <p class="text-gray-600">Informations de base de votre boutique</p>
                         </div>
                     </div>
 
@@ -100,7 +100,7 @@
                         <div>
                             <label class="block font-semibold text-gray-700 mb-2 flex items-center">
                                 <i class="fas fa-signature text-blue-500 mr-2"></i>
-                                Nom de la Parapharmacie *
+                                Nom de la boutique *
                             </label>
                             <input type="text" name="store_name" required
                                    value="{{ old('store_name', $settings['store_name'] ?? '') }}"
