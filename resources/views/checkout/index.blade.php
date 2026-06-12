@@ -261,23 +261,21 @@
 
 <script>
     // Auto-format phone number
-    document.getElementById('customer_phone').addEventListener('input', function(e) {
-        let value = e.target.value.replace(/\D/g, '');
-        if (value.length > 0) {
-            if (value.length <= 2) {
-                value = value;
-            } else if (value.length <= 4) {
-                value = value.substr(0, 2) + ' ' + value.substr(2);
-            } else if (value.length <= 6) {
-                value = value.substr(0, 2) + ' ' + value.substr(2, 2) + ' ' + value.substr(4);
-            } else if (value.length <= 8) {
-                value = value.substr(0, 2) + ' ' + value.substr(2, 2) + ' ' + value.substr(4, 2) + ' ' + value.substr(6);
-            } else {
-                value = value.substr(0, 2) + ' ' + value.substr(2, 2) + ' ' + value.substr(4, 2) + ' ' + value.substr(6, 2);
-            }
-        }
-        e.target.value = value;
-    });
+ document.getElementById('customer_phone').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+
+    // Limit to 10 digits
+    value = value.substring(0, 10);
+
+    let formatted = '';
+
+    for (let i = 0; i < value.length; i += 2) {
+        if (formatted) formatted += ' ';
+        formatted += value.substring(i, i + 2);
+    }
+
+    e.target.value = formatted;
+});
 
     // Show the fixed mobile submit button only after the customer scrolls down.
     function updateMobileCheckoutSubmit() {
