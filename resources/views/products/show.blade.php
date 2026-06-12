@@ -23,6 +23,20 @@
             'values' => $items->map(fn ($item) => ['id' => $item->value->id, 'value' => $item->value->value])->unique('id')->values()->all(),
         ];
     })->values() : collect();
+    $primaryGalleryImage = $product->images->firstWhere('is_primary', true) ?: $product->primaryImage;
+    $galleryImages = collect([$primaryGalleryImage])
+        ->filter()
+        ->merge($product->images->reject(fn ($image) => $primaryGalleryImage && $image->id === $primaryGalleryImage->id))
+        ->values();
+    $fallbackImageUrl = 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop';
+    $initialImageUrl = $galleryImages->isNotEmpty()
+        ? asset('storage/' . $galleryImages->first()->image_path)
+        : $fallbackImageUrl;
+    $galleryImageUrls = $galleryImages->map(fn ($image) => asset('storage/' . $image->image_path));
+    if ($galleryImageUrls->isEmpty()) {
+        $galleryImageUrls = collect([$fallbackImageUrl]);
+    }
+
     $variantPayload = $usesVariants ? $activeVariants->map(function ($variant) use ($product) {
         return [
             'id' => $variant->id,
@@ -47,9 +61,9 @@
                     <div class="relative overflow-hidden rounded-2xl bg-white shadow-2xl border border-gray-100">
                         <img id="mainImage" 
                              loading="lazy"
-                             src="{{ $product->primaryImage ? asset('storage/' . $product->primaryImage->image_path) : 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop' }}" 
+                             src="{{ $initialImageUrl }}"
                              alt="{{ $product->name }}" 
-                             class="w-full h-[500px] object-cover transition-all duration-500 group-hover:scale-[1.02]">
+                             class="w-full h-[360px] sm:h-[440px] lg:h-[500px] object-contain p-4 sm:p-6 transition-all duration-500 group-hover:scale-[1.01]">
                         
                         <!-- Zoom Overlay -->
                         <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -84,9 +98,9 @@
                 </div>
 
                 <!-- Thumbnails Grid -->
-                @if($product->images->count() > 1)
+                @if($galleryImages->count() > 1)
                     <div class="relative">
-                        @if($product->images->count() > 4)
+                        @if($galleryImages->count() > 4)
                             <!-- Navigation Arrows -->
                             <button type="button" onclick="scrollThumbnails(-1)" 
                                     class="absolute left-0 top-1/2 transform -translate-y-1/2 -ml-6 w-10 h-10 bg-white rounded-full shadow-lg border border-gray-200 flex items-center justify-center text-gray-600 hover:text-emerald-600 hover:border-emerald-300 z-10 transition-all duration-200 hover:shadow-xl">
@@ -100,11 +114,11 @@
 
                         <!-- Thumbnails Container -->
                         <div id="thumbnailsContainer" class="flex overflow-x-auto space-x-3 pb-2 scrollbar-hide snap-x snap-mandatory">
-                            @foreach($product->images as $index => $image)
+                            @foreach($galleryImages as $index => $image)
                                 <button type="button" 
                                         onclick="changeMainImage('{{ asset('storage/' . $image->image_path) }}', {{ $index + 1 }})" 
                                         class="group relative flex-shrink-0 snap-center">
-                                    <div class="relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-emerald-500 transition-all duration-200 w-20 h-20 lg:w-28 lg:h-28">
+                                    <div class="relative overflow-hidden rounded-xl border-2 {{ $loop->first ? 'border-emerald-500' : 'border-gray-200' }} hover:border-emerald-500 transition-all duration-200 w-20 h-20 lg:w-28 lg:h-28">
                                         <img src="{{ asset('storage/' . $image->image_path) }}" 
                                              alt="{{ $product->name }} - Image {{ $index + 1 }}" 
                                              loading="lazy"
@@ -113,7 +127,6 @@
                                         
                                         <!-- Active Indicator -->
                                         @if($loop->first)
-                                            <div class="absolute inset-0 border-2 border-emerald-500 rounded-xl pointer-events-none"></div>
                                             <div class="absolute top-2 right-2 w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center">
                                                 <i class="fas fa-check text-white text-xs"></i>
                                             </div>
@@ -126,12 +139,12 @@
                 @endif
 
                 <!-- Image Counter (Discreet) -->
-                @if($product->images->count() > 1)
+                @if($galleryImages->count() > 1)
                     <div class="text-center">
                         <div class="inline-flex items-center space-x-2 bg-gray-50 px-4 py-2 rounded-full">
                             <i class="fas fa-image text-gray-400 text-sm"></i>
                             <span class="text-sm text-gray-600 font-medium">
-                                Image <span class="text-emerald-600" id="currentImageIndex">1</span> / {{ $product->images->count() }}
+                                Image <span class="text-emerald-600" id="currentImageIndex">1</span> / {{ $galleryImages->count() }}
                             </span>
                         </div>
                     </div>
@@ -563,13 +576,13 @@
         
         <!-- Image Counter -->
         <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-black/50 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm">
-            <span id="modalImageInfo">1 / {{ $product->images->count() }}</span>
+            <span id="modalImageInfo">1 / {{ $galleryImageUrls->count() }}</span>
         </div>
         
         <!-- Thumbnails in Modal -->
-        @if($product->images->count() > 1)
+        @if($galleryImages->count() > 1)
             <div class="absolute bottom-20 left-1/2 transform -translate-x-1/2 flex space-x-2 overflow-x-auto max-w-full p-2">
-                @foreach($product->images as $index => $image)
+                @foreach($galleryImages as $index => $image)
                     <button type="button" 
                             onclick="changeModalImage('{{ asset('storage/' . $image->image_path) }}', {{ $index + 1 }})" 
                             class="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 border-transparent hover:border-white transition-colors">
@@ -586,17 +599,12 @@
 <script>
 // Gallery functionality
 let currentImageIndex = 1;
-const totalImages = {{ $product->images->count() }};
-const images = [
-    @foreach($product->images as $image)
-        '{{ asset('storage/' . $image->image_path) }}',
-    @endforeach
-];
+const images = @json($galleryImageUrls->values());
+const totalImages = images.length;
 
 // Change main image
 function changeMainImage(src, index) {
     const mainImage = document.getElementById('mainImage');
-    const currentIndex = document.getElementById('currentImageIndex');
     
     // Add fade out effect
     mainImage.style.opacity = '0';
@@ -604,11 +612,7 @@ function changeMainImage(src, index) {
     setTimeout(() => {
         mainImage.src = src;
         mainImage.style.opacity = '1';
-        currentImageIndex = index;
-        currentIndex.textContent = index;
-        
-        // Update active thumbnail
-        updateActiveThumbnail(index);
+        syncGallerySelection(index);
     }, 200);
 }
 
@@ -616,7 +620,9 @@ function changeMainImage(src, index) {
 function updateActiveThumbnail(index) {
     // Remove all active indicators
     document.querySelectorAll('#thumbnailsContainer button').forEach(btn => {
-        btn.querySelector('.relative').classList.remove('border-emerald-500');
+        const thumbnail = btn.querySelector('.relative');
+        thumbnail.classList.remove('border-emerald-500');
+        thumbnail.classList.add('border-gray-200');
         const checkIcon = btn.querySelector('.bg-emerald-500');
         if (checkIcon) {
             checkIcon.remove();
@@ -627,6 +633,7 @@ function updateActiveThumbnail(index) {
     const currentThumbnail = document.querySelector(`#thumbnailsContainer button:nth-child(${index})`);
     if (currentThumbnail) {
         const thumbnailDiv = currentThumbnail.querySelector('.relative');
+        thumbnailDiv.classList.remove('border-gray-200');
         thumbnailDiv.classList.add('border-emerald-500');
         
         const checkIcon = document.createElement('div');
@@ -634,6 +641,14 @@ function updateActiveThumbnail(index) {
         checkIcon.innerHTML = '<i class="fas fa-check text-white text-xs"></i>';
         thumbnailDiv.appendChild(checkIcon);
     }
+}
+
+
+function syncGallerySelection(index) {
+    currentImageIndex = index;
+    const currentIndex = document.getElementById('currentImageIndex');
+    if (currentIndex && index > 0) currentIndex.textContent = index;
+    updateActiveThumbnail(index);
 }
 
 // Scroll thumbnails
@@ -649,8 +664,9 @@ function openImageModal() {
     const modalImage = document.getElementById('modalImage');
     const modalImageInfo = document.getElementById('modalImageInfo');
     
-    modalImage.src = images[currentImageIndex - 1];
-    modalImageInfo.textContent = `${currentImageIndex} / ${totalImages}`;
+    const galleryImage = currentImageIndex > 0 ? images[currentImageIndex - 1] : null;
+    modalImage.src = galleryImage || document.getElementById('mainImage').src;
+    modalImageInfo.textContent = currentImageIndex > 0 ? `${currentImageIndex} / ${totalImages}` : '';
     modal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
 }
@@ -673,9 +689,9 @@ function navigateModalImage(direction) {
     setTimeout(() => {
         modalImage.src = images[newIndex - 1];
         modalImage.style.opacity = '1';
-        currentImageIndex = newIndex;
+        document.getElementById('mainImage').src = images[newIndex - 1];
         modalImageInfo.textContent = `${newIndex} / ${totalImages}`;
-        updateActiveThumbnail(newIndex);
+        syncGallerySelection(newIndex);
     }, 200);
 }
 
@@ -687,9 +703,9 @@ function changeModalImage(src, index) {
     setTimeout(() => {
         modalImage.src = src;
         modalImage.style.opacity = '1';
-        currentImageIndex = index;
+        document.getElementById('mainImage').src = src;
         modalImageInfo.textContent = `${index} / ${totalImages}`;
-        updateActiveThumbnail(index);
+        syncGallerySelection(index);
     }, 200);
 }
 
@@ -870,7 +886,11 @@ if (variantChooser) {
             quantityInput.value = Math.min(Number(quantityInput.value || 1), Math.max(1, variant.stock_quantity));
             updateQuantity(0);
         }
-        if (variant.image && mainImage) mainImage.src = variant.image;
+        if (variant.image && mainImage) {
+            mainImage.src = variant.image;
+            const galleryIndex = images.indexOf(variant.image);
+            syncGallerySelection(galleryIndex >= 0 ? galleryIndex + 1 : 0);
+        }
         updateStockDisplay(variant.stock_quantity);
         if (message) message.classList.toggle('hidden', variant.stock_quantity > 0);
     }
@@ -915,8 +935,6 @@ if (variantChooser) {
     }
 }
 
-// Initialize active thumbnail
-updateActiveThumbnail(1);
 </script>
 
 <style>
