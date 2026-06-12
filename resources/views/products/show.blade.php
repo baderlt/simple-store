@@ -167,12 +167,12 @@
                             @endfor
                         </div>
                         <span class="ml-2 text-gray-600 font-medium">
-                            4.{{ rand(2, 9) }} ({{ rand(50, 223) }} avis)
+                            {{ number_format((float) $product->review_rating, 1) }} ({{ $product->reviews_count }} avis)
                         </span>
                     </div>
                     <div class="text-gray-500">
                         <i class="fas fa-shopping-cart mr-1"></i>
-                        {{ rand(80, 300) }} vendus
+                        {{ $product->sales_count }} vendus
                     </div>
                 </div>
 
