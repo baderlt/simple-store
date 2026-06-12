@@ -11,7 +11,8 @@ class Product extends Model
 {
     protected $fillable = [
         'category_id', 'name', 'slug', 'description', 'price',
-        'stock_quantity', 'low_stock_alert', 'sku', 'is_active', 'is_featured'
+        'stock_quantity', 'low_stock_alert', 'sku', 'is_active', 'is_featured',
+        'review_rating', 'reviews_count', 'sales_count'
     ];
 
     protected $casts = [
@@ -20,9 +21,29 @@ class Product extends Model
         'low_stock_alert' => 'integer',
         'is_active' => 'boolean',
         'is_featured' => 'boolean',
+        'review_rating' => 'decimal:1',
+        'reviews_count' => 'integer',
+        'sales_count' => 'integer',
     ];
 
     protected $appends = ['final_price'];
+
+    protected static function booted(): void
+    {
+        static::creating(function (Product $product): void {
+            if ($product->review_rating === null) {
+                $product->review_rating = random_int(42, 49) / 10;
+            }
+
+            if ($product->sales_count === null) {
+                $product->sales_count = random_int(50, 100);
+            }
+
+            if ($product->reviews_count === null) {
+                $product->reviews_count = random_int(10, min(80, (int) $product->sales_count));
+            }
+        });
+    }
 
     public function orderItems(): HasMany
     {
