@@ -93,8 +93,11 @@ class ProductVariantFlowTest extends TestCase
         $response = $this->get(route('products.show', $product->slug));
 
         $response->assertOk()
-            ->assertSee('id="variantChooser"', false)
-            ->assertSee('id="purchaseActions"', false)
+            ->assertSeeInOrder([
+                'id="variantChooser"',
+                'id="variantStockPanel"',
+                'id="purchaseActions"',
+            ], false)
             ->assertSee('data-default-id="' . $availableVariant->id . '"', false)
             ->assertDontSee('data-default-id="' . $outOfStockVariant->id . '"', false);
     }

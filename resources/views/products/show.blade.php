@@ -140,7 +140,7 @@
 
                 <!-- Image Counter (Discreet) -->
                 @if($galleryImages->count() > 1)
-                    <div class="text-center">
+                    <div class="hidden sm:block text-center">
                         <div class="inline-flex items-center space-x-2 bg-gray-50 px-4 py-2 rounded-full">
                             <i class="fas fa-image text-gray-400 text-sm"></i>
                             <span class="text-sm text-gray-600 font-medium">
@@ -212,6 +212,32 @@
                     @endif
                 </div>
 
+                @if($usesVariants)
+                    <div class="p-5 bg-white rounded-xl border border-gray-200 space-y-4" id="variantChooser"
+                         data-variants='@json($variantPayload)' data-default-id="{{ $defaultVariant?->id }}">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-bold text-gray-900">{{ __('product.select_variant') }}</h3>
+                            <span class="text-xs text-gray-500"><span id="variantSku">{{ $defaultVariant?->sku }}</span><span id="variantUnit" class="ml-2">{{ $defaultVariant?->unit }}</span></span>
+                        </div>
+                        @foreach($variantAttributes as $attribute)
+                            <div class="space-y-2" data-attribute="{{ $attribute['id'] }}">
+                                <p class="text-sm font-semibold text-gray-700">{{ $attribute['name'] }}</p>
+                                <div class="flex flex-wrap gap-2">
+                                    @foreach($attribute['values'] as $value)
+                                        <button type="button"
+                                                class="variant-option px-4 py-2 border border-gray-300 rounded-xl text-sm font-semibold hover:border-emerald-500 hover:bg-emerald-50 transition"
+                                                data-attribute-id="{{ $attribute['id'] }}"
+                                                data-value-id="{{ $value['id'] }}">
+                                            {{ $value['value'] }}
+                                        </button>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endforeach
+                        <p id="variantMessage" class="text-sm text-red-600 hidden">{{ __('product.choose_option') }}</p>
+                    </div>
+                @endif
+
                 <!-- Stock Status -->
                 <div id="variantStockPanel" class="p-5 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200">
                     <div class="flex items-center justify-between mb-3">
@@ -241,32 +267,6 @@
                     @endif
                 </div>
 
-
-                @if($usesVariants)
-                    <div class="p-5 bg-white rounded-xl border border-gray-200 space-y-4" id="variantChooser"
-                         data-variants='@json($variantPayload)' data-default-id="{{ $defaultVariant?->id }}">
-                        <div class="flex items-center justify-between">
-                            <h3 class="font-bold text-gray-900">{{ __('product.select_variant') }}</h3>
-                            <span class="text-xs text-gray-500"><span id="variantSku">{{ $defaultVariant?->sku }}</span><span id="variantUnit" class="ml-2">{{ $defaultVariant?->unit }}</span></span>
-                        </div>
-                        @foreach($variantAttributes as $attribute)
-                            <div class="space-y-2" data-attribute="{{ $attribute['id'] }}">
-                                <p class="text-sm font-semibold text-gray-700">{{ $attribute['name'] }}</p>
-                                <div class="flex flex-wrap gap-2">
-                                    @foreach($attribute['values'] as $value)
-                                        <button type="button"
-                                                class="variant-option px-4 py-2 border border-gray-300 rounded-xl text-sm font-semibold hover:border-emerald-500 hover:bg-emerald-50 transition"
-                                                data-attribute-id="{{ $attribute['id'] }}"
-                                                data-value-id="{{ $value['id'] }}">
-                                            {{ $value['value'] }}
-                                        </button>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endforeach
-                        <p id="variantMessage" class="text-sm text-red-600 hidden">{{ __('product.choose_option') }}</p>
-                    </div>
-                @endif
 
                 <!-- Quantity Selector -->
                 @if($productAvailable)

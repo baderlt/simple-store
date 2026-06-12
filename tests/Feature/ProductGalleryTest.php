@@ -47,6 +47,7 @@ class ProductGalleryTest extends TestCase
                 'onclick="changeMainImage(\'http://localhost/storage/products/first-by-order.jpg\', 2)"',
             ], false)
             ->assertSee('object-contain', false)
+            ->assertSee('hidden sm:block text-center', false)
             ->assertSee("syncGallerySelection(galleryIndex >= 0 ? galleryIndex + 1 : 0);", false);
     }
 }
