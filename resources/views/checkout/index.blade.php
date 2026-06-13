@@ -3,353 +3,545 @@
 @section('title', 'Checkout')
 
 @section('content')
-<div class="min-h-screen bg-gray-50 py-12">
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-white py-8 sm:py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="lg:grid lg:grid-cols-2 lg:gap-8">
-            <!-- Left Column: Order Summary -->
-            <div class="mb-8 lg:mb-0">
-                <div class="bg-white rounded-2xl shadow-lg p-6 sticky top-8">
-                    @if($isDirect ?? false)
-                        <div></div>
-                    @else
-                        <div class="mb-6">
-                            <h1 class="text-2xl font-bold text-gray-900">Votre panier</h1>
-                            <p class="text-gray-600 mt-1">Vérifiez vos articles avant de commander</p>
+        <!-- Page Header -->
+        <div class="mb-8 text-center lg:text-left">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">Finaliser votre commande</h1>
+            <p class="text-gray-600 mt-2">Vérifiez vos informations et confirmez votre achat en toute sécurité</p>
+        </div>
+
+        <div class="lg:grid lg:grid-cols-3 lg:gap-8">
+            <!-- Left Column: Checkout Form (spans 2 columns on desktop) -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                    <div class="p-6 sm:p-8 relative">
+                        <!-- Loading Overlay -->
+                        <div id="loadingOverlay" class="hidden absolute inset-0 bg-white/95 backdrop-blur-sm z-20 flex flex-col items-center justify-center">
+                            <div class="text-center p-6">
+                                <div class="inline-block animate-spin rounded-full h-14 w-14 border-4 border-emerald-200 border-t-emerald-600 mb-4"></div>
+                                <h3 class="text-xl font-semibold text-gray-900 mb-2">Commande en cours...</h3>
+                                <p class="text-gray-600">Veuillez patienter, nous traitons votre commande.</p>
+                            </div>
                         </div>
-                    @endif
+
+                        <form action="{{ route('checkout.store') }}" method="POST" id="checkoutForm" novalidate>
+                            @csrf
+
+                            <div class="space-y-8">
+                                <!-- Delivery Information Section -->
+                                <div>
+                                    <div class="flex items-center space-x-3 mb-6 pb-2 border-b border-gray-200">
+                                        <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-truck text-emerald-600 text-lg"></i>
+                                        </div>
+                                        <h2 class="text-xl font-bold text-gray-900">Informations de livraison</h2>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <!-- Customer Name -->
+                                        <div class="md:col-span-2">
+                                            <label for="customer_name" class="block text-sm font-semibold text-gray-700 mb-2">
+                                                Nom complet <span class="text-rose-500">*</span>
+                                            </label>
+                                            <div class="relative">
+                                                <i class="fas fa-user absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                                <input type="text"
+                                                       name="customer_name"
+                                                       id="customer_name"
+                                                       value="{{ old('customer_name', auth()->user()->name ?? '') }}"
+                                                       required
+                                                       class="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 @error('customer_name') border-rose-500 @enderror"
+                                                       placeholder="Jean Dupont">
+                                            </div>
+                                            @error('customer_name')
+                                                <p class="mt-1 text-sm text-rose-600">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+
+                                        <!-- Phone -->
+                                        <div>
+                                            <label for="customer_phone" class="block text-sm font-semibold text-gray-700 mb-2">
+                                                Téléphone <span class="text-rose-500">*</span>
+                                            </label>
+                                            <div class="relative">
+                                                <i class="fas fa-phone-alt absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                                <input type="tel"
+                                                       name="customer_phone"
+                                                       id="customer_phone"
+                                                       value="{{ old('customer_phone', auth()->user()->phone ?? '') }}"
+                                                       required
+                                                       class="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 @error('customer_phone') border-rose-500 @enderror"
+                                                       placeholder="06 12 34 56 78">
+                                            </div>
+                                            @error('customer_phone')
+                                                <p class="mt-1 text-sm text-rose-600">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+
+                                        <!-- City -->
+                                        <div>
+                                            <label for="customer_city" class="block text-sm font-semibold text-gray-700 mb-2">
+                                                Ville <span class="text-rose-500">*</span>
+                                            </label>
+                                            <div class="relative">
+                                                <i class="fas fa-city absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                                <input type="text"
+                                                       name="customer_city"
+                                                       id="customer_city"
+                                                       value="{{ old('customer_city') }}"
+                                                       required
+                                                       class="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 @error('customer_city') border-rose-500 @enderror"
+                                                       placeholder="Casablanca, Rabat, Marrakech...">
+                                            </div>
+                                            @error('customer_city')
+                                                <p class="mt-1 text-sm text-rose-600">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+
+                                        <!-- Address (full width) -->
+                                        <div class="md:col-span-2">
+                                            <label for="customer_address" class="block text-sm font-semibold text-gray-700 mb-2">
+                                                Adresse complète <span class="text-rose-500">*</span>
+                                            </label>
+                                            <div class="relative">
+                                                <i class="fas fa-map-marker-alt absolute left-4 top-4 text-gray-400"></i>
+                                                <textarea name="customer_address"
+                                                          id="customer_address"
+                                                          rows="3"
+                                                          required
+                                                          class="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 @error('customer_address') border-rose-500 @enderror"
+                                                          placeholder="Numéro, rue, quartier, immeuble, étage...">{{ old('customer_address') }}</textarea>
+                                            </div>
+                                            @error('customer_address')
+                                                <p class="mt-1 text-sm text-rose-600">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+
+                                        <!-- Notes (optional) -->
+                                        <div class="md:col-span-2">
+                                            <label for="notes" class="block text-sm font-semibold text-gray-700 mb-2">
+                                                Notes supplémentaires (optionnel)
+                                            </label>
+                                            <div class="relative">
+                                                <i class="fas fa-pen absolute left-4 top-4 text-gray-400"></i>
+                                                <textarea name="notes"
+                                                          id="notes"
+                                                          rows="2"
+                                                          class="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                                                          placeholder="Instructions de livraison, code d'accès, horaires préférés...">{{ old('notes') }}</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Payment Method Section -->
+                                <div>
+                                    <div class="flex items-center space-x-3 mb-6 pb-2 border-b border-gray-200">
+                                        <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-credit-card text-emerald-600 text-lg"></i>
+                                        </div>
+                                        <h2 class="text-xl font-bold text-gray-900">Méthode de paiement</h2>
+                                    </div>
+
+                                    <div class="space-y-3">
+                                        <div class="relative">
+                                            <input type="radio"
+                                                   id="cash_on_delivery"
+                                                   name="payment_method"
+                                                   value="cash_on_delivery"
+                                                   checked
+                                                   class="peer hidden">
+                                            <label for="cash_on_delivery" 
+                                                   class="flex items-center justify-between p-5 border-2 border-gray-200 rounded-xl cursor-pointer transition-all duration-200 peer-checked:border-emerald-500 peer-checked:bg-emerald-50 hover:border-emerald-300">
+                                                <div class="flex items-center space-x-4">
+                                                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
+                                                        <i class="fas fa-money-bill-wave text-emerald-600 text-xl"></i>
+                                                    </div>
+                                                    <div>
+                                                        <p class="font-bold text-gray-900">Paiement à la livraison</p>
+                                                        <p class="text-sm text-gray-500">Payez en espèces lors de la réception de votre commande</p>
+                                                    </div>
+                                                </div>
+                                                <div class="w-6 h-6 rounded-full border-2 border-gray-300 peer-checked:border-emerald-500 peer-checked:bg-emerald-500 flex items-center justify-center transition-all">
+                                                    <i class="fas fa-check text-white text-xs opacity-0 peer-checked:opacity-100 transition-opacity"></i>
+                                                </div>
+                                            </label>
+                                        </div>
+
+                                        <!-- More payment methods can be added here -->
+                                        <div class="text-xs text-gray-500 text-center mt-4">
+                                            <i class="fas fa-lock mr-1"></i> Paiement 100% sécurisé
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Submit Button Section (Desktop - inside form, Mobile - sticky bar) -->
+                            <div class="mt-8 pt-6 border-t border-gray-200 hidden md:block">
+                                <button type="submit"
+                                        id="submitButton"
+                                        class="w-full bg-gradient-to-r from-emerald-600 to-green-600 text-white font-bold py-4 px-6 rounded-xl hover:from-emerald-700 hover:to-green-700 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center group disabled:opacity-70 disabled:cursor-not-allowed">
+                                    <span id="buttonText">
+                                        @if($isDirect ?? false)
+                                            <i class="fas fa-bolt mr-3 group-hover:rotate-12 transition-transform"></i>
+                                            Confirmer et commander
+                                        @else
+                                            <i class="fas fa-check-circle mr-3 group-hover:scale-110 transition-transform"></i>
+                                            Confirmer la commande
+                                        @endif
+                                    </span>
+                                    <span id="buttonSpinner" class="hidden">
+                                        <i class="fas fa-spinner fa-spin mr-3"></i>
+                                        Traitement...
+                                    </span>
+                                </button>
+
+                                <div class="mt-4 text-center">
+                                    @if($isDirect ?? false)
+                                        <a href="{{ route('products.show', reset($cart)['slug'] ?? '#') }}"
+                                           class="inline-flex items-center text-gray-500 hover:text-gray-700 transition-colors">
+                                            <i class="fas fa-arrow-left mr-2"></i>
+                                            Retour au produit
+                                        </a>
+                                    @else
+                                        <a href="{{ route('cart.index') }}"
+                                           class="inline-flex items-center text-gray-500 hover:text-gray-700 transition-colors">
+                                            <i class="fas fa-shopping-cart mr-2"></i>
+                                            Modifier le panier
+                                        </a>
+                                    @endif
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Order Summary (Sticky) -->
+            <div class="mt-8 lg:mt-0">
+                <div class="bg-white rounded-2xl shadow-xl border border-gray-100 sticky top-8 overflow-hidden">
+                    <div class="p-6 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+                        <h2 class="text-xl font-bold text-gray-900 flex items-center">
+                            <i class="fas fa-shopping-bag mr-3 text-emerald-600"></i>
+                            Résumé de la commande
+                        </h2>
+                    </div>
 
                     <!-- Cart Items -->
-                    <div class="space-y-4">
+                    <div class="p-6 space-y-4 max-h-[320px] overflow-y-auto custom-scrollbar">
                         @foreach($cart as $item)
-                            <div class="flex items-center p-4 border border-gray-200 rounded-xl hover:border-emerald-300 transition-colors">
+                            <div class="flex items-start space-x-3 pb-4 border-b border-gray-100 last:border-0">
                                 @if($item['image'])
                                     <img src="{{ asset('storage/' . $item['image']) }}"
                                          alt="{{ $item['display_name'] ?? $item['name'] }}"
                                          loading="lazy"
-                                         class="w-16 h-16 object-cover rounded-lg">
+                                         class="w-16 h-16 object-cover rounded-lg shadow-sm">
                                 @else
-                                    <div class="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
-                                        <i class="fas fa-box text-gray-400"></i>
+                                    <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-box text-gray-400 text-xl"></i>
                                     </div>
                                 @endif
 
-                                <div class="ml-4 flex-1">
-                                    <h4 class="font-medium text-gray-900">{{ $item['display_name'] ?? $item['name'] }}</h4>
+                                <div class="flex-1 min-w-0">
+                                    <h4 class="font-semibold text-gray-900 text-sm truncate">{{ $item['display_name'] ?? $item['name'] }}</h4>
                                     @if(!empty($item['selected_attributes']))
-                                        <p class="text-xs text-gray-500 mt-1">{{ implode(' / ', $item['selected_attributes']) }}</p>
+                                        <p class="text-xs text-gray-500 mt-1 truncate">{{ implode(' / ', $item['selected_attributes']) }}</p>
                                     @endif
                                     <div class="flex items-center justify-between mt-2">
-                                        <div class="flex items-center space-x-4">
-                                            <span class="text-lg font-bold text-gray-900">
-                                                {{ number_format($item['final_price'] * $item['quantity'], 0) }} DH
+                                        <div class="flex items-baseline space-x-2">
+                                            <span class="font-bold text-gray-900 text-sm">
+                                                {{ number_format($item['final_price'] * $item['quantity'], 2) }} DH
                                             </span>
                                             @if($item['has_discount'] && $item['final_price'] < $item['price'])
-                                                <span class="text-sm text-gray-400 line-through">
-                                                    {{ number_format($item['price'] * $item['quantity'], 0) }} DH
+                                                <span class="text-xs text-gray-400 line-through">
+                                                    {{ number_format($item['price'] * $item['quantity'], 2) }} DH
                                                 </span>
                                             @endif
                                         </div>
-                                        <div class="text-gray-600">
-                                            {{ $item['quantity'] }} × {{ number_format($item['final_price'], 0) }} DH
-                                        </div>
+                                        <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                                            Qté: {{ $item['quantity'] }}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
                         @endforeach
                     </div>
 
-                    <!-- Order Summary -->
-                    <div class="mt-8 pt-6 border-t border-gray-200">
+                    <!-- Totals -->
+                    <div class="p-6 bg-gray-50 border-t border-gray-100">
+                        @php
+                            $subtotal = 0;
+                            foreach($cart as $item) {
+                                $subtotal += $item['final_price'] * $item['quantity'];
+                            }
+                            $threshold = settings('free_delivery_threshold');
+                            $deliveryFeeToShow = ($threshold && $subtotal > $threshold) ? 0 : $deliveryFee;
+                            $total = $subtotal + $deliveryFeeToShow;
+                        @endphp
                         <div class="space-y-3">
-                            <div class="flex justify-between">
+                            <div class="flex justify-between text-sm">
                                 <span class="text-gray-600">Sous-total</span>
-                                @php
-                                    $subtotal = 0;
-                                    foreach($cart as $item) {
-                                        $subtotal += $item['final_price'] * $item['quantity'];
-                                    }
-                                @endphp
-                                <span class="font-medium">{{ number_format($subtotal, 0) }} DH</span>
+                                <span class="font-medium text-gray-900">{{ number_format($subtotal, 2) }} DH</span>
                             </div>
-                            <div class="flex justify-between">
+                            <div class="flex justify-between text-sm">
                                 <span class="text-gray-600">Frais de livraison</span>
-                                <span class="font-medium">{{ number_format($deliveryFee, 0) }} DH</span>
+                                @if($threshold && $subtotal > $threshold)
+                                    <span class="font-medium text-emerald-600">Gratuit</span>
+                                @else
+                                    <span class="font-medium text-gray-900">{{ number_format($deliveryFee, 2) }} DH</span>
+                                @endif
                             </div>
-                            @php
-                                $threshold=settings('free_delivery_threshold');
-                            @endphp
-                            @if($threshold && $subtotal > $threshold)
-                                <div class="flex justify-between">
-                                    <span class="text-gray-600">Livraison offerte</span>
-                                    <span class="font-medium text-rose-600">-{{ number_format($deliveryFee, 0) }} DH</span>
+
+                            @if($threshold && $subtotal > 0 && $subtotal <= $threshold)
+                                <div class="bg-amber-50 rounded-lg p-3 text-xs text-amber-700">
+                                    <i class="fas fa-truck mr-1"></i> 
+                                    Ajoutez {{ number_format($threshold - $subtotal, 2) }} DH pour bénéficier de la livraison gratuite.
                                 </div>
                             @endif
-                            <div class="border-t border-gray-300 pt-3">
-                                <div class="flex justify-between text-lg">
-                                    <span class="font-bold text-gray-900">Total</span>
-                                    <span class="font-bold text-emerald-600">
-                                        {{ number_format($subtotal + ($threshold && $subtotal > $threshold ? 0 : $deliveryFee), 0) }} DH
+
+                            <div class="border-t border-gray-200 pt-3 mt-2">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-lg font-bold text-gray-900">Total</span>
+                                    <span class="text-2xl font-bold text-emerald-600">
+                                        {{ number_format($total, 2) }} DH
                                     </span>
                                 </div>
+                                <p class="text-xs text-gray-500 mt-1 text-right">TVA incluse</p>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Right Column: Checkout Form -->
-            <div>
-                <div class="bg-white rounded-2xl shadow-lg p-6 relative">
-                    <!-- Loading Overlay -->
-                    <div id="loadingOverlay" class="hidden absolute inset-0 bg-white bg-opacity-90 z-10 flex flex-col items-center justify-center rounded-2xl">
-                        <div class="text-center">
-                            <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-600 mb-4"></div>
-                            <h3 class="text-lg font-semibold text-gray-900 mb-2">Traitement de votre commande</h3>
-                            <p class="text-gray-600">Veuillez patienter...</p>
-                        </div>
-                    </div>
-
-                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Informations de livraison</h2>
-
-                    <form action="{{ route('checkout.store') }}" method="POST" id="checkoutForm">
-                        @csrf
-
-                        <div class="space-y-6">
-                            <!-- Customer Name -->
-                            <div>
-                                <label for="customer_name" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Nom complet *
-                                </label>
-                                <input type="text"
-                                       name="customer_name"
-                                       id="customer_name"
-                                       value="{{ old('customer_name', auth()->user()->name ?? '') }}"
-                                       required
-                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors">
-                                @error('customer_name')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <!-- Phone -->
-                            <div>
-                                <label for="customer_phone" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Téléphone *
-                                </label>
-                                <input type="tel"
-                                       name="customer_phone"
-                                       id="customer_phone"
-                                       value="{{ old('customer_phone', auth()->user()->phone ?? '') }}"
-                                       required
-                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
-                                       placeholder="06 XX XX XX XX">
-                                @error('customer_phone')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <!-- City -->
-                            <div>
-                                <label for="customer_city" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Ville *
-                                </label>
-                                <input type="text" name="customer_city"
-                                        id="customer_city"
-                                        required
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"/>
-                                @error('customer_city')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <!-- Address -->
-                            <div>
-                                <label for="customer_address" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Adresse complète *
-                                </label>
-                                <textarea name="customer_address"
-                                          id="customer_address"
-                                          rows="3"
-                                          required
-                                          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
-                                          placeholder="Numéro, rue, quartier, immeuble...">{{ old('customer_address') }}</textarea>
-                                @error('customer_address')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <!-- Notes -->
-                            <div>
-                                <label for="notes" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Notes supplémentaires (optionnel)
-                                </label>
-                                <textarea name="notes"
-                                          id="notes"
-                                          rows="2"
-                                          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
-                                          placeholder="Instructions de livraison, codes d'accès, horaires préférés...">{{ old('notes') }}</textarea>
-                            </div>
-
-                            <!-- Payment Method -->
-                            <div class="border-t border-gray-200 pt-6">
-                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Méthode de paiement</h3>
-                                <div class="space-y-3">
-                                    <div class="flex items-center p-4 border-2 border-emerald-500 rounded-lg bg-emerald-50">
-                                        <input type="radio"
-                                               id="cash_on_delivery"
-                                               name="payment_method"
-                                               value="cash_on_delivery"
-                                               checked
-                                               class="h-5 w-5 text-emerald-600 focus:ring-emerald-500">
-                                        <label for="cash_on_delivery" class="ml-3 flex-1">
-                                            <div class="flex items-center justify-between">
-                                                <div>
-                                                    <span class="font-medium text-gray-900">Paiement à la livraison</span>
-                                                    <p class="text-sm text-gray-600">Payez en espèces lorsque vous recevez votre commande</p>
-                                                </div>
-                                                <i class="fas fa-money-bill-wave text-emerald-600 text-xl"></i>
-                                            </div>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Submit Button -->
-                        <div id="checkoutSubmit" class="checkout-submit fixed bottom-2 left-0 right-0 z-50 bg-white p-3 border-t shadow-2xl transform translate-y-full opacity-0 pointer-events-none transition-all duration-300 md:left-1/2 md:right-auto md:w-[min(42rem,calc(100%-2rem))] md:-translate-x-1/2 md:rounded-xl md:border">
-                            <button type="submit"
-                                    id="submitButton"
-                                    class="w-full bg-gradient-to-r from-emerald-600 to-green-500 text-white font-extrabold text-lg sm:text-xl py-5 px-6 rounded-xl hover:from-emerald-700 hover:to-green-600 transition-all duration-200 shadow-xl shadow-emerald-600/25 hover:shadow-2xl hover:shadow-emerald-600/35 hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center group ring-1 ring-white/20 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none">
-                                <span id="buttonText">
-                                    @if($isDirect ?? false)
-                                        <i class="fas fa-bolt mr-3 group-hover:rotate-12 transition-transform"></i>
-                                        Commander maintenant
-                                    @else
-                                        <i class="fas fa-shopping-cart mr-3 group-hover:rotate-12 transition-transform"></i>
-                                        Confirmer la commande
-                                    @endif
-                                </span>
-                                <span id="buttonSpinner" class="hidden">
-                                    <i class="fas fa-spinner fa-spin mr-3"></i>
-                                    Traitement en cours...
-                                </span>
-                            </button>
-
-                            <!-- Back link -->
-                            <div class="mt-4 text-center">
-                                @if($isDirect ?? false)
-                                    <a href="{{ route('products.show', reset($cart)['slug'] ?? '#') }}"
-                                       class="inline-flex items-center text-gray-600 hover:text-gray-900">
-                                        <i class="fas fa-arrow-left mr-2"></i>
-                                        Retour au produit
-                                    </a>
-                                @else
-                                    <a href="{{ route('cart.index') }}"
-                                       class="inline-flex items-center text-gray-600 hover:text-gray-900">
-                                        <i class="fas fa-arrow-left mr-2"></i>
-                                        Modifier le panier
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
-                    </form>
+                <!-- Secure Payment Badge -->
+                <div class="mt-4 text-center text-xs text-gray-500 flex items-center justify-center space-x-4">
+                    <span><i class="fas fa-lock text-emerald-600 mr-1"></i> Paiement sécurisé</span>
+                    <span><i class="fas fa-shield-alt text-emerald-600 mr-1"></i> Données protégées</span>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Sticky Mobile Checkout Button (visible only on mobile when scrolled) -->
+<div id="mobileCheckoutSubmit" 
+     class="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-gray-200 p-4 shadow-[0_-10px_30px_-8px_rgba(0,0,0,0.1)] transition-all duration-500 ease-out md:hidden translate-y-full opacity-0 pointer-events-none">
+    <div class="flex items-center justify-between gap-3">
+        <div class="flex flex-col">
+            <span class="text-xs text-gray-500">Total</span>
+            <span class="text-xl font-bold text-emerald-600">{{ number_format($total, 2) }} DH</span>
+        </div>
+        <button type="submit" 
+                form="checkoutForm"
+                class="flex-1 bg-gradient-to-r from-emerald-600 to-green-600 text-white font-bold py-3 px-4 rounded-xl hover:from-emerald-700 hover:to-green-700 transition-all shadow-lg flex items-center justify-center gap-2">
+            <i class="fas fa-check-circle"></i>
+            <span>Confirmer</span>
+        </button>
+    </div>
+</div>
+
 <script>
-    // Auto-format phone number
- document.getElementById('customer_phone').addEventListener('input', function(e) {
-    let value = e.target.value.replace(/\D/g, '');
-
-    // Limit to 10 digits
-    value = value.substring(0, 10);
-
-    let formatted = '';
-
-    for (let i = 0; i < value.length; i += 2) {
-        if (formatted) formatted += ' ';
-        formatted += value.substring(i, i + 2);
+    // Format phone number as user types (Moroccan format)
+    const phoneInput = document.getElementById('customer_phone');
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            
+            // Limit to 10 digits (Moroccan numbers)
+            if (value.length > 10) value = value.slice(0, 10);
+            
+            // Format as XX XX XX XX XX
+            let formatted = '';
+            for (let i = 0; i < value.length; i++) {
+                if (i > 0 && i % 2 === 0) formatted += ' ';
+                formatted += value[i];
+            }
+            e.target.value = formatted;
+        });
     }
 
-    e.target.value = formatted;
-});
+    // Update mobile sticky button visibility
+    function updateMobileCheckoutSubmit() {
+        const submitBar = document.getElementById('mobileCheckoutSubmit');
+        if (!submitBar || window.innerWidth >= 768) return;
 
-    // Show the fixed submit button on every screen size only after the customer scrolls down.
-    function updateCheckoutSubmit() {
-        const submitBar = document.getElementById('checkoutSubmit');
-
-        if (!submitBar) {
-            return;
+        const shouldShow = window.scrollY > 250;
+        if (shouldShow) {
+            submitBar.classList.remove('translate-y-full', 'opacity-0', 'pointer-events-none');
+            submitBar.classList.add('translate-y-0', 'opacity-100', 'pointer-events-auto');
+        } else {
+            submitBar.classList.remove('translate-y-0', 'opacity-100', 'pointer-events-auto');
+            submitBar.classList.add('translate-y-full', 'opacity-0', 'pointer-events-none');
         }
-
-        const shouldShow = window.scrollY > 220;
-        submitBar.classList.toggle('translate-y-full', !shouldShow);
-        submitBar.classList.toggle('opacity-0', !shouldShow);
-        submitBar.classList.toggle('pointer-events-none', !shouldShow);
     }
 
-    window.addEventListener('scroll', updateCheckoutSubmit, { passive: true });
-    window.addEventListener('resize', updateCheckoutSubmit);
-    document.addEventListener('DOMContentLoaded', updateCheckoutSubmit);
+    window.addEventListener('scroll', updateMobileCheckoutSubmit, { passive: true });
+    window.addEventListener('resize', updateMobileCheckoutSubmit);
+    document.addEventListener('DOMContentLoaded', updateMobileCheckoutSubmit);
 
-    // Form submission handling
-    document.getElementById('checkoutForm').addEventListener('submit', function(e) {
-        // Prevent multiple submissions
-        if (this.classList.contains('submitting')) {
-            e.preventDefault();
-            return false;
-        }
+    // Form validation and submission handling
+    const form = document.getElementById('checkoutForm');
+    let isSubmitting = false;
 
-        this.classList.add('submitting');
-
-        const button = document.getElementById('submitButton');
-        const buttonText = document.getElementById('buttonText');
-        const buttonSpinner = document.getElementById('buttonSpinner');
-        const loadingOverlay = document.getElementById('loadingOverlay');
-
-        // Show loading states
-        button.disabled = true;
-        buttonText.classList.add('hidden');
-        buttonSpinner.classList.remove('hidden');
-        loadingOverlay.classList.remove('hidden');
-
-        // Allow form to submit normally - the loading will continue until page reloads
-        return true;
-    });
-
-    // Prevent double-click
-    let formSubmitted = false;
-    document.getElementById('checkoutForm').addEventListener('submit', function() {
-        if (formSubmitted) {
-            return false;
-        }
-        formSubmitted = true;
-        return true;
+    if (form) {
+        form.addEventListener('submit', async function(e) {
+            // Client-side validation before submission
+            const name = document.getElementById('customer_name');
+            const phone = document.getElementById('customer_phone');
+            const city = document.getElementById('customer_city');
+            const address = document.getElementById('customer_address');
+            
+            let isValid = true;
+            
+            // Simple validation
+            if (!name.value.trim()) {
+                showFieldError(name, 'Veuillez entrer votre nom complet');
+                isValid = false;
+            } else {
+                clearFieldError(name);
+            }
+            
+            if (!phone.value.trim() || phone.value.replace(/\s/g, '').length < 9) {
+                showFieldError(phone, 'Veuillez entrer un numéro de téléphone valide');
+                isValid = false;
+            } else {
+                clearFieldError(phone);
+            }
+            
+            if (!city.value.trim()) {
+                showFieldError(city, 'Veuillez entrer votre ville');
+                isValid = false;
+            } else {
+                clearFieldError(city);
+            }
+            
+            if (!address.value.trim()) {
+                showFieldError(address, 'Veuillez entrer votre adresse complète');
+                isValid = false;
+            } else {
+                clearFieldError(address);
+            }
+            
+            if (!isValid) {
+                e.preventDefault();
+                // Scroll to first error
+                const firstError = document.querySelector('.border-rose-500');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                return false;
+            }
+            
+            // Prevent double submission
+            if (isSubmitting) {
+                e.preventDefault();
+                return false;
+            }
+            
+            isSubmitting = true;
+            
+            // Show loading states
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const submitButton = document.getElementById('submitButton');
+            const buttonText = document.getElementById('buttonText');
+            const buttonSpinner = document.getElementById('buttonSpinner');
+            
+            if (loadingOverlay) loadingOverlay.classList.remove('hidden');
+            if (submitButton) {
+                submitButton.disabled = true;
+                if (buttonText) buttonText.classList.add('hidden');
+                if (buttonSpinner) buttonSpinner.classList.remove('hidden');
+            }
+            
+            // Also disable mobile button if exists
+            const mobileButton = document.querySelector('#mobileCheckoutSubmit button');
+            if (mobileButton) mobileButton.disabled = true;
+            
+            return true; // Allow form submission
+        });
+    }
+    
+    // Helper functions for validation UI
+    function showFieldError(field, message) {
+        field.classList.add('border-rose-500', 'bg-rose-50');
+        
+        // Remove existing error message
+        const existingError = field.parentElement.querySelector('.error-message');
+        if (existingError) existingError.remove();
+        
+        // Add new error message
+        const error = document.createElement('p');
+        error.className = 'error-message mt-1 text-sm text-rose-600';
+        error.innerHTML = `<i class="fas fa-exclamation-circle mr-1"></i>${message}`;
+        field.parentElement.appendChild(error);
+    }
+    
+    function clearFieldError(field) {
+        field.classList.remove('border-rose-500', 'bg-rose-50');
+        const existingError = field.parentElement.querySelector('.error-message');
+        if (existingError) existingError.remove();
+    }
+    
+    // Clear errors on input
+    document.querySelectorAll('#customer_name, #customer_phone, #customer_city, #customer_address').forEach(field => {
+        field.addEventListener('input', function() {
+            clearFieldError(this);
+        });
     });
 </script>
 
 <style>
+    /* Custom scrollbar for order summary */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 5px;
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 10px;
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }
+    
+    /* Loading overlay animation */
     #loadingOverlay {
-        backdrop-filter: blur(2px);
+        transition: all 0.3s ease;
     }
-
-    @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.7; }
+    
+    /* Smooth transitions */
+    .transition-all {
+        transition-duration: 200ms;
     }
-
-    .submitting {
-        animation: pulse 1.5s infinite;
+    
+    /* Radio button animation */
+    .peer:checked + label .peer-checked\:opacity-100 {
+        opacity: 1;
     }
-</style>
-
-<style>
-    /* Keep page content clear of the fixed checkout controls. */
-    body {
-        padding-bottom: 92px;
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        body {
+            padding-bottom: 85px;
+        }
+    }
+    
+    /* Input focus styles */
+    input:focus, textarea:focus {
+        outline: none;
+    }
+    
+    /* Disabled button state */
+    button:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none !important;
     }
 </style>
 @endsection
