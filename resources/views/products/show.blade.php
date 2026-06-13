@@ -51,7 +51,7 @@
         ];
     })->values() : collect();
 @endphp
-<div class="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+<div class="min-h-screen bg-gradient-to-b from-gray-50 to-white pb-24">
     <div class="container mx-auto px-4 py-8">
         <div class="grid lg:grid-cols-2 gap-8 lg:gap-12">
             <!-- Product Gallery -->
@@ -165,23 +165,17 @@
                 <!-- Price Section -->
                 <div class="py-6 border-y border-gray-200">
                     @if($product->hasDiscount())
-                        <div class="flex items-baseline space-x-4 mb-3">
-                            <span class="text-3xl sm:text-5xl font-bold text-gray-900"><span id="variantFinalPrice">{{ number_format($currentFinalPrice, 0) }}</span> DH</span>
-                            <span class="text-lg sm:text-2xl text-gray-400 line-through"><span id="variantBasePrice">{{ number_format($currentPrice, 0) }}</span> DH</span>
+                        <div class="flex flex-wrap items-baseline gap-x-5 gap-y-2 mb-3">
+                            <span dir="ltr" class="inline-flex items-baseline gap-1 whitespace-nowrap text-3xl sm:text-5xl font-bold text-gray-900"><span id="variantFinalPrice">{{ number_format($currentFinalPrice, 0) }}</span> <span>DH</span></span>
+                            <span dir="ltr" class="inline-flex items-baseline gap-1 whitespace-nowrap text-lg sm:text-2xl text-gray-400 line-through"><span id="variantBasePrice">{{ number_format($currentPrice, 0) }}</span> <span>DH</span></span>
                         </div>
-                        <div class="flex items-center space-x-3">
+                        <div class="flex items-center">
                             <span class="bg-rose-50 text-rose-700 px-3 py-1.5 rounded-lg font-bold text-sm">
                                 Économisez {{ number_format($product->price - $product->final_price, 2) }} DH
                             </span>
-                            @if($product->activeDiscount->end_date)
-                                <span class="text-sm text-gray-600">
-                                    <i class="fas fa-clock mr-1"></i>
-                                    Jusqu'au {{ $product->activeDiscount->end_date->format('d/m/Y') }}
-                                </span>
-                            @endif
                         </div>
                     @else
-                        <span class="text-3xl sm:text-5xl font-bold text-gray-900"><span id="variantBasePrice">{{ number_format($currentPrice, 0) }}</span> DH</span>
+                        <span dir="ltr" class="inline-flex items-baseline gap-1 whitespace-nowrap text-3xl sm:text-5xl font-bold text-gray-900"><span id="variantBasePrice">{{ number_format($currentPrice, 0) }}</span> <span>DH</span></span>
                     @endif
                 </div>
 
@@ -251,22 +245,22 @@
                                 <input type="hidden" name="quantity" id="buyNowQuantity" value="1">
                                     <input type="hidden" name="variant_id" class="selectedVariantInput" value="{{ $defaultVariant?->id }}">
                                 <button type="submit" 
-                                        class="buy-now-btn w-full bg-gray-900 text-white py-4 rounded-xl font-bold text-lg hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group">
+                                        class="buy-now-btn w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white py-4 rounded-xl font-bold text-lg hover:from-amber-600 hover:to-orange-700 transition-all duration-300 shadow-lg shadow-orange-200 hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center group">
                                     <i class="fas fa-bolt mr-3 group-hover:scale-125 transition-transform"></i>
                                     Commander maintenant
                                 </button>
                             </form>
                         </div>
 
-                        <!-- Fixed buy action (shown after scrolling past the original action buttons) -->
+                        <!-- Permanently visible buy action -->
                         <div id="mobileBuyNowBar"
-                             class="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur border-t border-gray-200 shadow-2xl p-3 transform translate-y-full opacity-0 pointer-events-none transition-all duration-300">
-                            <form action="{{ route('checkout.direct', $product->id) }}" method="GET" id="fixedBuyNowForm">
+                             class="fixed bottom-0 left-0 right-0 z-50 border-t border-orange-100 bg-white/95 p-3 shadow-[0_-8px_30px_rgba(0,0,0,0.12)] backdrop-blur">
+                            <form action="{{ route('checkout.direct', $product->id) }}" method="GET" id="fixedBuyNowForm" class="mx-auto max-w-2xl">
                                 <input type="hidden" name="quantity" id="fixedBuyNowQuantity" value="1">
                                     <input type="hidden" name="variant_id" class="selectedVariantInput" value="{{ $defaultVariant?->id }}">
                                 <button type="submit"
-                                        class="buy-now-btn w-full bg-gray-900 text-white py-3 rounded-xl font-bold text-sm hover:bg-gray-800 transition-all duration-300 shadow flex items-center justify-center">
-                                    <i class="fas fa-bolt mr-2"></i>
+                                        class="buy-now-btn w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white py-3.5 rounded-xl font-bold text-base hover:from-amber-600 hover:to-orange-700 transition-all duration-300 shadow-lg shadow-orange-200 flex items-center justify-center group">
+                                    <i class="fas fa-bolt mr-2 group-hover:scale-125 transition-transform"></i>
                                     Commander maintenant
                                 </button>
                             </form>
@@ -577,27 +571,6 @@ function updateQuantity(change) {
         fixedBuyNowQuantity.value = newValue;
     }
 }
-
-// Sticky buy-now visibility
-function updateMobileBuyNowBar() {
-    const bar = document.getElementById('mobileBuyNowBar');
-    const originalForm = document.getElementById('buyNowForm');
-
-    if (!bar || !originalForm) {
-        return;
-    }
-
-    const originalButtonBottom = originalForm.getBoundingClientRect().bottom;
-    const shouldShow = originalButtonBottom < 0;
-
-    bar.classList.toggle('translate-y-full', !shouldShow);
-    bar.classList.toggle('opacity-0', !shouldShow);
-    bar.classList.toggle('pointer-events-none', !shouldShow);
-}
-
-window.addEventListener('scroll', updateMobileBuyNowBar, { passive: true });
-window.addEventListener('resize', updateMobileBuyNowBar);
-document.addEventListener('DOMContentLoaded', updateMobileBuyNowBar);
 
 // Share product
 function shareProduct() {
