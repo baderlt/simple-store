@@ -48,6 +48,7 @@ class ProductGalleryTest extends TestCase
             ], false)
             ->assertSee('object-contain', false)
             ->assertSee('hidden sm:block text-center', false)
+            ->assertDontSee('id="mobileBuyNowBar"', false)
             ->assertSee("syncGallerySelection(galleryIndex >= 0 ? galleryIndex + 1 : 0);", false);
     }
 }
