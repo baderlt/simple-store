@@ -162,20 +162,32 @@
                 <!-- Product Name -->
                 <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 leading-tight">{{ $product->name }}</h1>
 
-                <!-- Price Section -->
+                <!-- Price Section with Improved Spacing -->
                 <div class="py-6 border-y border-gray-200">
                     @if($product->hasDiscount())
-                        <div class="flex flex-wrap items-baseline gap-x-5 gap-y-2 mb-3">
-                            <span dir="ltr" class="inline-flex items-baseline gap-1 whitespace-nowrap text-3xl sm:text-5xl font-bold text-gray-900"><span id="variantFinalPrice">{{ number_format($currentFinalPrice, 0) }}</span> <span>DH</span></span>
-                            <span dir="ltr" class="inline-flex items-baseline gap-1 whitespace-nowrap text-lg sm:text-2xl text-gray-400 line-through"><span id="variantBasePrice">{{ number_format($currentPrice, 0) }}</span> <span>DH</span></span>
+                        <div class="flex flex-wrap items-baseline gap-x-6 gap-y-2 mb-3">
+                            <!-- Discounted Price -->
+                            <span dir="ltr" class="inline-flex items-baseline gap-1 whitespace-nowrap text-4xl sm:text-5xl font-bold text-gray-900">
+                                <span id="variantFinalPrice">{{ number_format($currentFinalPrice, 0) }}</span> 
+                                <span>DH</span>
+                            </span>
+                            
+                            <!-- Original Price (strikethrough) with increased spacing -->
+                            <span dir="ltr" class="inline-flex items-baseline gap-1 whitespace-nowrap text-xl sm:text-2xl text-gray-400 line-through ml-4">
+                                <span id="variantBasePrice">{{ number_format($currentPrice, 0) }}</span> 
+                                <span>DH</span>
+                            </span>
                         </div>
-                        <div class="flex items-center">
+                        <div class="flex items-center mt-2">
                             <span class="bg-rose-50 text-rose-700 px-3 py-1.5 rounded-lg font-bold text-sm">
-                                Économisez {{ number_format($product->price - $product->final_price, 2) }} DH
+                                Économisez {{ number_format($currentPrice - $currentFinalPrice, 2) }} DH
                             </span>
                         </div>
                     @else
-                        <span dir="ltr" class="inline-flex items-baseline gap-1 whitespace-nowrap text-3xl sm:text-5xl font-bold text-gray-900"><span id="variantBasePrice">{{ number_format($currentPrice, 0) }}</span> <span>DH</span></span>
+                        <span dir="ltr" class="inline-flex items-baseline gap-1 whitespace-nowrap text-3xl sm:text-5xl font-bold text-gray-900">
+                            <span id="variantBasePrice">{{ number_format($currentPrice, 0) }}</span> 
+                            <span>DH</span>
+                        </span>
                     @endif
                 </div>
 
@@ -250,6 +262,41 @@
                                     <span class="relative z-10">Commander maintenant</span>
                                 </button>
                             </form>
+                        </div>
+
+                        <!-- Fixed buy action shown after the customer starts scrolling - IMPROVED VERSION -->
+                        <div id="mobileBuyNowBar"
+                             aria-hidden="true"
+                             class="fixed left-0 right-0 bottom-0 z-50 translate-y-full opacity-0 invisible transition-all duration-500 ease-out pointer-events-none bg-white/95 backdrop-blur-md border-t border-gray-100 shadow-[0_-10px_30px_-8px_rgba(0,0,0,0.15)] py-3 px-4">
+                            <div class="container mx-auto px-2 sm:px-4">
+                                <div class="flex items-center justify-between gap-3">
+                                    <!-- Price Summary Column -->
+                                    <div class="flex flex-col flex-shrink-0">
+                                        @if($product->hasDiscount())
+                                            <div class="flex items-baseline gap-2">
+                                                <span class="text-xl font-bold text-gray-900" id="stickyFinalPrice">{{ number_format($currentFinalPrice, 0) }} DH</span>
+                                                <span class="text-sm text-gray-400 line-through" id="stickyBasePrice">{{ number_format($currentPrice, 0) }} DH</span>
+                                            </div>
+                                            <span class="text-xs text-rose-600 font-medium">-{{ $product->activeDiscount->discount_percentage }}%</span>
+                                        @else
+                                            <span class="text-xl font-bold text-gray-900" id="stickyFinalPrice">{{ number_format($currentPrice, 0) }} DH</span>
+                                        @endif
+                                    </div>
+                                    
+                                    <!-- Action Column -->
+                                    <div class="flex-1 max-w-[280px] ml-auto">
+                                        <form action="{{ route('checkout.direct', $product->id) }}" method="GET" id="fixedBuyNowForm" class="w-full">
+                                            <input type="hidden" name="quantity" id="fixedBuyNowQuantity" value="1">
+                                            <input type="hidden" name="variant_id" class="selectedVariantInput" value="{{ $defaultVariant?->id }}">
+                                            <button type="submit"
+                                                    class="buy-now-btn purchase-action-button order-now-attention relative flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-base font-bold shadow-lg transition-all duration-200 active:scale-[0.98]">
+                                                <i class="fas fa-bolt relative z-10 text-lg"></i>
+                                                <span class="relative z-10">Commander maintenant</span>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Share Button -->
@@ -419,6 +466,29 @@ let currentImageIndex = 1;
 const images = @json($galleryImageUrls->values());
 const totalImages = images.length;
 
+function updateFixedBuyNowBar() {
+    const buyNowBar = document.getElementById('mobileBuyNowBar');
+
+    if (!buyNowBar) {
+        return;
+    }
+
+    const shouldShow = window.scrollY > 300; // Increased threshold for better UX
+    if (shouldShow) {
+        buyNowBar.classList.remove('translate-y-full', 'opacity-0', 'invisible', 'pointer-events-none');
+        buyNowBar.classList.add('translate-y-0', 'opacity-100', 'visible', 'pointer-events-auto');
+        buyNowBar.setAttribute('aria-hidden', 'false');
+    } else {
+        buyNowBar.classList.remove('translate-y-0', 'opacity-100', 'visible', 'pointer-events-auto');
+        buyNowBar.classList.add('translate-y-full', 'opacity-0', 'invisible', 'pointer-events-none');
+        buyNowBar.setAttribute('aria-hidden', 'true');
+    }
+}
+
+window.addEventListener('scroll', updateFixedBuyNowBar, { passive: true });
+window.addEventListener('resize', updateFixedBuyNowBar);
+updateFixedBuyNowBar();
+
 // Change main image
 function changeMainImage(src, index) {
     const mainImage = document.getElementById('mainImage');
@@ -551,6 +621,8 @@ function formatWholePrice(value) {
 function updateDisplayedTotal(quantity) {
     const basePrice = document.getElementById('variantBasePrice');
     const finalPrice = document.getElementById('variantFinalPrice');
+    const stickyBasePrice = document.getElementById('stickyBasePrice');
+    const stickyFinalPrice = document.getElementById('stickyFinalPrice');
 
     if (basePrice) {
         basePrice.textContent = formatWholePrice(currentUnitBasePrice * quantity);
@@ -558,12 +630,19 @@ function updateDisplayedTotal(quantity) {
     if (finalPrice) {
         finalPrice.textContent = formatWholePrice(currentUnitFinalPrice * quantity);
     }
+    if (stickyFinalPrice) {
+        stickyFinalPrice.textContent = formatWholePrice(currentUnitFinalPrice * quantity) + ' DH';
+    }
+    if (stickyBasePrice) {
+        stickyBasePrice.textContent = formatWholePrice(currentUnitBasePrice * quantity) + ' DH';
+    }
 }
 
 function updateQuantity(change) {
     const input = document.getElementById('quantity');
     const formQuantity = document.getElementById('formQuantity');
     const buyNowQuantity = document.getElementById('buyNowQuantity');
+    const fixedBuyNowQuantity = document.getElementById('fixedBuyNowQuantity');
 
     let newValue = (parseInt(input.value, 10) || 1) + change;
     newValue = Math.max(1, Math.min(newValue, parseInt(input.max || 1)));
@@ -571,6 +650,9 @@ function updateQuantity(change) {
     input.value = newValue;
     formQuantity.value = newValue;
     buyNowQuantity.value = newValue;
+    if (fixedBuyNowQuantity) {
+        fixedBuyNowQuantity.value = newValue;
+    }
     updateDisplayedTotal(newValue);
 }
 
@@ -601,6 +683,8 @@ if (variantChooser) {
     const mainImage = document.getElementById('mainImage');
     const basePrice = document.getElementById('variantBasePrice');
     const finalPrice = document.getElementById('variantFinalPrice');
+    const stickyBasePrice = document.getElementById('stickyBasePrice');
+    const stickyFinalPrice = document.getElementById('stickyFinalPrice');
     const sku = document.getElementById('variantSku');
     const unit = document.getElementById('variantUnit');
     const message = document.getElementById('variantMessage');
@@ -691,12 +775,14 @@ if (variantChooser) {
     });
 
 
-    document.getElementById('buyNowForm')?.addEventListener('submit', event => {
-        if (!selectedVariantId.value) {
-            event.preventDefault();
-            if (message) message.classList.remove('hidden');
-            variantChooser.scrollIntoView({behavior: 'smooth', block: 'center'});
-        }
+    document.querySelectorAll('#buyNowForm, #fixedBuyNowForm').forEach(form => {
+        form.addEventListener('submit', event => {
+            if (!selectedVariantId.value) {
+                event.preventDefault();
+                if (message) message.classList.remove('hidden');
+                variantChooser.scrollIntoView({behavior: 'smooth', block: 'center'});
+            }
+        });
     });
 
     if (defaultVariant) {
@@ -709,6 +795,18 @@ if (variantChooser) {
 </script>
 
 <style>
+    /* Remove extra bottom padding on body since sticky bar is fixed at bottom */
+    body {
+        padding-bottom: 0 !important;
+    }
+
+    /* Add bottom padding to main content to prevent overlap on mobile */
+    @media (max-width: 768px) {
+        .min-h-screen > .container {
+            padding-bottom: 80px;
+        }
+    }
+
     /* Smooth image transition */
     #mainImage {
         transition: opacity 0.3s ease-in-out, transform 0.5s ease;
@@ -862,6 +960,19 @@ if (variantChooser) {
     @media (prefers-reduced-motion: reduce) {
         .order-now-attention::after {
             animation: none;
+        }
+    }
+
+    /* Sticky bar specific styles */
+    #mobileBuyNowBar {
+        transition-property: transform, opacity, visibility;
+        will-change: transform;
+    }
+    
+    /* Ensure sticky bar doesn't cause layout shift */
+    @media (max-width: 768px) {
+        #mobileBuyNowBar {
+            padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
         }
     }
 </style>
