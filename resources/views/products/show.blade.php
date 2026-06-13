@@ -236,7 +236,7 @@
                                     data-product-id="{{ $product->id }}"
                                     data-product-name="{{ $product->name }}"
                                     data-product-stock="{{ $currentStock }}"
-                                    class="add-to-cart-btn w-full bg-green-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-green-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group">
+                                    class="add-to-cart-btn w-full bg-gray-950 text-white py-4 rounded-xl font-bold text-lg hover:bg-black transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center group">
                                 <i class="fas fa-shopping-cart mr-3 group-hover:rotate-12 transition-transform"></i>
                                 Ajouter au panier
                             </button>
@@ -245,23 +245,23 @@
                                 <input type="hidden" name="quantity" id="buyNowQuantity" value="1">
                                     <input type="hidden" name="variant_id" class="selectedVariantInput" value="{{ $defaultVariant?->id }}">
                                 <button type="submit" 
-                                        class="buy-now-btn w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white py-4 rounded-xl font-bold text-lg hover:from-amber-600 hover:to-orange-700 transition-all duration-300 shadow-lg shadow-orange-200 hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center group">
-                                    <i class="fas fa-bolt mr-3 group-hover:scale-125 transition-transform"></i>
-                                    Commander maintenant
+                                        class="buy-now-btn order-now-attention relative overflow-hidden w-full bg-gray-950 text-white py-4 rounded-xl font-bold text-lg hover:bg-black transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center group">
+                                    <i class="fas fa-bolt relative z-10 mr-3 group-hover:scale-125 transition-transform"></i>
+                                    <span class="relative z-10">Commander maintenant</span>
                                 </button>
                             </form>
                         </div>
 
                         <!-- Permanently visible buy action -->
                         <div id="mobileBuyNowBar"
-                             class="fixed bottom-0 left-0 right-0 z-50 border-t border-orange-100 bg-white/95 p-3 shadow-[0_-8px_30px_rgba(0,0,0,0.12)] backdrop-blur">
+                             class="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white/95 p-3 shadow-[0_-8px_30px_rgba(0,0,0,0.12)] backdrop-blur">
                             <form action="{{ route('checkout.direct', $product->id) }}" method="GET" id="fixedBuyNowForm" class="mx-auto max-w-2xl">
                                 <input type="hidden" name="quantity" id="fixedBuyNowQuantity" value="1">
                                     <input type="hidden" name="variant_id" class="selectedVariantInput" value="{{ $defaultVariant?->id }}">
                                 <button type="submit"
-                                        class="buy-now-btn w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white py-3.5 rounded-xl font-bold text-base hover:from-amber-600 hover:to-orange-700 transition-all duration-300 shadow-lg shadow-orange-200 flex items-center justify-center group">
-                                    <i class="fas fa-bolt mr-2 group-hover:scale-125 transition-transform"></i>
-                                    Commander maintenant
+                                        class="buy-now-btn order-now-attention relative overflow-hidden w-full bg-gray-950 text-white py-3.5 rounded-xl font-bold text-base hover:bg-black transition-all duration-300 shadow-lg flex items-center justify-center group">
+                                    <i class="fas fa-bolt relative z-10 mr-2 group-hover:scale-125 transition-transform"></i>
+                                    <span class="relative z-10">Commander maintenant</span>
                                 </button>
                             </form>
                         </div>
@@ -555,13 +555,32 @@ document.addEventListener('keydown', (e) => {
 });
 
 // Quantity update
+let currentUnitBasePrice = Number(@json((float) $currentPrice));
+let currentUnitFinalPrice = Number(@json((float) $currentFinalPrice));
+
+function formatWholePrice(value) {
+    return Math.round(value).toLocaleString('en-US');
+}
+
+function updateDisplayedTotal(quantity) {
+    const basePrice = document.getElementById('variantBasePrice');
+    const finalPrice = document.getElementById('variantFinalPrice');
+
+    if (basePrice) {
+        basePrice.textContent = formatWholePrice(currentUnitBasePrice * quantity);
+    }
+    if (finalPrice) {
+        finalPrice.textContent = formatWholePrice(currentUnitFinalPrice * quantity);
+    }
+}
+
 function updateQuantity(change) {
     const input = document.getElementById('quantity');
     const formQuantity = document.getElementById('formQuantity');
     const buyNowQuantity = document.getElementById('buyNowQuantity');
     const fixedBuyNowQuantity = document.getElementById('fixedBuyNowQuantity');
-    
-    let newValue = parseInt(input.value) + change;
+
+    let newValue = (parseInt(input.value, 10) || 1) + change;
     newValue = Math.max(1, Math.min(newValue, parseInt(input.max || 1)));
     
     input.value = newValue;
@@ -570,7 +589,10 @@ function updateQuantity(change) {
     if (fixedBuyNowQuantity) {
         fixedBuyNowQuantity.value = newValue;
     }
+    updateDisplayedTotal(newValue);
 }
+
+document.getElementById('quantity')?.addEventListener('input', () => updateQuantity(0));
 
 // Share product
 function shareProduct() {
@@ -646,8 +668,8 @@ if (variantChooser) {
 
         selectedVariantId.value = variant.id;
         document.querySelectorAll('.selectedVariantInput').forEach(input => input.value = variant.id);
-        if (basePrice) basePrice.textContent = Number(variant.price).toFixed(0);
-        if (finalPrice) finalPrice.textContent = Number(variant.final_price).toFixed(0);
+        currentUnitBasePrice = Number(variant.price);
+        currentUnitFinalPrice = Number(variant.final_price);
         if (sku) sku.textContent = variant.sku || '';
         if (unit) unit.textContent = variant.unit || '';
         if (quantityInput) {
@@ -787,6 +809,38 @@ if (variantChooser) {
     
     .hover-lift:hover {
         transform: translateY(-2px);
+    }
+
+    .order-now-attention {
+        animation: orderButtonPulse 2.2s ease-in-out infinite;
+        isolation: isolate;
+    }
+
+    .order-now-attention::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        background: linear-gradient(110deg, transparent 20%, rgba(255, 255, 255, 0.24) 45%, transparent 70%);
+        transform: translateX(-120%);
+        animation: orderButtonShine 2.8s ease-in-out infinite;
+    }
+
+    @keyframes orderButtonPulse {
+        0%, 100% { box-shadow: 0 10px 20px rgba(0, 0, 0, 0.18); }
+        50% { box-shadow: 0 12px 30px rgba(0, 0, 0, 0.34); }
+    }
+
+    @keyframes orderButtonShine {
+        0%, 45% { transform: translateX(-120%); }
+        75%, 100% { transform: translateX(120%); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .order-now-attention,
+        .order-now-attention::after {
+            animation: none;
+        }
     }
 </style>
 @endsection
