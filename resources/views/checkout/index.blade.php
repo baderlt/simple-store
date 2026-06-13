@@ -216,7 +216,7 @@
                         </div>
 
                         <!-- Submit Button -->
-                        <div id="mobileCheckoutSubmit" class="mt-8 md:mt-8 mobile-checkout-submit md:static fixed bottom-0 left-0 right-0 z-50 bg-white p-3 md:p-0 border-t md:border-t-0 shadow-2xl md:shadow-none transform translate-y-full opacity-0 pointer-events-none md:translate-y-0 md:opacity-100 md:pointer-events-auto transition-all duration-300">
+                        <div id="checkoutSubmit" class="checkout-submit fixed bottom-2 left-0 right-0 z-50 bg-white p-3 border-t shadow-2xl transform translate-y-full opacity-0 pointer-events-none transition-all duration-300 md:left-1/2 md:right-auto md:w-[min(42rem,calc(100%-2rem))] md:-translate-x-1/2 md:rounded-xl md:border">
                             <button type="submit"
                                     id="submitButton"
                                     class="w-full bg-gradient-to-r from-emerald-600 to-green-500 text-white font-extrabold text-lg sm:text-xl py-5 px-6 rounded-xl hover:from-emerald-700 hover:to-green-600 transition-all duration-200 shadow-xl shadow-emerald-600/25 hover:shadow-2xl hover:shadow-emerald-600/35 hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center group ring-1 ring-white/20 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none">
@@ -277,11 +277,11 @@
     e.target.value = formatted;
 });
 
-    // Show the fixed mobile submit button only after the customer scrolls down.
-    function updateMobileCheckoutSubmit() {
-        const submitBar = document.getElementById('mobileCheckoutSubmit');
+    // Show the fixed submit button on every screen size only after the customer scrolls down.
+    function updateCheckoutSubmit() {
+        const submitBar = document.getElementById('checkoutSubmit');
 
-        if (!submitBar || window.innerWidth >= 768) {
+        if (!submitBar) {
             return;
         }
 
@@ -291,9 +291,9 @@
         submitBar.classList.toggle('pointer-events-none', !shouldShow);
     }
 
-    window.addEventListener('scroll', updateMobileCheckoutSubmit, { passive: true });
-    window.addEventListener('resize', updateMobileCheckoutSubmit);
-    document.addEventListener('DOMContentLoaded', updateMobileCheckoutSubmit);
+    window.addEventListener('scroll', updateCheckoutSubmit, { passive: true });
+    window.addEventListener('resize', updateCheckoutSubmit);
+    document.addEventListener('DOMContentLoaded', updateCheckoutSubmit);
 
     // Form submission handling
     document.getElementById('checkoutForm').addEventListener('submit', function(e) {
@@ -347,11 +347,9 @@
 </style>
 
 <style>
-    /* mobile checkout fixed padding */
-    @media (max-width: 767px) {
-        body {
-            padding-bottom: 92px;
-        }
+    /* Keep page content clear of the fixed checkout controls. */
+    body {
+        padding-bottom: 92px;
     }
 </style>
 @endsection
