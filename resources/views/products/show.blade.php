@@ -324,7 +324,7 @@
                     <p class="mt-1 text-sm text-gray-600">{{ __('product.delivery_time') }}</p>
                     <div class="mt-4 flex flex-col gap-2 text-sm sm:flex-row sm:gap-6">
                         <span class="font-medium text-emerald-700">
-                            {{ __('product.delivery_free_city', ['city' => settings('delivery_zone', 'Laâyoune') ?: 'Laâyoune']) }}
+                            {{ __('product.delivery_free_city', ['city' => settings('delivery_zone', 'laayoune ') ?: 'laayoune']) }}
                         </span>
                         <span class="text-gray-600">
                             {{ __('product.delivery_other_cities', ['price' => number_format((float) settings('delivery_fee', 40), 0)]) }}
