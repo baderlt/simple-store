@@ -254,7 +254,7 @@
 
                         <!-- Fixed buy action shown after the customer starts scrolling -->
                         <div id="mobileBuyNowBar"
-                             class="fixed bottom-2 left-0 right-0 z-50 translate-y-full border-t border-gray-200 bg-white/95 px-4 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] opacity-0 shadow-[0_-8px_30px_rgba(0,0,0,0.12)] backdrop-blur transition-all duration-300 pointer-events-none">
+                             class="fixed bottom-0 left-0 right-0 z-50 translate-y-full border-t border-gray-200 bg-white/95 px-4 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] opacity-0 shadow-[0_-8px_30px_rgba(0,0,0,0.12)] backdrop-blur transition-all duration-300 pointer-events-none">
                             <form action="{{ route('checkout.direct', $product->id) }}" method="GET" id="fixedBuyNowForm" class="mx-auto w-full max-w-4xl">
                                 <input type="hidden" name="quantity" id="fixedBuyNowQuantity" value="1">
                                     <input type="hidden" name="variant_id" class="selectedVariantInput" value="{{ $defaultVariant?->id }}">
