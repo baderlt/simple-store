@@ -55,10 +55,8 @@ class DashboardController extends Controller
             ->get();
         
         // Best selling products
-        $bestSellingProducts = Product::select('products.*', DB::raw('COALESCE(SUM(order_items.quantity), 0) as total_sold'))
-            ->leftJoin('order_items', 'products.id', '=', 'order_items.product_id')
-            ->groupBy('products.id')
-            ->orderBy('total_sold', 'desc')
+        $bestSellingProducts = Product::withSum('orderItems as total_sold', 'quantity')
+            ->orderByDesc('total_sold')
             ->take(6)
             ->get();
         
