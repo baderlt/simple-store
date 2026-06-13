@@ -30,7 +30,7 @@ class ProductStorefrontMetricsTest extends TestCase
         ]);
     }
 
-    public function test_product_metrics_stay_fixed_when_the_page_is_refreshed(): void
+    public function test_product_metrics_are_not_shown_on_the_minimal_product_page(): void
     {
         $product = $this->createProduct([
             'review_rating' => 4.7,
@@ -41,11 +41,39 @@ class ProductStorefrontMetricsTest extends TestCase
         foreach (range(1, 2) as $refresh) {
             $this->get(route('products.show', $product->slug))
                 ->assertOk()
-                ->assertSee('4.7 (42 avis)')
-                ->assertSee('68 vendus');
+                ->assertDontSee('4.7 (42 avis)')
+                ->assertDontSee('68 vendus')
+                ->assertDontSee('Disponible en stock')
+                ->assertDontSee('Garantie')
+                ->assertDontSee('1 an')
+                ->assertDontSee('Retours')
+                ->assertDontSee('15 jours')
+                ->assertDontSee('Description');
         }
 
         $this->assertSame(68, $product->fresh()->sales_count);
+    }
+
+    public function test_product_page_shows_localized_delivery_information_and_whole_prices(): void
+    {
+        $product = $this->createProduct(['price' => 125]);
+
+        $this->get(route('products.show', $product->slug))
+            ->assertOk()
+            ->assertSee('125')
+            ->assertDontSee('125.00')
+            ->assertSee('dir="ltr"', false)
+            ->assertDontSee("Jusqu'au")
+            ->assertSee('id="mobileBuyNowBar"', false)
+            ->assertDontSee('translate-y-full', false)
+            ->assertSee('add-to-cart-btn purchase-action-button', false)
+            ->assertSee('buy-now-btn purchase-action-button order-now-attention', false)
+            ->assertSee('color: #fff !important', false)
+            ->assertSee('function updateDisplayedTotal(quantity)', false)
+            ->assertSee(__('product.delivery_title'))
+            ->assertSee(__('product.delivery_time'))
+            ->assertSee(__('product.delivery_free_city', ['city' => 'Laâyoune']))
+            ->assertSee(__('product.delivery_other_cities', ['price' => '40']));
     }
 
     public function test_checkout_increments_sales_once_per_product_regardless_of_quantity(): void

@@ -51,7 +51,7 @@
         ];
     })->values() : collect();
 @endphp
-<div class="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+<div class="min-h-screen bg-gradient-to-b from-gray-50 to-white pb-24">
     <div class="container mx-auto px-4 py-8">
         <div class="grid lg:grid-cols-2 gap-8 lg:gap-12">
             <!-- Product Gallery -->
@@ -85,15 +85,6 @@
                             </div>
                         @endif
                         
-                        <!-- Stock Warning -->
-                        @if($product->isLowStock() && $currentStock > 0)
-                            <div class="absolute top-6 right-6">
-                                <span class="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-lg backdrop-blur-sm">
-                                    <i class="fas fa-exclamation-triangle mr-2"></i>
-                                    {{ $currentStock }} restant(s)
-                                </span>
-                            </div>
-                        @endif
                     </div>
                 </div>
 
@@ -171,44 +162,20 @@
                 <!-- Product Name -->
                 <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 leading-tight">{{ $product->name }}</h1>
 
-                <!-- Rating & Reviews -->
-                <div class="flex items-center space-x-6">
-                    <div class="flex items-center">
-                        <div class="flex text-amber-400">
-                            @for($i = 1; $i <= 5; $i++)
-                                <i class="fas fa-star"></i>
-                            @endfor
-                        </div>
-                        <span class="ml-2 text-gray-600 font-medium">
-                            {{ number_format((float) $product->review_rating, 1) }} ({{ $product->reviews_count }} avis)
-                        </span>
-                    </div>
-                    <div class="text-gray-500">
-                        <i class="fas fa-shopping-cart mr-1"></i>
-                        {{ $product->sales_count }} vendus
-                    </div>
-                </div>
-
                 <!-- Price Section -->
                 <div class="py-6 border-y border-gray-200">
                     @if($product->hasDiscount())
-                        <div class="flex items-baseline space-x-4 mb-3">
-                            <span class="text-5xl font-bold text-gray-900"><span id="variantFinalPrice">{{ number_format($currentFinalPrice, 2) }}</span> DH</span>
-                            <span class="text-2xl text-gray-400 line-through"><span id="variantBasePrice">{{ number_format($currentPrice, 2) }}</span> DH</span>
+                        <div class="flex flex-wrap items-baseline gap-x-5 gap-y-2 mb-3">
+                            <span dir="ltr" class="inline-flex items-baseline gap-1 whitespace-nowrap text-3xl sm:text-5xl font-bold text-gray-900"><span id="variantFinalPrice">{{ number_format($currentFinalPrice, 0) }}</span> <span>DH</span></span>
+                            <span dir="ltr" class="inline-flex items-baseline gap-1 whitespace-nowrap text-lg sm:text-2xl text-gray-400 line-through"><span id="variantBasePrice">{{ number_format($currentPrice, 0) }}</span> <span>DH</span></span>
                         </div>
-                        <div class="flex items-center space-x-3">
+                        <div class="flex items-center">
                             <span class="bg-rose-50 text-rose-700 px-3 py-1.5 rounded-lg font-bold text-sm">
                                 Économisez {{ number_format($product->price - $product->final_price, 2) }} DH
                             </span>
-                            @if($product->activeDiscount->end_date)
-                                <span class="text-sm text-gray-600">
-                                    <i class="fas fa-clock mr-1"></i>
-                                    Jusqu'au {{ $product->activeDiscount->end_date->format('d/m/Y') }}
-                                </span>
-                            @endif
                         </div>
                     @else
-                        <span class="text-5xl font-bold text-gray-900"><span id="variantBasePrice">{{ number_format($currentPrice, 2) }}</span> DH</span>
+                        <span dir="ltr" class="inline-flex items-baseline gap-1 whitespace-nowrap text-3xl sm:text-5xl font-bold text-gray-900"><span id="variantBasePrice">{{ number_format($currentPrice, 0) }}</span> <span>DH</span></span>
                     @endif
                 </div>
 
@@ -237,36 +204,6 @@
                         <p id="variantMessage" class="text-sm text-red-600 hidden">{{ __('product.choose_option') }}</p>
                     </div>
                 @endif
-
-                <!-- Stock Status -->
-                <div id="variantStockPanel" class="p-5 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="flex items-center space-x-3">
-                            @if($currentStock > 0)
-                                <div id="variantStockDot" class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
-                                <span id="variantStockLabel" class="font-semibold text-emerald-700">Disponible en stock</span>
-                            @else
-                                <div id="variantStockDot" class="w-3 h-3 bg-red-500 rounded-full"></div>
-                                <span id="variantStockLabel" class="font-semibold text-red-700">Rupture de stock</span>
-                            @endif
-                        </div>
-                        <span id="variantStockCount" class="text-sm text-gray-600 font-medium {{ $currentStock > 0 ? '' : 'hidden' }}">{{ $currentStock }} unités disponibles</span>
-                    </div>
-                    
-                    @if($currentStock > 0)
-                        <div id="variantStockDetails" class="space-y-2">
-                            <div class="h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                                <div class="h-full bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full" 
-                                     style="width: {{ min(($currentStock / 100) * 100, 100) }}%"></div>
-                            </div>
-                            <div class="flex justify-between text-xs text-gray-500">
-                                <span>Stock limité</span>
-                                <span>Disponible</span>
-                            </div>
-                        </div>
-                    @endif
-                </div>
-
 
                 <!-- Quantity Selector -->
                 @if($productAvailable)
@@ -299,32 +236,32 @@
                                     data-product-id="{{ $product->id }}"
                                     data-product-name="{{ $product->name }}"
                                     data-product-stock="{{ $currentStock }}"
-                                    class="add-to-cart-btn w-full bg-green-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-green-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group">
-                                <i class="fas fa-shopping-cart mr-3 group-hover:rotate-12 transition-transform"></i>
-                                Ajouter au panier
+                                    class="add-to-cart-btn purchase-action-button w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center group">
+                                <i class="fas fa-shopping-cart relative z-10 mr-3 group-hover:rotate-12 transition-transform"></i>
+                                <span class="relative z-10">Ajouter au panier</span>
                             </button>
 
                             <form action="{{ route('checkout.direct', $product->id) }}" method="GET" id="buyNowForm">
                                 <input type="hidden" name="quantity" id="buyNowQuantity" value="1">
                                     <input type="hidden" name="variant_id" class="selectedVariantInput" value="{{ $defaultVariant?->id }}">
                                 <button type="submit" 
-                                        class="buy-now-btn w-full bg-gray-900 text-white py-4 rounded-xl font-bold text-lg hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group">
-                                    <i class="fas fa-bolt mr-3 group-hover:scale-125 transition-transform"></i>
-                                    Commander maintenant
+                                        class="buy-now-btn purchase-action-button order-now-attention relative overflow-hidden w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center group">
+                                    <i class="fas fa-bolt relative z-10 mr-3 group-hover:scale-125 transition-transform"></i>
+                                    <span class="relative z-10">Commander maintenant</span>
                                 </button>
                             </form>
                         </div>
 
-                        <!-- Fixed buy action (shown after scrolling past the original action buttons) -->
+                        <!-- Permanently visible buy action -->
                         <div id="mobileBuyNowBar"
-                             class="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur border-t border-gray-200 shadow-2xl p-3 transform translate-y-full opacity-0 pointer-events-none transition-all duration-300">
-                            <form action="{{ route('checkout.direct', $product->id) }}" method="GET" id="fixedBuyNowForm">
+                             class="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white/95 p-3 shadow-[0_-8px_30px_rgba(0,0,0,0.12)] backdrop-blur">
+                            <form action="{{ route('checkout.direct', $product->id) }}" method="GET" id="fixedBuyNowForm" class="mx-auto max-w-2xl">
                                 <input type="hidden" name="quantity" id="fixedBuyNowQuantity" value="1">
                                     <input type="hidden" name="variant_id" class="selectedVariantInput" value="{{ $defaultVariant?->id }}">
                                 <button type="submit"
-                                        class="buy-now-btn w-full bg-gray-900 text-white py-3 rounded-xl font-bold text-sm hover:bg-gray-800 transition-all duration-300 shadow flex items-center justify-center">
-                                    <i class="fas fa-bolt mr-2"></i>
-                                    Commander maintenant
+                                        class="buy-now-btn purchase-action-button order-now-attention relative overflow-hidden w-full py-3.5 rounded-xl font-bold text-base flex items-center justify-center group">
+                                    <i class="fas fa-bolt relative z-10 mr-2 group-hover:scale-125 transition-transform"></i>
+                                    <span class="relative z-10">Commander maintenant</span>
                                 </button>
                             </form>
                         </div>
@@ -350,7 +287,7 @@
                     </div>
                 @endif
 
-                <!-- Features & Guarantees -->
+                <!-- Store services -->
                 <div class="grid grid-cols-2 gap-4 pt-6">
                     <div class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
                         <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
@@ -362,24 +299,6 @@
                             <p class="text-sm text-gray-500">À partir de {{settings('free_delivery_threshold')}} DH</p>
                         </div>
                         @endif
-                    </div>
-                    <div class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                        <div class="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-shield-alt text-green-600"></i>
-                        </div>
-                        <div>
-                            <p class="font-medium text-gray-900">Garantie</p>
-                            <p class="text-sm text-gray-500">1 an</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                        <div class="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-undo-alt text-purple-600"></i>
-                        </div>
-                        <div>
-                            <p class="font-medium text-gray-900">Retours</p>
-                            <p class="text-sm text-gray-500">15 jours</p>
-                        </div>
                     </div>
                     <div class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
                         <div class="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center">
@@ -394,114 +313,26 @@
             </div>
         </div>
 
-        <!-- Description & Details Tabs -->
-        <div class="mt-12">
-            <div class="border-b border-gray-200">
-                <nav class="-mb-px flex space-x-8">
-                    <button type="button" onclick="switchTab('description')" 
-                            id="tab-description" 
-                            class="py-4 px-1 border-b-2 font-medium text-sm border-emerald-500 text-emerald-600">
-                        <i class="fas fa-file-alt mr-2"></i>Description
-                    </button>
-                    <button type="button" onclick="switchTab('shipping')" 
-                            id="tab-shipping" 
-                            class="py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
-                        <i class="fas fa-truck mr-2"></i>Livraison
-                    </button>
-                </nav>
-            </div>
-
-            <!-- Tab Content -->
-            <div id="tab-content" style="display: block" class="py-8">
-                <!-- Description Tab -->
-                <div id="description-content" class="space-y-6">
-                    <p class="text-gray-700 leading-relaxed text-lg">{{ $product->description }}</p>
-                    
-                    <!-- Features List -->
-                    <div class="grid md:grid-cols-2 gap-6">
-                        <div class="space-y-3">
-                            <h4 class="font-bold text-gray-900">Caractéristiques principales</h4>
-                            <ul class="space-y-2">
-                                <li class="flex items-center">
-                                    <i class="fas fa-check text-emerald-500 mr-3"></i>
-                                    <span>Qualité premium garantie</span>
-                                </li>
-                                <li class="flex items-center">
-                                    <i class="fas fa-check text-emerald-500 mr-3"></i>
-                                    <span>Matériaux durables</span>
-                                </li>
-                                <li class="flex items-center">
-                                    <i class="fas fa-check text-emerald-500 mr-3"></i>
-                                    <span>Design moderne et élégant</span>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="space-y-3">
-                            <h4 class="font-bold text-gray-900">Avantages</h4>
-                            <ul class="space-y-2">
-                                <li class="flex items-center">
-                                    <i class="fas fa-check text-emerald-500 mr-3"></i>
-                                    <span>Facile à utiliser</span>
-                                </li>
-                                <li class="flex items-center">
-                                    <i class="fas fa-check text-emerald-500 mr-3"></i>
-                                    <span>Entretien simple</span>
-                                </li>
-                                <li class="flex items-center">
-                                    <i class="fas fa-check text-emerald-500 mr-3"></i>
-                                    <span>Écologique</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+        <!-- Delivery information -->
+        <section class="mt-10 rounded-2xl border border-gray-100 bg-white p-5 sm:p-6 shadow-sm">
+            <div class="flex items-start gap-4">
+                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+                    <i class="fas fa-truck"></i>
                 </div>
-
-                <!-- Shipping Tab (Hidden by default) -->
-                <div id="shipping-content" class="hidden space-y-6">
-                    <div class="bg-gray-50 p-6 rounded-xl">
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">Informations de livraison</h3>
-                        <div class="grid md:grid-cols-2 gap-6">
-                            <div>
-                                <h4 class="font-semibold text-gray-800 mb-2">Délais de livraison</h4>
-                                <ul class="space-y-2 text-gray-600">
-                                    <li class="flex items-center">
-                                        <i class="fas fa-check-circle text-emerald-500 mr-2"></i>
-                                        <span>Fes : 24 heures</span>
-                                    </li>
-                                    <li class="flex items-center">
-                                        <i class="fas fa-check-circle text-emerald-500 mr-2"></i>
-                                        <span>Grandes villes : 1-3 jours</span>
-                                    </li>
-                                    <li class="flex items-center">
-                                        <i class="fas fa-check-circle text-emerald-500 mr-2"></i>
-                                        <span>Autres régions : 3-5 jours</span>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-gray-800 mb-2">Frais de livraison</h4>
-                                <ul class="space-y-2 text-gray-600">
-                                    <li class="flex items-center">
-                                        <i class="fas fa-truck text-blue-500 mr-2"></i>
-                                        <span>Livraison standard : {{settings('delivery_fee')}} DH</span>
-                                    </li>
-                                    <li class="flex items-center">
-                                        <i class="fas fa-rocket text-purple-500 mr-2"></i>
-                                        <span>Livraison express : 50 DH</span>
-                                    </li>
-                                    @if (settings('free_delivery_threshold'))
-                                    <li class="flex items-center">
-                                        <i class="fas fa-gift text-amber-500 mr-2"></i>
-                                        <span>Offerte à partir de {{settings('free_delivery_threshold')}} DH</span>
-                                    </li>
-                                    @endif
-                                </ul>
-                            </div>
-                        </div>
+                <div>
+                    <h2 class="text-lg font-bold text-gray-900">{{ __('product.delivery_title') }}</h2>
+                    <p class="mt-1 text-sm text-gray-600">{{ __('product.delivery_time') }}</p>
+                    <div class="mt-4 flex flex-col gap-2 text-sm sm:flex-row sm:gap-6">
+                        <span class="font-medium text-emerald-700">
+                            {{ __('product.delivery_free_city', ['city' => settings('delivery_zone', 'Laâyoune') ?: 'Laâyoune']) }}
+                        </span>
+                        <span class="text-gray-600">
+                            {{ __('product.delivery_other_cities', ['price' => number_format((float) settings('delivery_fee', 40), 0)]) }}
+                        </span>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- Related Products -->
         @if($relatedProducts->count() > 0)
@@ -723,35 +554,33 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// Tab switching function
-function switchTab(tabName) {
-    // Update active tab
-    document.querySelectorAll('[id^="tab-"]').forEach(tab => {
-        tab.classList.remove('border-emerald-500', 'text-emerald-600');
-        tab.classList.add('border-transparent', 'text-gray-500');
-    });
-    
-    const activeTab = document.getElementById(`tab-${tabName}`);
-    activeTab.classList.add('border-emerald-500', 'text-emerald-600');
-    activeTab.classList.remove('border-transparent', 'text-gray-500');
-    
-    // Show active content
-    document.querySelectorAll('[id$="-content"]').forEach(content => {
-        content.classList.add('hidden');
-    });
-    
-    const activeContent = document.getElementById(`${tabName}-content`);
-    activeContent.classList.remove('hidden');
+// Quantity update
+let currentUnitBasePrice = Number(@json((float) $currentPrice));
+let currentUnitFinalPrice = Number(@json((float) $currentFinalPrice));
+
+function formatWholePrice(value) {
+    return Math.round(value).toLocaleString('en-US');
 }
 
-// Quantity update
+function updateDisplayedTotal(quantity) {
+    const basePrice = document.getElementById('variantBasePrice');
+    const finalPrice = document.getElementById('variantFinalPrice');
+
+    if (basePrice) {
+        basePrice.textContent = formatWholePrice(currentUnitBasePrice * quantity);
+    }
+    if (finalPrice) {
+        finalPrice.textContent = formatWholePrice(currentUnitFinalPrice * quantity);
+    }
+}
+
 function updateQuantity(change) {
     const input = document.getElementById('quantity');
     const formQuantity = document.getElementById('formQuantity');
     const buyNowQuantity = document.getElementById('buyNowQuantity');
     const fixedBuyNowQuantity = document.getElementById('fixedBuyNowQuantity');
-    
-    let newValue = parseInt(input.value) + change;
+
+    let newValue = (parseInt(input.value, 10) || 1) + change;
     newValue = Math.max(1, Math.min(newValue, parseInt(input.max || 1)));
     
     input.value = newValue;
@@ -760,28 +589,10 @@ function updateQuantity(change) {
     if (fixedBuyNowQuantity) {
         fixedBuyNowQuantity.value = newValue;
     }
+    updateDisplayedTotal(newValue);
 }
 
-// Sticky buy-now visibility
-function updateMobileBuyNowBar() {
-    const bar = document.getElementById('mobileBuyNowBar');
-    const originalForm = document.getElementById('buyNowForm');
-
-    if (!bar || !originalForm) {
-        return;
-    }
-
-    const originalButtonBottom = originalForm.getBoundingClientRect().bottom;
-    const shouldShow = originalButtonBottom < 0;
-
-    bar.classList.toggle('translate-y-full', !shouldShow);
-    bar.classList.toggle('opacity-0', !shouldShow);
-    bar.classList.toggle('pointer-events-none', !shouldShow);
-}
-
-window.addEventListener('scroll', updateMobileBuyNowBar, { passive: true });
-window.addEventListener('resize', updateMobileBuyNowBar);
-document.addEventListener('DOMContentLoaded', updateMobileBuyNowBar);
+document.getElementById('quantity')?.addEventListener('input', () => updateQuantity(0));
 
 // Share product
 function shareProduct() {
@@ -811,10 +622,6 @@ if (variantChooser) {
     const sku = document.getElementById('variantSku');
     const unit = document.getElementById('variantUnit');
     const message = document.getElementById('variantMessage');
-    const stockDot = document.getElementById('variantStockDot');
-    const stockLabel = document.getElementById('variantStockLabel');
-    const stockCount = document.getElementById('variantStockCount');
-    const stockDetails = document.getElementById('variantStockDetails');
     const addButton = document.querySelector('.add-to-cart-btn[data-product-id="{{ $product->id }}"]');
     const buyNowButtons = document.querySelectorAll('.buy-now-btn');
     const defaultVariant = variants.find(v => String(v.id) === String(variantChooser.dataset.defaultId)) || variants[0];
@@ -847,23 +654,7 @@ if (variantChooser) {
     }
 
     function updateStockDisplay(stock) {
-        const isAvailable = stock > 0;
-        if (stockDot) {
-            stockDot.classList.toggle('bg-emerald-500', isAvailable);
-            stockDot.classList.toggle('animate-pulse', isAvailable);
-            stockDot.classList.toggle('bg-red-500', !isAvailable);
-        }
-        if (stockLabel) {
-            stockLabel.textContent = isAvailable ? 'Disponible en stock' : 'Rupture de stock';
-            stockLabel.classList.toggle('text-emerald-700', isAvailable);
-            stockLabel.classList.toggle('text-red-700', !isAvailable);
-        }
-        if (stockCount) {
-            stockCount.textContent = `${stock} unités disponibles`;
-            stockCount.classList.toggle('hidden', !isAvailable);
-        }
-        stockDetails?.classList.toggle('hidden', !isAvailable);
-        setPurchaseAvailability(isAvailable);
+        setPurchaseAvailability(stock > 0);
     }
 
     function applyVariant(variant) {
@@ -877,8 +668,8 @@ if (variantChooser) {
 
         selectedVariantId.value = variant.id;
         document.querySelectorAll('.selectedVariantInput').forEach(input => input.value = variant.id);
-        if (basePrice) basePrice.textContent = Number(variant.price).toFixed(2);
-        if (finalPrice) finalPrice.textContent = Number(variant.final_price).toFixed(2);
+        currentUnitBasePrice = Number(variant.price);
+        currentUnitFinalPrice = Number(variant.final_price);
         if (sku) sku.textContent = variant.sku || '';
         if (unit) unit.textContent = variant.unit || '';
         if (quantityInput) {
@@ -1018,6 +809,69 @@ if (variantChooser) {
     
     .hover-lift:hover {
         transform: translateY(-2px);
+    }
+
+    .purchase-action-button {
+        color: #fff !important;
+        background: #111827 !important;
+        border: 1px solid #111827;
+        box-shadow: 0 10px 22px rgba(17, 24, 39, 0.2);
+        transition: transform 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .purchase-action-button,
+    .purchase-action-button i,
+    .purchase-action-button span {
+        color: #fff !important;
+    }
+
+    .purchase-action-button:hover {
+        background: #000 !important;
+        box-shadow: 0 14px 28px rgba(0, 0, 0, 0.28);
+        transform: translateY(-2px);
+    }
+
+    .purchase-action-button:active {
+        transform: translateY(0) scale(0.99);
+    }
+
+    .purchase-action-button:focus-visible {
+        outline: 3px solid rgba(17, 24, 39, 0.3);
+        outline-offset: 3px;
+    }
+
+    .purchase-action-button:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+        transform: none;
+    }
+
+    .order-now-attention {
+        isolation: isolate;
+    }
+
+    .order-now-attention::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        background: linear-gradient(110deg, transparent 20%, rgba(255, 255, 255, 0.24) 45%, transparent 70%);
+        transform: translateX(-120%);
+        animation: orderButtonShine 3s ease-in-out infinite;
+        will-change: transform;
+        pointer-events: none;
+    }
+
+    @keyframes orderButtonShine {
+        0%, 45% { transform: translateX(-120%); }
+        75%, 100% { transform: translateX(120%); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .order-now-attention::after {
+            animation: none;
+        }
     }
 </style>
 @endsection
