@@ -233,11 +233,11 @@
             }
             .logo-container {
                 order: 1;
-                width: 40%;
+                width: 45%;
             }
             .mobile-buttons {
                 order: 2;
-                width: 60%;
+                width: 55%;
                 justify-content: flex-end;
             }
             .search-container-mobile {
@@ -387,7 +387,7 @@
                         @if($logoPath && file_exists(public_path('storage/'.$logoPath)))
                             <img src="{{ asset('storage/'.$logoPath) }}" alt="{{ $storeName }}" 
                             loading="lazy"
-                                 class="h-10 lg:h-16 w-auto object-contain transition-transform duration-300 hover:scale-105">
+                                 class="h-14 sm:h-16 lg:h-16 w-auto max-w-full object-contain transition-transform duration-300 hover:scale-105">
                                      {{-- <span class="text-lg font-bold text-gray-800 lg:hidden">{{ $storeName }}</span> --}}
                         @else 
                             <div class="flex items-center space-x-2">
