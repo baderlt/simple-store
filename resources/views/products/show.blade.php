@@ -252,21 +252,6 @@
                             </form>
                         </div>
 
-                        <!-- Fixed buy action shown after the customer starts scrolling -->
-                        <div id="mobileBuyNowBar"
-                             aria-hidden="true"
-                             class="fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-50 translate-y-[calc(100%+1.5rem)] opacity-0 transition-all duration-300 pointer-events-none sm:inset-x-4">
-                            <form action="{{ route('checkout.direct', $product->id) }}" method="GET" id="fixedBuyNowForm" class="w-full">
-                                <input type="hidden" name="quantity" id="fixedBuyNowQuantity" value="1">
-                                    <input type="hidden" name="variant_id" class="selectedVariantInput" value="{{ $defaultVariant?->id }}">
-                                <button type="submit"
-                                        class="buy-now-btn purchase-action-button order-now-attention relative flex min-h-[59px] w-full items-center justify-center overflow-hidden rounded-xl px-5 py-[15.5px] text-lg font-bold shadow-[0_8px_30px_rgba(0,0,0,0.18)] group">
-                                    <i class="fas fa-bolt relative z-10 mr-2.5 text-lg group-hover:scale-125 transition-transform"></i>
-                                    <span class="relative z-10">Commander maintenant</span>
-                                </button>
-                            </form>
-                        </div>
-
                         <!-- Share Button -->
                         <div class="flex justify-center pt-4">
                             <button type="button" onclick="shareProduct()" 
@@ -434,24 +419,6 @@ let currentImageIndex = 1;
 const images = @json($galleryImageUrls->values());
 const totalImages = images.length;
 
-function updateFixedBuyNowBar() {
-    const buyNowBar = document.getElementById('mobileBuyNowBar');
-
-    if (!buyNowBar) {
-        return;
-    }
-
-    const shouldShow = window.scrollY > 220;
-    buyNowBar.classList.toggle('translate-y-[calc(100%+1.5rem)]', !shouldShow);
-    buyNowBar.classList.toggle('opacity-0', !shouldShow);
-    buyNowBar.classList.toggle('pointer-events-none', !shouldShow);
-    buyNowBar.setAttribute('aria-hidden', String(!shouldShow));
-}
-
-window.addEventListener('scroll', updateFixedBuyNowBar, { passive: true });
-window.addEventListener('resize', updateFixedBuyNowBar);
-updateFixedBuyNowBar();
-
 // Change main image
 function changeMainImage(src, index) {
     const mainImage = document.getElementById('mainImage');
@@ -597,7 +564,6 @@ function updateQuantity(change) {
     const input = document.getElementById('quantity');
     const formQuantity = document.getElementById('formQuantity');
     const buyNowQuantity = document.getElementById('buyNowQuantity');
-    const fixedBuyNowQuantity = document.getElementById('fixedBuyNowQuantity');
 
     let newValue = (parseInt(input.value, 10) || 1) + change;
     newValue = Math.max(1, Math.min(newValue, parseInt(input.max || 1)));
@@ -605,9 +571,6 @@ function updateQuantity(change) {
     input.value = newValue;
     formQuantity.value = newValue;
     buyNowQuantity.value = newValue;
-    if (fixedBuyNowQuantity) {
-        fixedBuyNowQuantity.value = newValue;
-    }
     updateDisplayedTotal(newValue);
 }
 
@@ -728,14 +691,12 @@ if (variantChooser) {
     });
 
 
-    document.querySelectorAll('#buyNowForm, #fixedBuyNowForm').forEach(form => {
-        form.addEventListener('submit', event => {
-            if (!selectedVariantId.value) {
-                event.preventDefault();
-                if (message) message.classList.remove('hidden');
-                variantChooser.scrollIntoView({behavior: 'smooth', block: 'center'});
-            }
-        });
+    document.getElementById('buyNowForm')?.addEventListener('submit', event => {
+        if (!selectedVariantId.value) {
+            event.preventDefault();
+            if (message) message.classList.remove('hidden');
+            variantChooser.scrollIntoView({behavior: 'smooth', block: 'center'});
+        }
     });
 
     if (defaultVariant) {
@@ -748,10 +709,6 @@ if (variantChooser) {
 </script>
 
 <style>
-    body {
-        padding-bottom: 84px;
-    }
-
     /* Smooth image transition */
     #mainImage {
         transition: opacity 0.3s ease-in-out, transform 0.5s ease;
