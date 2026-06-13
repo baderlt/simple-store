@@ -236,16 +236,16 @@
                                     data-product-id="{{ $product->id }}"
                                     data-product-name="{{ $product->name }}"
                                     data-product-stock="{{ $currentStock }}"
-                                    class="add-to-cart-btn w-full bg-gray-950 text-white py-4 rounded-xl font-bold text-lg hover:bg-black transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center group">
-                                <i class="fas fa-shopping-cart mr-3 group-hover:rotate-12 transition-transform"></i>
-                                Ajouter au panier
+                                    class="add-to-cart-btn purchase-action-button w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center group">
+                                <i class="fas fa-shopping-cart relative z-10 mr-3 group-hover:rotate-12 transition-transform"></i>
+                                <span class="relative z-10">Ajouter au panier</span>
                             </button>
 
                             <form action="{{ route('checkout.direct', $product->id) }}" method="GET" id="buyNowForm">
                                 <input type="hidden" name="quantity" id="buyNowQuantity" value="1">
                                     <input type="hidden" name="variant_id" class="selectedVariantInput" value="{{ $defaultVariant?->id }}">
                                 <button type="submit" 
-                                        class="buy-now-btn order-now-attention relative overflow-hidden w-full bg-gray-950 text-white py-4 rounded-xl font-bold text-lg hover:bg-black transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center group">
+                                        class="buy-now-btn purchase-action-button order-now-attention relative overflow-hidden w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center group">
                                     <i class="fas fa-bolt relative z-10 mr-3 group-hover:scale-125 transition-transform"></i>
                                     <span class="relative z-10">Commander maintenant</span>
                                 </button>
@@ -259,7 +259,7 @@
                                 <input type="hidden" name="quantity" id="fixedBuyNowQuantity" value="1">
                                     <input type="hidden" name="variant_id" class="selectedVariantInput" value="{{ $defaultVariant?->id }}">
                                 <button type="submit"
-                                        class="buy-now-btn order-now-attention relative overflow-hidden w-full bg-gray-950 text-white py-3.5 rounded-xl font-bold text-base hover:bg-black transition-all duration-300 shadow-lg flex items-center justify-center group">
+                                        class="buy-now-btn purchase-action-button order-now-attention relative overflow-hidden w-full py-3.5 rounded-xl font-bold text-base flex items-center justify-center group">
                                     <i class="fas fa-bolt relative z-10 mr-2 group-hover:scale-125 transition-transform"></i>
                                     <span class="relative z-10">Commander maintenant</span>
                                 </button>
@@ -811,8 +811,43 @@ if (variantChooser) {
         transform: translateY(-2px);
     }
 
+    .purchase-action-button {
+        color: #fff !important;
+        background: #111827 !important;
+        border: 1px solid #111827;
+        box-shadow: 0 10px 22px rgba(17, 24, 39, 0.2);
+        transition: transform 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .purchase-action-button,
+    .purchase-action-button i,
+    .purchase-action-button span {
+        color: #fff !important;
+    }
+
+    .purchase-action-button:hover {
+        background: #000 !important;
+        box-shadow: 0 14px 28px rgba(0, 0, 0, 0.28);
+        transform: translateY(-2px);
+    }
+
+    .purchase-action-button:active {
+        transform: translateY(0) scale(0.99);
+    }
+
+    .purchase-action-button:focus-visible {
+        outline: 3px solid rgba(17, 24, 39, 0.3);
+        outline-offset: 3px;
+    }
+
+    .purchase-action-button:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+        transform: none;
+    }
+
     .order-now-attention {
-        animation: orderButtonPulse 2.2s ease-in-out infinite;
         isolation: isolate;
     }
 
@@ -823,12 +858,9 @@ if (variantChooser) {
         z-index: 0;
         background: linear-gradient(110deg, transparent 20%, rgba(255, 255, 255, 0.24) 45%, transparent 70%);
         transform: translateX(-120%);
-        animation: orderButtonShine 2.8s ease-in-out infinite;
-    }
-
-    @keyframes orderButtonPulse {
-        0%, 100% { box-shadow: 0 10px 20px rgba(0, 0, 0, 0.18); }
-        50% { box-shadow: 0 12px 30px rgba(0, 0, 0, 0.34); }
+        animation: orderButtonShine 3s ease-in-out infinite;
+        will-change: transform;
+        pointer-events: none;
     }
 
     @keyframes orderButtonShine {
@@ -837,7 +869,6 @@ if (variantChooser) {
     }
 
     @media (prefers-reduced-motion: reduce) {
-        .order-now-attention,
         .order-now-attention::after {
             animation: none;
         }
