@@ -166,8 +166,8 @@
                 <div class="py-6 border-y border-gray-200">
                     @if($product->hasDiscount())
                         <div class="flex items-baseline space-x-4 mb-3">
-                            <span class="text-5xl font-bold text-gray-900"><span id="variantFinalPrice">{{ number_format($currentFinalPrice, 2) }}</span> DH</span>
-                            <span class="text-2xl text-gray-400 line-through"><span id="variantBasePrice">{{ number_format($currentPrice, 2) }}</span> DH</span>
+                            <span class="text-3xl sm:text-5xl font-bold text-gray-900"><span id="variantFinalPrice">{{ number_format($currentFinalPrice, 0) }}</span> DH</span>
+                            <span class="text-lg sm:text-2xl text-gray-400 line-through"><span id="variantBasePrice">{{ number_format($currentPrice, 0) }}</span> DH</span>
                         </div>
                         <div class="flex items-center space-x-3">
                             <span class="bg-rose-50 text-rose-700 px-3 py-1.5 rounded-lg font-bold text-sm">
@@ -181,7 +181,7 @@
                             @endif
                         </div>
                     @else
-                        <span class="text-5xl font-bold text-gray-900"><span id="variantBasePrice">{{ number_format($currentPrice, 2) }}</span> DH</span>
+                        <span class="text-3xl sm:text-5xl font-bold text-gray-900"><span id="variantBasePrice">{{ number_format($currentPrice, 0) }}</span> DH</span>
                     @endif
                 </div>
 
@@ -318,6 +318,27 @@
                 </div>
             </div>
         </div>
+
+        <!-- Delivery information -->
+        <section class="mt-10 rounded-2xl border border-gray-100 bg-white p-5 sm:p-6 shadow-sm">
+            <div class="flex items-start gap-4">
+                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+                    <i class="fas fa-truck"></i>
+                </div>
+                <div>
+                    <h2 class="text-lg font-bold text-gray-900">{{ __('product.delivery_title') }}</h2>
+                    <p class="mt-1 text-sm text-gray-600">{{ __('product.delivery_time') }}</p>
+                    <div class="mt-4 flex flex-col gap-2 text-sm sm:flex-row sm:gap-6">
+                        <span class="font-medium text-emerald-700">
+                            {{ __('product.delivery_free_city', ['city' => settings('delivery_zone', 'Laâyoune') ?: 'Laâyoune']) }}
+                        </span>
+                        <span class="text-gray-600">
+                            {{ __('product.delivery_other_cities', ['price' => number_format((float) settings('delivery_fee', 40), 0)]) }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <!-- Related Products -->
         @if($relatedProducts->count() > 0)
@@ -652,8 +673,8 @@ if (variantChooser) {
 
         selectedVariantId.value = variant.id;
         document.querySelectorAll('.selectedVariantInput').forEach(input => input.value = variant.id);
-        if (basePrice) basePrice.textContent = Number(variant.price).toFixed(2);
-        if (finalPrice) finalPrice.textContent = Number(variant.final_price).toFixed(2);
+        if (basePrice) basePrice.textContent = Number(variant.price).toFixed(0);
+        if (finalPrice) finalPrice.textContent = Number(variant.final_price).toFixed(0);
         if (sku) sku.textContent = variant.sku || '';
         if (unit) unit.textContent = variant.unit || '';
         if (quantityInput) {
