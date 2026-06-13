@@ -85,15 +85,6 @@
                             </div>
                         @endif
                         
-                        <!-- Stock Warning -->
-                        @if($product->isLowStock() && $currentStock > 0)
-                            <div class="absolute top-6 right-6">
-                                <span class="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-lg backdrop-blur-sm">
-                                    <i class="fas fa-exclamation-triangle mr-2"></i>
-                                    {{ $currentStock }} restant(s)
-                                </span>
-                            </div>
-                        @endif
                     </div>
                 </div>
 
@@ -171,24 +162,6 @@
                 <!-- Product Name -->
                 <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 leading-tight">{{ $product->name }}</h1>
 
-                <!-- Rating & Reviews -->
-                <div class="flex items-center space-x-6">
-                    <div class="flex items-center">
-                        <div class="flex text-amber-400">
-                            @for($i = 1; $i <= 5; $i++)
-                                <i class="fas fa-star"></i>
-                            @endfor
-                        </div>
-                        <span class="ml-2 text-gray-600 font-medium">
-                            {{ number_format((float) $product->review_rating, 1) }} ({{ $product->reviews_count }} avis)
-                        </span>
-                    </div>
-                    <div class="text-gray-500">
-                        <i class="fas fa-shopping-cart mr-1"></i>
-                        {{ $product->sales_count }} vendus
-                    </div>
-                </div>
-
                 <!-- Price Section -->
                 <div class="py-6 border-y border-gray-200">
                     @if($product->hasDiscount())
@@ -237,36 +210,6 @@
                         <p id="variantMessage" class="text-sm text-red-600 hidden">{{ __('product.choose_option') }}</p>
                     </div>
                 @endif
-
-                <!-- Stock Status -->
-                <div id="variantStockPanel" class="p-5 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="flex items-center space-x-3">
-                            @if($currentStock > 0)
-                                <div id="variantStockDot" class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
-                                <span id="variantStockLabel" class="font-semibold text-emerald-700">Disponible en stock</span>
-                            @else
-                                <div id="variantStockDot" class="w-3 h-3 bg-red-500 rounded-full"></div>
-                                <span id="variantStockLabel" class="font-semibold text-red-700">Rupture de stock</span>
-                            @endif
-                        </div>
-                        <span id="variantStockCount" class="text-sm text-gray-600 font-medium {{ $currentStock > 0 ? '' : 'hidden' }}">{{ $currentStock }} unités disponibles</span>
-                    </div>
-                    
-                    @if($currentStock > 0)
-                        <div id="variantStockDetails" class="space-y-2">
-                            <div class="h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                                <div class="h-full bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full" 
-                                     style="width: {{ min(($currentStock / 100) * 100, 100) }}%"></div>
-                            </div>
-                            <div class="flex justify-between text-xs text-gray-500">
-                                <span>Stock limité</span>
-                                <span>Disponible</span>
-                            </div>
-                        </div>
-                    @endif
-                </div>
-
 
                 <!-- Quantity Selector -->
                 @if($productAvailable)
@@ -350,7 +293,7 @@
                     </div>
                 @endif
 
-                <!-- Features & Guarantees -->
+                <!-- Store services -->
                 <div class="grid grid-cols-2 gap-4 pt-6">
                     <div class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
                         <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
@@ -364,139 +307,12 @@
                         @endif
                     </div>
                     <div class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                        <div class="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-shield-alt text-green-600"></i>
-                        </div>
-                        <div>
-                            <p class="font-medium text-gray-900">Garantie</p>
-                            <p class="text-sm text-gray-500">1 an</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                        <div class="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-undo-alt text-purple-600"></i>
-                        </div>
-                        <div>
-                            <p class="font-medium text-gray-900">Retours</p>
-                            <p class="text-sm text-gray-500">15 jours</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
                         <div class="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center">
                             <i class="fas fa-headset text-orange-600"></i>
                         </div>
                         <div>
                             <p class="font-medium text-gray-900">Support</p>
                             <p class="text-sm text-gray-500">24/7</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Description & Details Tabs -->
-        <div class="mt-12">
-            <div class="border-b border-gray-200">
-                <nav class="-mb-px flex space-x-8">
-                    <button type="button" onclick="switchTab('description')" 
-                            id="tab-description" 
-                            class="py-4 px-1 border-b-2 font-medium text-sm border-emerald-500 text-emerald-600">
-                        <i class="fas fa-file-alt mr-2"></i>Description
-                    </button>
-                    <button type="button" onclick="switchTab('shipping')" 
-                            id="tab-shipping" 
-                            class="py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
-                        <i class="fas fa-truck mr-2"></i>Livraison
-                    </button>
-                </nav>
-            </div>
-
-            <!-- Tab Content -->
-            <div id="tab-content" style="display: block" class="py-8">
-                <!-- Description Tab -->
-                <div id="description-content" class="space-y-6">
-                    <p class="text-gray-700 leading-relaxed text-lg">{{ $product->description }}</p>
-                    
-                    <!-- Features List -->
-                    <div class="grid md:grid-cols-2 gap-6">
-                        <div class="space-y-3">
-                            <h4 class="font-bold text-gray-900">Caractéristiques principales</h4>
-                            <ul class="space-y-2">
-                                <li class="flex items-center">
-                                    <i class="fas fa-check text-emerald-500 mr-3"></i>
-                                    <span>Qualité premium garantie</span>
-                                </li>
-                                <li class="flex items-center">
-                                    <i class="fas fa-check text-emerald-500 mr-3"></i>
-                                    <span>Matériaux durables</span>
-                                </li>
-                                <li class="flex items-center">
-                                    <i class="fas fa-check text-emerald-500 mr-3"></i>
-                                    <span>Design moderne et élégant</span>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="space-y-3">
-                            <h4 class="font-bold text-gray-900">Avantages</h4>
-                            <ul class="space-y-2">
-                                <li class="flex items-center">
-                                    <i class="fas fa-check text-emerald-500 mr-3"></i>
-                                    <span>Facile à utiliser</span>
-                                </li>
-                                <li class="flex items-center">
-                                    <i class="fas fa-check text-emerald-500 mr-3"></i>
-                                    <span>Entretien simple</span>
-                                </li>
-                                <li class="flex items-center">
-                                    <i class="fas fa-check text-emerald-500 mr-3"></i>
-                                    <span>Écologique</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Shipping Tab (Hidden by default) -->
-                <div id="shipping-content" class="hidden space-y-6">
-                    <div class="bg-gray-50 p-6 rounded-xl">
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">Informations de livraison</h3>
-                        <div class="grid md:grid-cols-2 gap-6">
-                            <div>
-                                <h4 class="font-semibold text-gray-800 mb-2">Délais de livraison</h4>
-                                <ul class="space-y-2 text-gray-600">
-                                    <li class="flex items-center">
-                                        <i class="fas fa-check-circle text-emerald-500 mr-2"></i>
-                                        <span>Fes : 24 heures</span>
-                                    </li>
-                                    <li class="flex items-center">
-                                        <i class="fas fa-check-circle text-emerald-500 mr-2"></i>
-                                        <span>Grandes villes : 1-3 jours</span>
-                                    </li>
-                                    <li class="flex items-center">
-                                        <i class="fas fa-check-circle text-emerald-500 mr-2"></i>
-                                        <span>Autres régions : 3-5 jours</span>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-gray-800 mb-2">Frais de livraison</h4>
-                                <ul class="space-y-2 text-gray-600">
-                                    <li class="flex items-center">
-                                        <i class="fas fa-truck text-blue-500 mr-2"></i>
-                                        <span>Livraison standard : {{settings('delivery_fee')}} DH</span>
-                                    </li>
-                                    <li class="flex items-center">
-                                        <i class="fas fa-rocket text-purple-500 mr-2"></i>
-                                        <span>Livraison express : 50 DH</span>
-                                    </li>
-                                    @if (settings('free_delivery_threshold'))
-                                    <li class="flex items-center">
-                                        <i class="fas fa-gift text-amber-500 mr-2"></i>
-                                        <span>Offerte à partir de {{settings('free_delivery_threshold')}} DH</span>
-                                    </li>
-                                    @endif
-                                </ul>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -723,27 +539,6 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// Tab switching function
-function switchTab(tabName) {
-    // Update active tab
-    document.querySelectorAll('[id^="tab-"]').forEach(tab => {
-        tab.classList.remove('border-emerald-500', 'text-emerald-600');
-        tab.classList.add('border-transparent', 'text-gray-500');
-    });
-    
-    const activeTab = document.getElementById(`tab-${tabName}`);
-    activeTab.classList.add('border-emerald-500', 'text-emerald-600');
-    activeTab.classList.remove('border-transparent', 'text-gray-500');
-    
-    // Show active content
-    document.querySelectorAll('[id$="-content"]').forEach(content => {
-        content.classList.add('hidden');
-    });
-    
-    const activeContent = document.getElementById(`${tabName}-content`);
-    activeContent.classList.remove('hidden');
-}
-
 // Quantity update
 function updateQuantity(change) {
     const input = document.getElementById('quantity');
@@ -811,10 +606,6 @@ if (variantChooser) {
     const sku = document.getElementById('variantSku');
     const unit = document.getElementById('variantUnit');
     const message = document.getElementById('variantMessage');
-    const stockDot = document.getElementById('variantStockDot');
-    const stockLabel = document.getElementById('variantStockLabel');
-    const stockCount = document.getElementById('variantStockCount');
-    const stockDetails = document.getElementById('variantStockDetails');
     const addButton = document.querySelector('.add-to-cart-btn[data-product-id="{{ $product->id }}"]');
     const buyNowButtons = document.querySelectorAll('.buy-now-btn');
     const defaultVariant = variants.find(v => String(v.id) === String(variantChooser.dataset.defaultId)) || variants[0];
@@ -847,23 +638,7 @@ if (variantChooser) {
     }
 
     function updateStockDisplay(stock) {
-        const isAvailable = stock > 0;
-        if (stockDot) {
-            stockDot.classList.toggle('bg-emerald-500', isAvailable);
-            stockDot.classList.toggle('animate-pulse', isAvailable);
-            stockDot.classList.toggle('bg-red-500', !isAvailable);
-        }
-        if (stockLabel) {
-            stockLabel.textContent = isAvailable ? 'Disponible en stock' : 'Rupture de stock';
-            stockLabel.classList.toggle('text-emerald-700', isAvailable);
-            stockLabel.classList.toggle('text-red-700', !isAvailable);
-        }
-        if (stockCount) {
-            stockCount.textContent = `${stock} unités disponibles`;
-            stockCount.classList.toggle('hidden', !isAvailable);
-        }
-        stockDetails?.classList.toggle('hidden', !isAvailable);
-        setPurchaseAvailability(isAvailable);
+        setPurchaseAvailability(stock > 0);
     }
 
     function applyVariant(variant) {
