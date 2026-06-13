@@ -227,18 +227,37 @@
         /* Mobile header fixes */
         @media (max-width: 1023px) {
             .header-container {
+                position: relative;
                 flex-wrap: wrap;
+                min-height: 3.75rem;
                 padding-top: 0.5rem;
                 padding-bottom: 0.5rem;
             }
             .logo-container {
                 order: 1;
-                width: 40%;
+                position: absolute;
+                top: 0.5rem;
+                left: 50%;
+                width: auto;
+                max-width: calc(100% - 11rem);
+                transform: translateX(-50%);
+                z-index: 1;
+            }
+            .logo-container > a {
+                justify-content: center;
             }
             .mobile-buttons {
                 order: 2;
-                width: 60%;
+                width: 100%;
                 justify-content: flex-end;
+            }
+            #mobileMenuButton {
+                position: absolute;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                z-index: 2;
+                padding: 0.5rem;
             }
             .search-container-mobile {
                 order: 3;
@@ -387,7 +406,7 @@
                         @if($logoPath && file_exists(public_path('storage/'.$logoPath)))
                             <img src="{{ asset('storage/'.$logoPath) }}" alt="{{ $storeName }}" 
                             loading="lazy"
-                                 class="h-10 lg:h-16 w-auto object-contain transition-transform duration-300 hover:scale-105">
+                                 class="h-11 sm:h-12 lg:h-16 w-auto max-w-full object-contain transition-transform duration-300 hover:scale-105">
                                      {{-- <span class="text-lg font-bold text-gray-800 lg:hidden">{{ $storeName }}</span> --}}
                         @else 
                             <div class="flex items-center space-x-2">
