@@ -48,6 +48,10 @@ class ProductGalleryTest extends TestCase
             ], false)
             ->assertSee('object-contain', false)
             ->assertSee('hidden sm:block text-center', false)
+            ->assertSee('id="mobileBuyNowBar"', false)
+            ->assertSee('class="w-full"', false)
+            ->assertSee('window.scrollY > 220', false)
+            ->assertSee("buyNowBar.setAttribute('aria-hidden', String(!shouldShow));", false)
             ->assertSee("syncGallerySelection(galleryIndex >= 0 ? galleryIndex + 1 : 0);", false);
     }
 }

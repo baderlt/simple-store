@@ -254,12 +254,13 @@
 
                         <!-- Fixed buy action shown after the customer starts scrolling -->
                         <div id="mobileBuyNowBar"
-                             class="fixed bottom-0 left-0 right-0 z-50 translate-y-full border-t border-gray-200 bg-white/95 px-4 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] opacity-0 shadow-[0_-8px_30px_rgba(0,0,0,0.12)] backdrop-blur transition-all duration-300 pointer-events-none">
-                            <form action="{{ route('checkout.direct', $product->id) }}" method="GET" id="fixedBuyNowForm" class="mx-auto w-full max-w-4xl">
+                             aria-hidden="true"
+                             class="fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-50 translate-y-[calc(100%+1.5rem)] opacity-0 transition-all duration-300 pointer-events-none sm:inset-x-4">
+                            <form action="{{ route('checkout.direct', $product->id) }}" method="GET" id="fixedBuyNowForm" class="w-full">
                                 <input type="hidden" name="quantity" id="fixedBuyNowQuantity" value="1">
                                     <input type="hidden" name="variant_id" class="selectedVariantInput" value="{{ $defaultVariant?->id }}">
                                 <button type="submit"
-                                        class="buy-now-btn purchase-action-button order-now-attention relative min-h-[59px] overflow-hidden w-full px-5 py-[15.5px] rounded-xl font-bold text-lg flex items-center justify-center group">
+                                        class="buy-now-btn purchase-action-button order-now-attention relative flex min-h-[59px] w-full items-center justify-center overflow-hidden rounded-xl px-5 py-[15.5px] text-lg font-bold shadow-[0_8px_30px_rgba(0,0,0,0.18)] group">
                                     <i class="fas fa-bolt relative z-10 mr-2.5 text-lg group-hover:scale-125 transition-transform"></i>
                                     <span class="relative z-10">Commander maintenant</span>
                                 </button>
@@ -441,9 +442,10 @@ function updateFixedBuyNowBar() {
     }
 
     const shouldShow = window.scrollY > 220;
-    buyNowBar.classList.toggle('translate-y-full', !shouldShow);
+    buyNowBar.classList.toggle('translate-y-[calc(100%+1.5rem)]', !shouldShow);
     buyNowBar.classList.toggle('opacity-0', !shouldShow);
     buyNowBar.classList.toggle('pointer-events-none', !shouldShow);
+    buyNowBar.setAttribute('aria-hidden', String(!shouldShow));
 }
 
 window.addEventListener('scroll', updateFixedBuyNowBar, { passive: true });
