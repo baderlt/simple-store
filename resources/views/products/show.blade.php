@@ -259,8 +259,8 @@
                                 <input type="hidden" name="quantity" id="fixedBuyNowQuantity" value="1">
                                     <input type="hidden" name="variant_id" class="selectedVariantInput" value="{{ $defaultVariant?->id }}">
                                 <button type="submit"
-                                        class="buy-now-btn purchase-action-button order-now-attention relative min-h-16 overflow-hidden w-full px-6 py-5 rounded-2xl font-bold text-lg sm:text-xl flex items-center justify-center group">
-                                    <i class="fas fa-bolt relative z-10 mr-3 text-xl group-hover:scale-125 transition-transform"></i>
+                                        class="buy-now-btn purchase-action-button order-now-attention relative min-h-20 overflow-hidden w-full px-6 py-6 rounded-2xl font-bold text-xl sm:text-2xl flex items-center justify-center group">
+                                    <i class="fas fa-bolt relative z-10 mr-3 text-2xl group-hover:scale-125 transition-transform"></i>
                                     <span class="relative z-10">Commander maintenant</span>
                                 </button>
                             </form>
