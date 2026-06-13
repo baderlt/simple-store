@@ -30,7 +30,7 @@ class ProductStorefrontMetricsTest extends TestCase
         ]);
     }
 
-    public function test_product_metrics_stay_fixed_when_the_page_is_refreshed(): void
+    public function test_product_metrics_are_not_shown_on_the_minimal_product_page(): void
     {
         $product = $this->createProduct([
             'review_rating' => 4.7,
@@ -41,8 +41,14 @@ class ProductStorefrontMetricsTest extends TestCase
         foreach (range(1, 2) as $refresh) {
             $this->get(route('products.show', $product->slug))
                 ->assertOk()
-                ->assertSee('4.7 (42 avis)')
-                ->assertSee('68 vendus');
+                ->assertDontSee('4.7 (42 avis)')
+                ->assertDontSee('68 vendus')
+                ->assertDontSee('Disponible en stock')
+                ->assertDontSee('Garantie')
+                ->assertDontSee('1 an')
+                ->assertDontSee('Retours')
+                ->assertDontSee('15 jours')
+                ->assertDontSee('Description');
         }
 
         $this->assertSame(68, $product->fresh()->sales_count);
