@@ -41,16 +41,16 @@
                                     <div class="flex items-center justify-between mt-2">
                                         <div class="flex items-center space-x-4">
                                             <span class="text-lg font-bold text-gray-900">
-                                                {{ number_format($item['final_price'] * $item['quantity'], 2) }} DH
+                                                {{ number_format($item['final_price'] * $item['quantity'], 0) }} DH
                                             </span>
                                             @if($item['has_discount'] && $item['final_price'] < $item['price'])
                                                 <span class="text-sm text-gray-400 line-through">
-                                                    {{ number_format($item['price'] * $item['quantity'], 2) }} DH
+                                                    {{ number_format($item['price'] * $item['quantity'], 0) }} DH
                                                 </span>
                                             @endif
                                         </div>
                                         <div class="text-gray-600">
-                                            {{ $item['quantity'] }} × {{ number_format($item['final_price'], 2) }} DH
+                                            {{ $item['quantity'] }} × {{ number_format($item['final_price'], 0) }} DH
                                         </div>
                                     </div>
                                 </div>
@@ -69,11 +69,11 @@
                                         $subtotal += $item['final_price'] * $item['quantity'];
                                     }
                                 @endphp
-                                <span class="font-medium">{{ number_format($subtotal, 2) }} DH</span>
+                                <span class="font-medium">{{ number_format($subtotal, 0) }} DH</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Frais de livraison</span>
-                                <span class="font-medium">{{ number_format($deliveryFee, 2) }} DH</span>
+                                <span class="font-medium">{{ number_format($deliveryFee, 0) }} DH</span>
                             </div>
                             @php
                                 $threshold=settings('free_delivery_threshold');
@@ -81,14 +81,14 @@
                             @if($threshold && $subtotal > $threshold)
                                 <div class="flex justify-between">
                                     <span class="text-gray-600">Livraison offerte</span>
-                                    <span class="font-medium text-rose-600">-{{ number_format($deliveryFee, 2) }} DH</span>
+                                    <span class="font-medium text-rose-600">-{{ number_format($deliveryFee, 0) }} DH</span>
                                 </div>
                             @endif
                             <div class="border-t border-gray-300 pt-3">
                                 <div class="flex justify-between text-lg">
                                     <span class="font-bold text-gray-900">Total</span>
                                     <span class="font-bold text-emerald-600">
-                                        {{ number_format($subtotal + ($threshold && $subtotal > $threshold ? 0 : $deliveryFee), 2) }} DH
+                                        {{ number_format($subtotal + ($threshold && $subtotal > $threshold ? 0 : $deliveryFee), 0) }} DH
                                     </span>
                                 </div>
                             </div>
@@ -219,7 +219,7 @@
                         <div id="mobileCheckoutSubmit" class="mt-8 md:mt-8 mobile-checkout-submit md:static fixed bottom-0 left-0 right-0 z-50 bg-white p-3 md:p-0 border-t md:border-t-0 shadow-2xl md:shadow-none transform translate-y-full opacity-0 pointer-events-none md:translate-y-0 md:opacity-100 md:pointer-events-auto transition-all duration-300">
                             <button type="submit"
                                     id="submitButton"
-                                    class="w-full bg-green-600 text-white font-bold py-4 px-6 rounded-lg hover:bg-green-700 transition-all shadow-lg hover:shadow-xl flex items-center justify-center group disabled:opacity-70 disabled:cursor-not-allowed">
+                                    class="w-full bg-gradient-to-r from-emerald-600 to-green-500 text-white font-extrabold text-lg sm:text-xl py-5 px-6 rounded-xl hover:from-emerald-700 hover:to-green-600 transition-all duration-200 shadow-xl shadow-emerald-600/25 hover:shadow-2xl hover:shadow-emerald-600/35 hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center group ring-1 ring-white/20 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none">
                                 <span id="buttonText">
                                     @if($isDirect ?? false)
                                         <i class="fas fa-bolt mr-3 group-hover:rotate-12 transition-transform"></i>
