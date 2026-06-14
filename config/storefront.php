@@ -6,6 +6,12 @@ return [
         'available' => ['minimal', 'modern', 'luxury', 'dark', 'fashion', 'electronics'],
     ],
 
+    'product_images' => [
+        'max_width' => (int) env('PRODUCT_IMAGE_MAX_WIDTH', 1600),
+        'max_height' => (int) env('PRODUCT_IMAGE_MAX_HEIGHT', 1600),
+        'quality' => (int) env('PRODUCT_IMAGE_QUALITY', 82),
+    ],
+
     'homepage_sections' => [
         ['key' => 'hero_slider', 'name' => 'Hero Slider', 'layout' => 'full', 'position' => 10],
         ['key' => 'categories', 'name' => 'Categories', 'layout' => 'grid', 'position' => 20],
