@@ -81,26 +81,19 @@
                                 <div class="space-y-2 text-right">
                                     <div class="flex justify-between">
                                         <span class="text-gray-600">Sous-total:</span>
-                                        <span class="font-semibold">{{ $order->total }} DH</span>
+                                        <span class="font-semibold">{{ number_format($order->subtotal, 2) }} DH</span>
                                     </div>
                                     <div class="flex justify-between">
                                         <span class="text-gray-600">Livraison:</span>
-                                        @php
-                                            $threshold = settings('free_delivery_threshold');
-                                        @endphp
-                                        @if($threshold && $order->total > $threshold)
+                                        @if((float) $order->delivery_fee === 0.0)
                                             <span class="text-green-600 font-semibold">Gratuite</span>
                                         @else
-                                            <span class="font-semibold">{{ $order->delivery_fee }} DH</span>
+                                            <span class="font-semibold">{{ number_format($order->delivery_fee, 2) }} DH</span>
                                         @endif
                                     </div>
                                     <div class="flex justify-between text-lg pt-2 border-t">
                                         <span class="font-bold">Total:</span>
-                                        @if($threshold && $order->total > $threshold)
-                                            <span class="text-2xl font-bold text-green-600">{{ $order->total }} DH</span>
-                                        @else
-                                            <span class="text-2xl font-bold text-green-600">{{ $order->total + $order->delivery_fee }} DH</span>
-                                        @endif
+                                        <span class="text-2xl font-bold text-green-600">{{ number_format($order->total, 2) }} DH</span>
                                     </div>
                                 </div>
                             </div>

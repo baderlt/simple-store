@@ -89,10 +89,7 @@
 
     <div class="totals">
         <table>
-            @php
-                $threshold = settings('free_delivery_threshold');
-                $isFreeDelivery = $threshold && $order->subtotal > $threshold;
-            @endphp
+            @php($isFreeDelivery = (float) $order->delivery_fee === 0.0)
             
             <tr>
                 <td>Sous-total articles:</td>
@@ -122,11 +119,7 @@
             <tr class="total-row">
                 <td>TOTAL À PAYER:</td>
                 <td class="text-right">
-                    @if($isFreeDelivery)
-                        {{ number_format($order->total, 2) }} DH
-                    @else
-                        {{ number_format($order->total + $order->delivery_fee, 2) }} DH
-                    @endif
+                    {{ number_format($order->total, 2) }} DH
                 </td>
             </tr>
         </table>
@@ -150,11 +143,7 @@
         <p style="margin-top: 10px;">
             <strong>Montant à payer:</strong> 
             <span style="font-weight: bold; color: #22c55e;">
-                @if($isFreeDelivery)
-                    {{ number_format($order->total, 2) }} DH
-                @else
-                    {{ number_format($order->total + $order->delivery_fee, 2) }} DH
-                @endif
+                {{ number_format($order->total, 2) }} DH
             </span>
         </p>
     </div>

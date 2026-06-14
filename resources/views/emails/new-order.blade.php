@@ -61,7 +61,7 @@
                 <div style="text-align: right;">
                     <p><strong>Sous-total:</strong> {{ $order->subtotal }} Dhs</p>
                     <p><strong>Frais de livraison:</strong> {{ $order->delivery_fee }} Dhs</p>
-                    <p class="total">Total: {{ $order->total + $order->delivery_fee }} Dhs</p>
+                    <p class="total">Total: {{ $order->total }} Dhs</p>
                 </div>
             </div>
             

@@ -48,12 +48,8 @@
             <div>
                 <p class="text-sm text-gray-600">Total</p>
                 <p class="text-xl font-bold text-emerald-700">
-                    @php
-                        $threshold = settings('free_delivery_threshold');
-                        $isFreeDelivery = $threshold && $order->total > $threshold;
-                        $total = $isFreeDelivery ? $order->total : $order->total + $order->delivery_fee;
-                    @endphp
-                    {{ number_format($total, 2) }} DH
+                    @php($isFreeDelivery = (float) $order->delivery_fee === 0.0)
+                    {{ number_format($order->total, 2) }} DH
                 </p>
             </div>
             @if($isFreeDelivery)
@@ -137,10 +133,6 @@
 
                             <div class="flex justify-between items-center">
                                 <span class="text-gray-600 text-sm sm:text-base">Frais de livraison:</span>
-                                @php
-                                    $threshold = settings('free_delivery_threshold');
-                                    $isFreeDelivery = $threshold && $order->total > $threshold;
-                                @endphp
                                 @if($isFreeDelivery)
                                     <span class="font-semibold text-green-600">Gratuite</span>
                                 @else
@@ -152,11 +144,7 @@
                                 <div class="flex justify-between items-center">
                                     <span class="text-base sm:text-lg font-bold">Total à payer:</span>
                                     <span class="text-xl sm:text-2xl font-bold text-emerald-700">
-                                        @if($isFreeDelivery)
-                                            {{ number_format($order->total, 2) }} DH
-                                        @else
-                                            {{ number_format($order->total + $order->delivery_fee, 2) }} DH
-                                        @endif
+                                        {{ number_format($order->total, 2) }} DH
                                     </span>
                                 </div>
                                 @if($isFreeDelivery)
