@@ -119,5 +119,12 @@
   "update_status": "Mettre à jour le statut",
   "view_all": "Voir tout",
   "view_low_stock": "Voir tous les produits en stock faible",
-  "view_site": "Voir le site"
+  "view_site": "Voir le site",
+  "new_order_notifications": "Notifications des nouvelles commandes",
+  "new_orders": "Nouvelles commandes",
+  "pending_orders_only": "Commandes en attente uniquement",
+  "no_new_orders": "Aucune nouvelle commande",
+  "new_orders_will_appear_here": "Les nouvelles commandes apparaîtront ici.",
+  "view_all_new_orders": "Voir toutes les nouvelles commandes",
+  "open_menu": "Ouvrir le menu"
 }

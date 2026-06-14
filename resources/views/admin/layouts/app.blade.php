@@ -49,10 +49,22 @@
 
         [dir="rtl"] .sidebar-mobile {
             transform: translateX(100%);
+            left: auto;
+            right: 0;
         }
 
         [dir="rtl"] .sidebar-mobile.active {
             transform: translateX(0);
+        }
+
+        [x-cloak] {
+            display: none !important;
+        }
+
+        [dir="rtl"] .notification-panel {
+            right: auto;
+            left: 0;
+            transform-origin: top left;
         }
         
         /* Backdrop for mobile sidebar */
@@ -94,12 +106,12 @@
 <body class="bg-gray-50">
     {{-- Mobile Header --}}
     <div class="lg:hidden bg-white shadow-sm border-b border-gray-200 sticky top-0 z-30">
-        <div class="flex items-center justify-between px-4 py-3">
-            <div class="flex items-center space-x-3">
-                <button id="mobileMenuButton" class="p-2 rounded-lg hover:bg-gray-100">
+        <div class="flex min-w-0 items-center justify-between gap-2 px-3 py-3 sm:px-4">
+            <div class="flex min-w-0 items-center gap-2">
+                <button id="mobileMenuButton" class="shrink-0 p-2 rounded-lg hover:bg-gray-100" aria-label="{{ __('open_menu') }}">
                     <i class="fas fa-bars text-gray-700 text-lg"></i>
                 </button>
-                <div class="flex items-center space-x-2">
+                <div class="flex min-w-0 items-center gap-2">
                     @php
                         $logoPath = settings('logo');
                         $storeName = settings('store_name', 'Maison Dorée');
@@ -112,35 +124,32 @@
                             <i class="fas fa-jar text-white text-sm"></i>
                         </div>
                     @endif
-                    <span class="font-bold text-gray-800">Admin</span>
+                    <span class="hidden truncate font-bold text-gray-800 min-[390px]:block">{{ __('admin_panel') }}</span>
                 </div>
             </div>
             
-            <div class="flex items-center space-x-3">
+            <div class="flex shrink-0 items-center gap-2">
                 {{-- Mobile Notifications --}}
-                <button class="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full">
-                    <i class="fas fa-bell"></i>
-                    <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                </button>
+                @include('admin.components.notifications')
 
                 {{-- Mobile Language Switcher --}}
-                <div class="flex rounded-full border border-gray-200 bg-white p-1 text-xs font-semibold">
+                <div class="flex rounded-full border border-gray-200 bg-white p-0.5 text-[11px] font-semibold sm:p-1 sm:text-xs">
                     <a href="{{ route('lang.switch', 'en') }}"
-                       class="px-2 py-1 rounded-full transition-colors {{ app()->getLocale() === 'en' ? 'bg-green-600 text-white' : 'text-gray-600' }}">
+                       class="rounded-full px-1.5 py-1 transition-colors sm:px-2 {{ app()->getLocale() === 'en' ? 'bg-green-600 text-white' : 'text-gray-600' }}">
                         EN
                     </a>
                     <a href="{{ route('lang.switch', 'fr') }}"
-                       class="px-2 py-1 rounded-full transition-colors {{ app()->getLocale() === 'fr' ? 'bg-green-600 text-white' : 'text-gray-600' }}">
+                       class="rounded-full px-1.5 py-1 transition-colors sm:px-2 {{ app()->getLocale() === 'fr' ? 'bg-green-600 text-white' : 'text-gray-600' }}">
                         FR
                     </a>
                     <a href="{{ route('lang.switch', 'ar') }}"
-                       class="px-2 py-1 rounded-full transition-colors {{ app()->getLocale() === 'ar' ? 'bg-green-600 text-white' : 'text-gray-600' }}">
+                       class="rounded-full px-1.5 py-1 transition-colors sm:px-2 {{ app()->getLocale() === 'ar' ? 'bg-green-600 text-white' : 'text-gray-600' }}">
                         AR
                     </a>
                 </div>
 
                 {{-- Mobile User Avatar --}}
-                <a href="{{ route('admin.profile.edit') }}" class="user-avatar w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full flex items-center justify-center shadow-md">
+                <a href="{{ route('admin.profile.edit') }}" class="user-avatar hidden w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full min-[360px]:flex items-center justify-center shadow-md">
                     <span class="font-bold text-white text-sm">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
                 </a>
             </div>
@@ -360,7 +369,7 @@
             {{-- Desktop Header --}}
             <header class="hidden lg:flex bg-white shadow-sm border-b border-gray-200">
                 <div class="flex items-center justify-between px-8 py-4 w-full">
-                    <div class="flex items-center space-x-4">
+                    <div class="flex min-w-0 items-center gap-4">
                         <h2 class="text-2xl font-bold text-gray-800">@yield('header', 'Tableau de bord')</h2>
                         @hasSection('subheader')
                             <span class="text-gray-400">/</span>
@@ -368,12 +377,9 @@
                         @endif
                     </div>
                     
-                    <div class="flex items-center space-x-6">
+                    <div class="flex shrink-0 items-center gap-4 xl:gap-6">
                         {{-- Notifications --}}
-                        <button class="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full">
-                            <i class="fas fa-bell"></i>
-                            <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                        </button>
+                        @include('admin.components.notifications')
 
                         {{-- Language Switcher --}}
                         <div class="hidden sm:flex rounded-full border border-gray-200 bg-white p-1 text-xs font-semibold">
@@ -388,8 +394,8 @@
                         </div>
 
                         {{-- User Menu --}}
-                        <div class="flex items-center space-x-3">
-                            <div class="text-right">
+                        <div class="flex items-center gap-3">
+                            <div class="hidden text-right xl:block">
                                 <p class="font-semibold text-gray-800">{{ auth()->user()->name }}</p>
                                 <p class="text-sm text-gray-500">{{ __('administrator') }}</p>
                             </div>

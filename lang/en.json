@@ -119,5 +119,12 @@
   "update_status": "Update status",
   "view_all": "View All",
   "view_low_stock": "View all low stock products",
-  "view_site": "View Site"
+  "view_site": "View Site",
+  "new_order_notifications": "New order notifications",
+  "new_orders": "New orders",
+  "pending_orders_only": "Pending orders only",
+  "no_new_orders": "No new orders",
+  "new_orders_will_appear_here": "New orders will appear here.",
+  "view_all_new_orders": "View all new orders",
+  "open_menu": "Open menu"
 }

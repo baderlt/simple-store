@@ -119,5 +119,12 @@
   "update_status": "تحديث حالة الطلب",
   "view_all": "عرض الكل",
   "view_low_stock": "عرض كل المنتجات ذات المخزون المنخفض",
-  "view_site": "عرض الموقع"
+  "view_site": "عرض الموقع",
+  "new_order_notifications": "إشعارات الطلبات الجديدة",
+  "new_orders": "الطلبات الجديدة",
+  "pending_orders_only": "الطلبات قيد الانتظار فقط",
+  "no_new_orders": "لا توجد طلبات جديدة",
+  "new_orders_will_appear_here": "ستظهر الطلبات الجديدة هنا.",
+  "view_all_new_orders": "عرض كل الطلبات الجديدة",
+  "open_menu": "فتح القائمة"
 }
