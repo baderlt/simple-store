@@ -108,6 +108,7 @@
                                                    name="customer_city"
                                                    id="customer_city"
                                                    value="{{ old('customer_city') }}"
+                                                   list="moroccanCities"
                                                    required
                                                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 @error('customer_city') border-rose-500 @enderror"
                                                    placeholder="{{ __('checkout.city_placeholder') }}">
