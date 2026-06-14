@@ -284,6 +284,7 @@
                                 <p class="text-xs sm:text-sm text-red-500 mt-2 sm:mt-3 font-medium" id="fileCountMessage">
                                     Maximum 10 images
                                 </p>
+                                <p class="text-xs text-emerald-600 mt-1">Les images sont automatiquement redimensionnées et compressées pour un chargement rapide.</p>
                             </div>
                             <input type="file" 
                                    name="images[]" 

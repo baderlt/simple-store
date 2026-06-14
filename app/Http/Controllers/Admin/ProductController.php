@@ -10,6 +10,7 @@ use App\Models\ProductAttributeValue;
 use App\Models\ProductImage;
 use App\Models\ProductVariant;
 use App\Models\ProductVariantItem;
+use App\Services\ProductImageOptimizer;
 use Illuminate\Database\QueryException;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\Request;
@@ -21,6 +22,10 @@ use Illuminate\Validation\ValidationException;
 
 class ProductController extends Controller
 {
+    public function __construct(private readonly ProductImageOptimizer $productImageOptimizer)
+    {
+    }
+
     public function index()
     {
         $products = Product::with(['category', 'primaryImage', 'variants'])
@@ -234,10 +239,7 @@ class ProductController extends Controller
 
         try {
             foreach ($images as $index => $image) {
-                $path = $image->store('products', 'public');
-                if (!$path) {
-                    throw new \RuntimeException('The product image could not be written to the public disk.');
-                }
+                $path = $this->productImageOptimizer->store($image);
                 $storedPaths[] = $path;
                 $makePrimary = $appendOnly
                     ? ($primaryIndex === $index || ($existingCount === 0 && $index === 0 && $primaryIndex < 0))

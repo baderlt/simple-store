@@ -400,6 +400,7 @@
                                     <span class="px-3 py-1 bg-gray-100 rounded-full text-gray-600">PNG</span>
                                     <span class="px-3 py-1 bg-gray-100 rounded-full text-gray-600">WEBP</span>
                                 </div>
+                                <p class="text-xs text-blue-600 mt-3">Les images sont automatiquement redimensionnées et compressées pour un chargement rapide.</p>
                             </div>
                             <input type="file" 
                                    name="images[]" 

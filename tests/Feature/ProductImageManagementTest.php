@@ -56,6 +56,38 @@ class ProductImageManagementTest extends TestCase
         $product->images->each(fn (ProductImage $image) => Storage::disk('public')->assertExists($image->image_path));
     }
 
+    public function test_uploaded_product_images_are_resized_and_stored_in_an_optimized_format(): void
+    {
+        Storage::fake('public');
+        config()->set('storefront.product_images.max_width', 800);
+        config()->set('storefront.product_images.max_height', 800);
+
+        $admin = User::factory()->create(['is_admin' => true]);
+        $category = Category::create(['name' => 'General', 'slug' => 'general', 'is_active' => true]);
+        $upload = UploadedFile::fake()->image('large-product.png', 2400, 1200);
+
+        $this->actingAs($admin)->post(route('admin.products.store'), [
+            'name' => 'Optimized Product',
+            'category_id' => $category->id,
+            'price' => 100,
+            'stock_quantity' => 5,
+            'low_stock_alert' => 1,
+            'images' => [$upload],
+        ])->assertRedirect(route('admin.products.index'));
+
+        $image = Product::where('slug', 'optimized-product')->firstOrFail()->images()->firstOrFail();
+        $expectedExtension = function_exists('imagewebp') ? '.webp' : '.jpg';
+        $expectedType = function_exists('imagewebp') ? IMAGETYPE_WEBP : IMAGETYPE_JPEG;
+        $this->assertStringEndsWith($expectedExtension, $image->image_path);
+        Storage::disk('public')->assertExists($image->image_path);
+
+        [$width, $height, $type] = getimagesize(Storage::disk('public')->path($image->image_path));
+        $this->assertSame(800, $width);
+        $this->assertSame(400, $height);
+        $this->assertSame($expectedType, $type);
+        $this->assertLessThan($upload->getSize(), Storage::disk('public')->size($image->image_path));
+    }
+
     public function test_primary_and_delete_routes_are_scoped_to_the_product(): void
     {
         Storage::fake('public');
