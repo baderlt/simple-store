@@ -11,6 +11,7 @@ use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 
 class CheckoutController extends Controller
@@ -156,7 +157,10 @@ class CheckoutController extends Controller
 
             $configuredDeliveryFee = (float) settings('delivery_fee', 30);
             $freeDeliveryThreshold = (float) settings('free_delivery_threshold', 0);
-            $deliveryFee = $freeDeliveryThreshold > 0 && $subtotal > $freeDeliveryThreshold ? 0 : $configuredDeliveryFee;
+            $hasFreeCityDelivery = $this->isFreeDeliveryCity($validated['customer_city']);
+            $deliveryFee = $hasFreeCityDelivery || ($freeDeliveryThreshold > 0 && $subtotal > $freeDeliveryThreshold)
+                ? 0
+                : $configuredDeliveryFee;
             $total = $subtotal + $deliveryFee;
 
             // Create order
@@ -300,5 +304,15 @@ class CheckoutController extends Controller
     {
         $order = Order::with('items.variant')->findOrFail($orderId);
         return view('checkout.success', compact('order'));
+    }
+
+    private function isFreeDeliveryCity(string $city): bool
+    {
+        $normalizedCity = Str::of($city)
+            ->lower()
+            ->ascii()
+            ->replaceMatches('/[^\pL\pN]+/u', '');
+
+        return $normalizedCity->contains('laayoune') || $normalizedCity->contains('العيون');
     }
 }
