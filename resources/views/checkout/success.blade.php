@@ -26,27 +26,22 @@
         <p><strong>Adresse:</strong> {{ $order->customer_address }}, {{ $order->customer_city }}</p>
         
         <div class="border-t border-b my-4 py-4">
-            @php
-            $threshold = settings('free_delivery_threshold');
-            $delivery_fee = $threshold && $order->total > $threshold ? 0 : $order->delivery_fee;
-            @endphp
-            
             <div class="space-y-2">
                 <div class="flex justify-between">
                     <span>Sous-total:</span>
-                    <span>{{ $order->total }} DH</span>
+                    <span>{{ number_format($order->subtotal, 2) }} DH</span>
                 </div>
                 <div class="flex justify-between">
                     <span>Livraison:</span>
-                    @if($threshold && $order->total > $threshold)
+                    @if((float) $order->delivery_fee === 0.0)
                     <span class="text-green-600 font-bold">Gratuite</span>
                     @else
-                    <span>{{ $order->delivery_fee }} DH</span>
+                    <span>{{ number_format($order->delivery_fee, 2) }} DH</span>
                     @endif
                 </div>
                 <div class="flex justify-between font-bold text-lg pt-2 border-t">
                     <span>Total:</span>
-                    <span class="text-green-600">{{ $order->total + $delivery_fee }} DH</span>
+                    <span class="text-green-600">{{ number_format($order->total, 2) }} DH</span>
                 </div>
             </div>
         </div>
