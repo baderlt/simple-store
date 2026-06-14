@@ -17,7 +17,7 @@
                 <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
                     <div class="p-6 sm:p-8 relative">
                         <!-- Loading Overlay -->
-                        <div id="loadingOverlay" class="hidden absolute inset-0 bg-white/95 backdrop-blur-sm z-20 flex flex-col items-center justify-center">
+                        <div id="loadingOverlay" class="hidden absolute inset-0 bg-white/95 backdrop-blur-sm z-20 flex flex-col items-center justify-center rounded-2xl">
                             <div class="text-center p-6">
                                 <div class="inline-block animate-spin rounded-full h-14 w-14 border-4 border-emerald-200 border-t-emerald-600 mb-4"></div>
                                 <h3 class="text-xl font-semibold text-gray-900 mb-2">Commande en cours...</h3>
@@ -44,18 +44,13 @@
                                             <label for="customer_name" class="block text-sm font-semibold text-gray-700 mb-2">
                                                 Nom complet <span class="text-rose-500">*</span>
                                             </label>
-                                            <div class="relative">
-                                                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-                                                    <i class="fas fa-user text-gray-400"></i>
-                                                </div>
-                                                <input type="text"
-                                                       name="customer_name"
-                                                       id="customer_name"
-                                                       value="{{ old('customer_name', auth()->user()->name ?? '') }}"
-                                                       required
-                                                       class="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 @error('customer_name') border-rose-500 @enderror"
-                                                       placeholder="Jean Dupont">
-                                            </div>
+                                            <input type="text"
+                                                   name="customer_name"
+                                                   id="customer_name"
+                                                   value="{{ old('customer_name', auth()->user()->name ?? '') }}"
+                                                   required
+                                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 @error('customer_name') border-rose-500 @enderror"
+                                                   placeholder="Jean Dupont">
                                             @error('customer_name')
                                                 <p class="mt-1 text-sm text-rose-600">{{ $message }}</p>
                                             @enderror
@@ -66,18 +61,13 @@
                                             <label for="customer_phone" class="block text-sm font-semibold text-gray-700 mb-2">
                                                 Téléphone <span class="text-rose-500">*</span>
                                             </label>
-                                            <div class="relative">
-                                                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-                                                    <i class="fas fa-phone-alt text-gray-400"></i>
-                                                </div>
-                                                <input type="tel"
-                                                       name="customer_phone"
-                                                       id="customer_phone"
-                                                       value="{{ old('customer_phone', auth()->user()->phone ?? '') }}"
-                                                       required
-                                                       class="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 @error('customer_phone') border-rose-500 @enderror"
-                                                       placeholder="06 12 34 56 78">
-                                            </div>
+                                            <input type="tel"
+                                                   name="customer_phone"
+                                                   id="customer_phone"
+                                                   value="{{ old('customer_phone', auth()->user()->phone ?? '') }}"
+                                                   required
+                                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 @error('customer_phone') border-rose-500 @enderror"
+                                                   placeholder="06 12 34 56 78">
                                             @error('customer_phone')
                                                 <p class="mt-1 text-sm text-rose-600">{{ $message }}</p>
                                             @enderror
@@ -88,18 +78,13 @@
                                             <label for="customer_city" class="block text-sm font-semibold text-gray-700 mb-2">
                                                 Ville <span class="text-rose-500">*</span>
                                             </label>
-                                            <div class="relative">
-                                                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-                                                    <i class="fas fa-city text-gray-400"></i>
-                                                </div>
-                                                <input type="text"
-                                                       name="customer_city"
-                                                       id="customer_city"
-                                                       value="{{ old('customer_city') }}"
-                                                       required
-                                                       class="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 @error('customer_city') border-rose-500 @enderror"
-                                                       placeholder="Casablanca, Rabat, Marrakech...">
-                                            </div>
+                                            <input type="text"
+                                                   name="customer_city"
+                                                   id="customer_city"
+                                                   value="{{ old('customer_city') }}"
+                                                   required
+                                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 @error('customer_city') border-rose-500 @enderror"
+                                                   placeholder="Casablanca, Rabat, Marrakech...">
                                             @error('customer_city')
                                                 <p class="mt-1 text-sm text-rose-600">{{ $message }}</p>
                                             @enderror
@@ -110,17 +95,12 @@
                                             <label for="customer_address" class="block text-sm font-semibold text-gray-700 mb-2">
                                                 Adresse complète <span class="text-rose-500">*</span>
                                             </label>
-                                            <div class="relative">
-                                                <div class="absolute top-4 left-4 pointer-events-none">
-                                                    <i class="fas fa-map-marker-alt text-gray-400"></i>
-                                                </div>
-                                                <textarea name="customer_address"
-                                                          id="customer_address"
-                                                          rows="3"
-                                                          required
-                                                          class="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 @error('customer_address') border-rose-500 @enderror"
-                                                          placeholder="Numéro, rue, quartier, immeuble, étage...">{{ old('customer_address') }}</textarea>
-                                            </div>
+                                            <textarea name="customer_address"
+                                                      id="customer_address"
+                                                      rows="3"
+                                                      required
+                                                      class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 @error('customer_address') border-rose-500 @enderror"
+                                                      placeholder="Numéro, rue, quartier, immeuble, étage...">{{ old('customer_address') }}</textarea>
                                             @error('customer_address')
                                                 <p class="mt-1 text-sm text-rose-600">{{ $message }}</p>
                                             @enderror
@@ -131,21 +111,16 @@
                                             <label for="notes" class="block text-sm font-semibold text-gray-700 mb-2">
                                                 Notes supplémentaires (optionnel)
                                             </label>
-                                            <div class="relative">
-                                                <div class="absolute top-4 left-4 pointer-events-none">
-                                                    <i class="fas fa-pen text-gray-400"></i>
-                                                </div>
-                                                <textarea name="notes"
-                                                          id="notes"
-                                                          rows="2"
-                                                          class="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
-                                                          placeholder="Instructions de livraison, code d'accès, horaires préférés...">{{ old('notes') }}</textarea>
-                                            </div>
+                                            <textarea name="notes"
+                                                      id="notes"
+                                                      rows="2"
+                                                      class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                                                      placeholder="Instructions de livraison, code d'accès, horaires préférés...">{{ old('notes') }}</textarea>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Payment Method Section - Only Cash on Delivery -->
+                                <!-- Payment Method Section - Cash on Delivery only -->
                                 <div>
                                     <div class="flex items-center space-x-3 mb-6 pb-2 border-b border-gray-200">
                                         <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
@@ -186,7 +161,7 @@
                                 </div>
                             </div>
 
-                            <!-- Submit Button Section (Desktop - inside form) -->
+                            <!-- Submit Button Section (Desktop) -->
                             <div class="mt-8 pt-6 border-t border-gray-200 hidden md:block">
                                 <button type="submit"
                                         id="submitButton"
@@ -332,7 +307,7 @@
     </div>
 </div>
 
-<!-- Sticky Mobile Checkout Button (visible only on mobile when scrolled) -->
+<!-- Sticky Mobile Checkout Button -->
 <div id="mobileCheckoutSubmit" 
      class="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-gray-200 p-4 shadow-[0_-10px_30px_-8px_rgba(0,0,0,0.1)] transition-all duration-500 ease-out md:hidden translate-y-full opacity-0 pointer-events-none">
     <div class="flex items-center justify-between gap-3">
@@ -393,7 +368,7 @@
     let isSubmitting = false;
 
     if (form) {
-        form.addEventListener('submit', async function(e) {
+        form.addEventListener('submit', function(e) {
             // Client-side validation before submission
             const name = document.getElementById('customer_name');
             const phone = document.getElementById('customer_phone');
@@ -402,33 +377,32 @@
             
             let isValid = true;
             
-            // Simple validation
+            // Reset previous errors
+            document.querySelectorAll('.error-message').forEach(el => el.remove());
+            document.querySelectorAll('.border-rose-500').forEach(el => {
+                el.classList.remove('border-rose-500', 'bg-rose-50');
+            });
+            
+            // Validation
             if (!name.value.trim()) {
                 showFieldError(name, 'Veuillez entrer votre nom complet');
                 isValid = false;
-            } else {
-                clearFieldError(name);
             }
             
-            if (!phone.value.trim() || phone.value.replace(/\s/g, '').length < 9) {
-                showFieldError(phone, 'Veuillez entrer un numéro de téléphone valide');
+            const phoneClean = phone.value.replace(/\s/g, '');
+            if (!phone.value.trim() || phoneClean.length < 9 || phoneClean.length > 10) {
+                showFieldError(phone, 'Veuillez entrer un numéro de téléphone valide (10 chiffres)');
                 isValid = false;
-            } else {
-                clearFieldError(phone);
             }
             
             if (!city.value.trim()) {
                 showFieldError(city, 'Veuillez entrer votre ville');
                 isValid = false;
-            } else {
-                clearFieldError(city);
             }
             
             if (!address.value.trim()) {
                 showFieldError(address, 'Veuillez entrer votre adresse complète');
                 isValid = false;
-            } else {
-                clearFieldError(address);
             }
             
             if (!isValid) {
@@ -462,11 +436,11 @@
                 if (buttonSpinner) buttonSpinner.classList.remove('hidden');
             }
             
-            // Also disable mobile button if exists
+            // Also disable mobile button
             const mobileButton = document.querySelector('#mobileCheckoutSubmit button');
             if (mobileButton) mobileButton.disabled = true;
             
-            return true; // Allow form submission
+            return true;
         });
     }
     
@@ -474,40 +448,23 @@
     function showFieldError(field, message) {
         field.classList.add('border-rose-500', 'bg-rose-50');
         
-        // Remove existing error message
+        // Remove existing error message for this field
         const existingError = field.parentElement.querySelector('.error-message');
         if (existingError) existingError.remove();
         
-        // Create error message element
+        // Add new error message
         const error = document.createElement('p');
         error.className = 'error-message mt-1 text-sm text-rose-600';
         error.innerHTML = `<i class="fas fa-exclamation-circle mr-1"></i>${message}`;
-        
-        // Insert after the field's parent (the relative div)
-        field.parentElement.parentElement?.appendChild(error) || field.parentElement.appendChild(error);
-    }
-    
-    function clearFieldError(field) {
-        field.classList.remove('border-rose-500', 'bg-rose-50');
-        // Remove error message - traverse up to find the container
-        let parent = field.parentElement;
-        while (parent && !parent.classList.contains('md\\:col-span-2') && parent !== document.body) {
-            const existingError = parent.querySelector('.error-message');
-            if (existingError) existingError.remove();
-            parent = parent.parentElement;
-        }
-        // Also check the direct parent of the relative div
-        const grandParent = field.parentElement?.parentElement;
-        if (grandParent) {
-            const existingError = grandParent.querySelector('.error-message');
-            if (existingError) existingError.remove();
-        }
+        field.parentElement.appendChild(error);
     }
     
     // Clear errors on input
     document.querySelectorAll('#customer_name, #customer_phone, #customer_city, #customer_address').forEach(field => {
         field.addEventListener('input', function() {
-            clearFieldError(this);
+            this.classList.remove('border-rose-500', 'bg-rose-50');
+            const existingError = this.parentElement.querySelector('.error-message');
+            if (existingError) existingError.remove();
         });
     });
 </script>
@@ -561,15 +518,18 @@
         transform: none !important;
     }
     
-    /* Fix icon alignment for textarea */
-    .relative .absolute {
-        z-index: 1;
+    /* Clean input styling */
+    input, textarea {
+        transition: all 0.2s ease;
     }
     
-    /* Ensure proper spacing for error messages */
-    .error-message {
-        margin-top: 0.25rem;
-        font-size: 0.875rem;
+    input:hover, textarea:hover {
+        border-color: #cbd5e1;
+    }
+    
+    /* Radio button animation */
+    .peer:checked + label {
+        border-color: #10b981;
     }
 </style>
 @endsection
