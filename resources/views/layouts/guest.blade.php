@@ -295,6 +295,7 @@
             .auth-heading p { margin-top: .55rem; color: #78716c; font-size: .83rem; line-height: 1.65; }
             .auth-status { margin-bottom: 1.25rem; padding: .85rem 1rem; border: 1px solid #bbf7d0; border-radius: .8rem; background: #f0fdf4; color: #15803d; font-size: .8rem; }
             .auth-form { display: grid; gap: 1.2rem; }
+            .auth-fields-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .85rem; }
             .auth-field label { display: block; color: #44403c; font-size: .76rem; font-weight: 600; }
             .auth-label-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: .5rem; }
             .auth-label-row a { color: var(--primary-color); font-size: .71rem; font-weight: 600; }
@@ -327,6 +328,8 @@
             .auth-password-toggle { position: absolute; right: .9rem; width: 2rem; height: 2rem; color: #a8a29e; border-radius: .5rem; }
             .auth-password-toggle:hover { color: var(--primary-color); background: color-mix(in srgb, var(--primary-color) 8%, white); }
             .auth-error { display: flex; align-items: center; gap: .35rem; margin-top: .45rem; color: #dc2626; font-size: .7rem; }
+            .auth-password-hint { display: flex; align-items: center; gap: .4rem; margin-top: -.65rem; color: #a8a29e; font-size: .65rem; }
+            .auth-password-hint i { color: var(--primary-color); }
             .auth-remember { display: flex; align-items: center; gap: .55rem; width: fit-content; color: #57534e; cursor: pointer; font-size: .74rem; }
             .auth-remember input { position: absolute; opacity: 0; pointer-events: none; }
             .auth-remember span { width: 1.1rem; height: 1.1rem; display: grid; place-items: center; border: 1px solid #d6d3d1; border-radius: .3rem; background: #fff; color: transparent; font-size: .55rem; transition: .2s; }
@@ -355,6 +358,12 @@
             .auth-register { display: flex; align-items: center; justify-content: center; gap: .55rem; min-height: 3rem; border: 1px solid #e7e5e4; border-radius: .85rem; color: #44403c; background: #fff; font-size: .76rem; font-weight: 600; }
             .auth-register i { color: var(--primary-color); }
             .auth-register:hover { border-color: color-mix(in srgb, var(--primary-color) 42%, white); color: var(--primary-color); background: color-mix(in srgb, var(--primary-color) 4%, white); }
+            .auth-terms { display: flex; align-items: flex-start; gap: .6rem; color: #78716c; cursor: pointer; font-size: .68rem; line-height: 1.55; }
+            .auth-terms input { position: absolute; opacity: 0; pointer-events: none; }
+            .auth-terms__check { width: 1.1rem; height: 1.1rem; display: grid; flex: 0 0 auto; place-items: center; margin-top: .05rem; border: 1px solid #d6d3d1; border-radius: .3rem; background: #fff; color: transparent; font-size: .55rem; transition: .2s; }
+            .auth-terms input:checked + .auth-terms__check { border-color: var(--primary-color); background: var(--primary-color); color: #fff; }
+            .auth-terms input:focus-visible + .auth-terms__check { box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 16%, transparent); }
+            .auth-terms strong { color: var(--primary-color); font-weight: 600; }
             .auth-security { display: flex; align-items: flex-start; justify-content: center; gap: .5rem; margin-top: 1.35rem; color: #a8a29e; font-size: .64rem; line-height: 1.5; text-align: center; }
             .auth-security i { margin-top: .15rem; color: #65a30d; }
             .auth-security strong { color: #78716c; }
@@ -364,6 +373,10 @@
             [dir="rtl"] .auth-password-toggle { right: auto; left: .9rem; }
             [dir="rtl"] .auth-store-link i, [dir="rtl"] .auth-submit i { transform: scaleX(-1); }
             [dir="rtl"] .auth-submit:hover i { transform: scaleX(-1) translateX(.2rem); }
+
+            .auth-shell--register .auth-form-panel { padding-top: 2rem; padding-bottom: 2rem; }
+            .auth-shell--register .auth-heading { margin-bottom: 1.35rem; }
+            .auth-shell--register .auth-form { gap: .9rem; }
 
             @media (max-width: 900px) {
                 .auth-shell { grid-template-columns: 1fr; min-height: auto; max-width: 34rem; margin: 0 auto; border-radius: 1.6rem; }
@@ -381,6 +394,7 @@
                 .auth-form-panel { padding: 1.5rem 1.15rem; }
                 .auth-heading { margin-bottom: 1.5rem; }
                 .auth-shell { border: 0; border-radius: 1.25rem; box-shadow: 0 18px 55px rgba(61, 43, 31, .11); }
+                .auth-fields-grid { grid-template-columns: 1fr; }
             }
 
             @media (prefers-reduced-motion: reduce) {
@@ -395,7 +409,7 @@
         <!-- Main Content -->
         <div class="min-h-screen flex flex-col justify-center items-center p-3 sm:p-6 animate-fade-in">
             <!-- Logo/Header -->
-            <div class="w-full max-w-md px-6 {{ request()->routeIs('login') ? 'hidden' : '' }}">
+            <div class="w-full max-w-md px-6 {{ request()->routeIs('login', 'register') ? 'hidden' : '' }}">
                 <div class="text-center mt-2">
                     @php
                         $logoPath = settings('logo');
@@ -422,26 +436,26 @@
             </div>
 
             <!-- Form Container -->
-            <div class="w-full {{ request()->routeIs('login') ? 'max-w-6xl' : 'sm:max-w-md mt-4 px-6' }} animate-slide-up">
-                <div class="{{ request()->routeIs('login') ? '' : 'bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100' }}">
+            <div class="w-full {{ request()->routeIs('login', 'register') ? 'max-w-6xl' : 'sm:max-w-md mt-4 px-6' }} animate-slide-up">
+                <div class="{{ request()->routeIs('login', 'register') ? '' : 'bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100' }}">
                     <!-- Decorative top bar -->
-                    @unless(request()->routeIs('login'))
+                    @unless(request()->routeIs('login', 'register'))
                         <div class="h-2 gradient-bg"></div>
                     @endunless
                     
                     <!-- Form content -->
-                    <div class="{{ request()->routeIs('login') ? '' : 'px-8 py-8' }}">
+                    <div class="{{ request()->routeIs('login', 'register') ? '' : 'px-8 py-8' }}">
                         {{ $slot }}
                     </div>
                     
                     <!-- Bottom decorative bar -->
-                    @unless(request()->routeIs('login'))
+                    @unless(request()->routeIs('login', 'register'))
                         <div class="h-1 bg-gray-100"></div>
                     @endunless
                 </div>
                 
                 <!-- Additional links -->
-                <div class="mt-8 text-center {{ request()->routeIs('login') ? 'hidden' : '' }}">
+                <div class="mt-8 text-center {{ request()->routeIs('login', 'register') ? 'hidden' : '' }}">
                     <p class="text-gray-600 text-sm">
                         © {{ date('Y') }} {{ $storeName }}. Tous droits réservés.
                         <a href="{{ route('home') }}" class="text-green-600 hover:text-green-700 font-medium ml-2">
