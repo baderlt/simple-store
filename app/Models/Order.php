@@ -49,24 +49,22 @@ class Order extends Model
 
     /**
      * Generate a unique order number
-     * Format: ORD-YYYYMMDD-XXXXXX
+     * Format: ORD-0001, ORD-0002, ...
      */
     public static function generateOrderNumber(): string
     {
-        // Format: ORD-20241211-ABC123
-        $prefix = 'ORD-';
-        $date = date('Ymd');
-        $random = strtoupper(substr(uniqid(), -6));
-        
-        $orderNumber = $prefix . $date . '-' . $random;
-        
-        // Check if order number already exists (very rare)
-        while (self::where('order_number', $orderNumber)->exists()) {
-            $random = strtoupper(substr(uniqid(), -6));
-            $orderNumber = $prefix . $date . '-' . $random;
-        }
-        
-        return $orderNumber;
+        $lastSequence = self::query()
+            ->where('order_number', 'like', 'ORD-%')
+            ->pluck('order_number')
+            ->reduce(function (int $highest, string $orderNumber): int {
+                if (! preg_match('/^ORD-(\d+)$/', $orderNumber, $matches)) {
+                    return $highest;
+                }
+
+                return max($highest, (int) $matches[1]);
+            }, 0);
+
+        return 'ORD-' . str_pad((string) ($lastSequence + 1), 4, '0', STR_PAD_LEFT);
     }
 
     /**
