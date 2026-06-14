@@ -17,9 +17,13 @@
                 <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
                     <div class="p-6 sm:p-8 relative">
                         <!-- Loading Overlay -->
-                        <div id="loadingOverlay" class="hidden absolute inset-0 bg-white/95 backdrop-blur-sm z-20 flex flex-col items-center justify-center rounded-2xl">
-                            <div class="text-center p-6">
-                                <div class="inline-block animate-spin rounded-full h-14 w-14 border-4 border-emerald-200 border-t-emerald-600 mb-4"></div>
+                        <div id="loadingOverlay"
+                             class="hidden fixed inset-0 z-[100] flex flex-col items-center justify-center bg-gray-950/50 px-4 backdrop-blur-sm"
+                             role="status"
+                             aria-live="polite"
+                             aria-hidden="true">
+                            <div class="w-full max-w-sm rounded-2xl bg-white p-8 text-center shadow-2xl">
+                                <div class="inline-block h-14 w-14 animate-spin rounded-full border-4 border-emerald-200 border-t-emerald-600 mb-4"></div>
                                 <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ __('checkout.processing_title') }}</h3>
                                 <p class="text-gray-600">{{ __('checkout.processing_message') }}</p>
                             </div>
@@ -339,9 +343,16 @@
         </div>
         <button type="submit" 
                 form="checkoutForm"
+                id="mobileSubmitButton"
                 class="flex-1 bg-gradient-to-r from-emerald-600 to-green-600 text-white font-bold py-3 px-4 rounded-xl hover:from-emerald-700 hover:to-green-700 transition-all shadow-lg flex items-center justify-center gap-2">
-            <i class="fas fa-check-circle"></i>
-            <span>{{ __('checkout.confirm') }}</span>
+            <span id="mobileButtonText" class="flex items-center gap-2">
+                <i class="fas fa-check-circle"></i>
+                {{ __('checkout.confirm') }}
+            </span>
+            <span id="mobileButtonSpinner" class="hidden items-center gap-2">
+                <i class="fas fa-spinner fa-spin"></i>
+                {{ __('checkout.processing') }}
+            </span>
         </button>
     </div>
 </div>
@@ -480,6 +491,7 @@
             }
             
             isSubmitting = true;
+            e.preventDefault();
             
             // Show loading states
             const loadingOverlay = document.getElementById('loadingOverlay');
@@ -487,7 +499,12 @@
             const buttonText = document.getElementById('buttonText');
             const buttonSpinner = document.getElementById('buttonSpinner');
             
-            if (loadingOverlay) loadingOverlay.classList.remove('hidden');
+            if (loadingOverlay) {
+                loadingOverlay.classList.remove('hidden');
+                loadingOverlay.setAttribute('aria-hidden', 'false');
+            }
+            document.body.classList.add('overflow-hidden');
+
             if (submitButton) {
                 submitButton.disabled = true;
                 if (buttonText) buttonText.classList.add('hidden');
@@ -495,10 +512,24 @@
             }
             
             // Also disable mobile button
-            const mobileButton = document.querySelector('#mobileCheckoutSubmit button');
-            if (mobileButton) mobileButton.disabled = true;
+            const mobileButton = document.getElementById('mobileSubmitButton');
+            const mobileButtonText = document.getElementById('mobileButtonText');
+            const mobileButtonSpinner = document.getElementById('mobileButtonSpinner');
+            if (mobileButton) {
+                mobileButton.disabled = true;
+                if (mobileButtonText) mobileButtonText.classList.add('hidden');
+                if (mobileButtonSpinner) {
+                    mobileButtonSpinner.classList.remove('hidden');
+                    mobileButtonSpinner.classList.add('flex');
+                }
+            }
+
+            // Allow the browser to paint the loading state before navigation starts.
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => HTMLFormElement.prototype.submit.call(form));
+            });
             
-            return true;
+            return false;
         });
     }
     
