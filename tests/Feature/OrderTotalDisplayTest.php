@@ -45,6 +45,9 @@ class OrderTotalDisplayTest extends TestCase
             ->get(route('admin.orders.invoice', $order))
             ->assertOk()
             ->assertSee('130.00 DH')
+            ->assertSee(__('invoice'))
+            ->assertSee(__('status_pending'))
+            ->assertSee(__('print_invoice'))
             ->assertDontSee('160.00 DH');
     }
 
