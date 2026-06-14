@@ -1,214 +1,179 @@
 <x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class=" p-4 bg-green-50 text-green-700 rounded-lg border border-green-200" :status="session('status')" />
+    @php
+        $storeName = settings('store_name', 'Simple Store');
+        $storeSlogan = settings('store_slogan', __('auth.login.brand_slogan'));
+        $logoPath = settings('logo');
+    @endphp
 
-    <div class="space-y-6">
-        <!-- Page Header -->
-        <div class="text-center">
-            <h2 class="text-2xl font-bold text-gray-900">
-                <i class="fas fa-sign-in-alt text-green-600 mr-2"></i>
-                {{ __('auth.login.title') }}
-            </h2>
-            <p class="mt-2 text-gray-600">
-                {{ __('auth.login.subtitle') }}
-            </p>
-        </div>
+    <div class="auth-shell">
+        <aside class="auth-story" aria-label="{{ __('auth.login.brand_panel_label') }}">
+            <div class="auth-story__glow auth-story__glow--one"></div>
+            <div class="auth-story__glow auth-story__glow--two"></div>
 
-        <form method="POST" action="{{ route('login') }}" class="space-y-6">
-            @csrf
+            <a href="{{ route('home') }}" class="auth-brand" aria-label="{{ __('auth.login.back_to_store', ['store' => $storeName]) }}">
+                @if($logoPath && file_exists(public_path('storage/'.$logoPath)))
+                    <span class="auth-brand__logo auth-brand__logo--image">
+                        <img src="{{ asset('storage/'.$logoPath) }}" alt="{{ $storeName }}">
+                    </span>
+                @else
+                    <span class="auth-brand__logo" aria-hidden="true">
+                        <i class="fas fa-basket-shopping"></i>
+                    </span>
+                @endif
+                <span>
+                    <strong>{{ $storeName }}</strong>
+                    <small>{{ $storeSlogan }}</small>
+                </span>
+            </a>
 
-            <!-- Email Address -->
-            <div class="space-y-2">
-                <label for="email" class="block text-sm font-medium text-gray-700">
-                    <i class="fas fa-envelope mr-2 text-green-600"></i>
-                    {{ __('auth.login.email') }}
-                </label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="fas fa-user text-gray-400"></i>
-                    </div>
-                    <input id="email" 
-                           name="email" 
-                           type="email" 
-                           value="{{ old('email') }}"
-                           required 
-                           autofocus 
-                           autocomplete="email"
-                           class="pl-10 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200
-                                  @error('email') border-red-300 ring-2 ring-red-200 @enderror"
-                           placeholder="votre@email.com">
-                </div>
-                @error('email')
-                    <div class="flex items-center text-sm text-red-600 mt-1">
-                        <i class="fas fa-exclamation-circle mr-2"></i>
-                        {{ $message }}
-                    </div>
-                @enderror
+            <div class="auth-story__content">
+                <span class="auth-eyebrow">
+                    <i class="fas fa-sparkles" aria-hidden="true"></i>
+                    {{ __('auth.login.member_space') }}
+                </span>
+                <h1>{{ __('auth.login.welcome_title') }}</h1>
+                <p>{{ __('auth.login.welcome_description') }}</p>
+
+                <ul class="auth-benefits">
+                    <li>
+                        <span><i class="fas fa-box-open" aria-hidden="true"></i></span>
+                        <div>
+                            <strong>{{ __('auth.login.benefits.orders_title') }}</strong>
+                            <small>{{ __('auth.login.benefits.orders_description') }}</small>
+                        </div>
+                    </li>
+                    <li>
+                        <span><i class="fas fa-bolt" aria-hidden="true"></i></span>
+                        <div>
+                            <strong>{{ __('auth.login.benefits.checkout_title') }}</strong>
+                            <small>{{ __('auth.login.benefits.checkout_description') }}</small>
+                        </div>
+                    </li>
+                    <li>
+                        <span><i class="fas fa-heart" aria-hidden="true"></i></span>
+                        <div>
+                            <strong>{{ __('auth.login.benefits.experience_title') }}</strong>
+                            <small>{{ __('auth.login.benefits.experience_description') }}</small>
+                        </div>
+                    </li>
+                </ul>
             </div>
 
-            <!-- Password -->
-            <div class="space-y-2">
-                <label for="password" class="block text-sm font-medium text-gray-700">
-                    <i class="fas fa-lock mr-2 text-green-600"></i>
-                    {{ __('auth.login.password') }}
-                </label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="fas fa-key text-gray-400"></i>
-                    </div>
-                    <input id="password" 
-                           name="password" 
-                           type="password" 
-                           required 
-                           autocomplete="current-password"
-                           class="pl-10 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200
-                                  @error('password') border-red-300 ring-2 ring-red-200 @enderror"
-                           placeholder="••••••••">
-                    <button type="button" 
-                            onclick="togglePasswordVisibility('password', this)"
-                            class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                </div>
-                @error('password')
-                    <div class="flex items-center text-sm text-red-600 mt-1">
-                        <i class="fas fa-exclamation-circle mr-2"></i>
-                        {{ $message }}
-                    </div>
-                @enderror
+            <a href="{{ route('home') }}" class="auth-store-link">
+                <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                {{ __('auth.login.continue_shopping') }}
+            </a>
+        </aside>
+
+        <main class="auth-form-panel">
+            <div class="auth-mobile-brand">
+                <a href="{{ route('home') }}" aria-label="{{ __('auth.login.back_to_store', ['store' => $storeName]) }}">
+                    @if($logoPath && file_exists(public_path('storage/'.$logoPath)))
+                        <img src="{{ asset('storage/'.$logoPath) }}" alt="{{ $storeName }}">
+                    @else
+                        <span><i class="fas fa-basket-shopping" aria-hidden="true"></i></span>
+                        <strong>{{ $storeName }}</strong>
+                    @endif
+                </a>
             </div>
 
-            <!-- Remember Me & Forgot Password -->
-            <div class="flex items-center justify-between">
-                <div class="flex items-center">
-                    <input id="remember_me" 
-                           name="remember" 
-                           type="checkbox"
-                           class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded cursor-pointer">
-                    <label for="remember_me" class="ml-2 block text-sm text-gray-700 cursor-pointer hover:text-gray-900 transition-colors duration-200">
+            <div class="auth-form-wrap">
+                <div class="auth-heading">
+                    <span class="auth-heading__icon" aria-hidden="true"><i class="fas fa-user"></i></span>
+                    <h2>{{ __('auth.login.title') }}</h2>
+                    <p>{{ __('auth.login.subtitle') }}</p>
+                </div>
+
+                <x-auth-session-status class="auth-status" :status="session('status')" />
+
+                <form method="POST" action="{{ route('login') }}" class="auth-form">
+                    @csrf
+
+                    <div class="auth-field">
+                        <label for="email">{{ __('auth.login.email') }}</label>
+                        <div class="auth-input-wrap @error('email') auth-input-wrap--error @enderror">
+                            <i class="fas fa-envelope" aria-hidden="true"></i>
+                            <input id="email"
+                                   name="email"
+                                   type="email"
+                                   value="{{ old('email') }}"
+                                   required
+                                   autofocus
+                                   autocomplete="email"
+                                   inputmode="email"
+                                   placeholder="{{ __('auth.login.email_placeholder') }}">
+                        </div>
+                        @error('email')
+                            <p class="auth-error"><i class="fas fa-circle-exclamation" aria-hidden="true"></i>{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="auth-field">
+                        <div class="auth-label-row">
+                            <label for="password">{{ __('auth.login.password') }}</label>
+                            @if (Route::has('password.request'))
+                                <a href="{{ route('password.request') }}">{{ __('auth.login.forgot_password') }}</a>
+                            @endif
+                        </div>
+                        <div class="auth-input-wrap @error('password') auth-input-wrap--error @enderror">
+                            <i class="fas fa-lock" aria-hidden="true"></i>
+                            <input id="password"
+                                   name="password"
+                                   type="password"
+                                   required
+                                   autocomplete="current-password"
+                                   placeholder="{{ __('auth.login.password_placeholder') }}">
+                            <button type="button"
+                                    class="auth-password-toggle"
+                                    data-password-toggle
+                                    aria-label="{{ __('auth.login.show_password') }}"
+                                    aria-pressed="false">
+                                <i class="fas fa-eye" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        @error('password')
+                            <p class="auth-error"><i class="fas fa-circle-exclamation" aria-hidden="true"></i>{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <label class="auth-remember" for="remember_me">
+                        <input id="remember_me" name="remember" type="checkbox">
+                        <span aria-hidden="true"><i class="fas fa-check"></i></span>
                         {{ __('auth.login.remember_me') }}
                     </label>
-                </div>
 
-                @if (Route::has('password.request'))
-                    <a href="{{ route('password.request') }}" 
-                       class="text-sm font-medium text-green-600 hover:text-green-700 transition-colors duration-200 flex items-center">
-                        <i class="fas fa-key mr-1"></i>
-                        {{ __('auth.login.forgot_password') }}
-                    </a>
-                @endif
-            </div>
+                    <button type="submit" class="auth-submit">
+                        <span>{{ __('auth.login.submit') }}</span>
+                        <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                    </button>
+                </form>
 
-            <!-- Submit Button -->
-            <div>
-                <button type="submit"
-                        class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5">
-                    <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-                        <i class="fas fa-sign-in-alt text-green-200 group-hover:text-green-100 transition-colors duration-200"></i>
-                    </span>
-                    {{ __('auth.login.submit') }}
-                    <span class="absolute right-0 inset-y-0 flex items-center pr-3">
-                        <i class="fas fa-arrow-right text-green-200 group-hover:text-green-100 transition-colors duration-200"></i>
-                    </span>
-                </button>
-            </div>
-        </form>
+                <div class="auth-divider"><span>{{ __('auth.login.new_customer') }}</span></div>
 
-        <!-- Divider -->
-        <div class="relative">
-            <div class="absolute inset-0 flex items-center">
-                <div class="w-full border-t border-gray-300"></div>
-            </div>
-            <div class="relative flex justify-center text-sm">
-                <span class="px-3 bg-white text-gray-500">
-                    Nouveau client ?
-                </span>
-            </div>
-        </div>
+                <a href="{{ route('register') }}" class="auth-register">
+                    <i class="fas fa-user-plus" aria-hidden="true"></i>
+                    {{ __('auth.login.create_account') }}
+                </a>
 
-        <!-- Register Link -->
-        <div>
-            <a href="{{ route('register') }}"
-               class="group w-full flex justify-center items-center py-3 px-4 border-2 border-green-600 rounded-lg shadow-sm text-sm font-medium text-green-600 hover:bg-green-50 hover:border-green-700 hover:text-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 transform hover:-translate-y-0.5">
-                <i class="fas fa-user-plus mr-2 group-hover:scale-110 transition-transform duration-200"></i>
-                Créer un nouveau compte
-            </a>
-        </div>
-
-        <!-- Security Notice -->
-        <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-            <div class="flex">
-                <div class="flex-shrink-0">
-                    <i class="fas fa-shield-alt text-blue-500"></i>
-                </div>
-                <div class="ml-3">
-                    <h3 class="text-sm font-medium text-blue-800">Connexion sécurisée</h3>
-                    <div class="mt-2 text-sm text-blue-700">
-                        <p>Vos informations sont protégées par un cryptage SSL. Nous ne partageons jamais vos données personnelles.</p>
-                    </div>
-                </div>
+                <p class="auth-security">
+                    <i class="fas fa-shield-halved" aria-hidden="true"></i>
+                    <span><strong>{{ __('auth.login.secure_title') }}</strong> {{ __('auth.login.secure_description') }}</span>
+                </p>
             </div>
-        </div>
+        </main>
     </div>
 
     <script>
-        function togglePasswordVisibility(inputId, button) {
-            const input = document.getElementById(inputId);
-            const icon = button.querySelector('i');
-            
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-            } else {
-                input.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-            }
-        }
+        document.querySelector('[data-password-toggle]')?.addEventListener('click', function () {
+            const password = document.getElementById('password');
+            const isVisible = password.type === 'text';
 
-        // Add animation to form elements
-        document.addEventListener('DOMContentLoaded', function() {
-            const formElements = document.querySelectorAll('input, button, a');
-            formElements.forEach((element, index) => {
-                element.style.animationDelay = `${index * 0.05}s`;
-                element.classList.add('animate__animated', 'animate__fadeInUp');
-            });
+            password.type = isVisible ? 'password' : 'text';
+            this.setAttribute('aria-pressed', String(!isVisible));
+            this.setAttribute('aria-label', isVisible
+                ? @js(__('auth.login.show_password'))
+                : @js(__('auth.login.hide_password')));
+            this.querySelector('i').className = isVisible ? 'fas fa-eye' : 'fas fa-eye-slash';
         });
     </script>
-
-    <style>
-        /* Custom animations */
-        .animate__animated {
-            animation-duration: 0.5s;
-            animation-fill-mode: both;
-        }
-        
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translate3d(0, 20px, 0);
-            }
-            to {
-                opacity: 1;
-                transform: translate3d(0, 0, 0);
-            }
-        }
-        
-        .animate__fadeInUp {
-            animation-name: fadeInUp;
-        }
-        
-        /* Custom focus styles */
-        input:focus {
-            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
-        }
-        
-        /* Smooth transitions */
-        * {
-            transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
-            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-            transition-duration: 200ms;
-        }
-    </style>
 </x-guest-layout>
