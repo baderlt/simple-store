@@ -1,14 +1,14 @@
 @extends('layouts.app')
 
-@section('title', 'Checkout')
+@section('title', __('checkout.page_title'))
 
 @section('content')
 <div class="min-h-screen bg-gradient-to-br from-gray-50 to-white py-8 sm:py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Page Header -->
         <div class="mb-8 text-center lg:text-left">
-            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">Finaliser votre commande</h1>
-            <p class="text-gray-600 mt-2">Vérifiez vos informations et confirmez votre achat en toute sécurité</p>
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">{{ __('checkout.heading') }}</h1>
+            <p class="text-gray-600 mt-2">{{ __('checkout.intro') }}</p>
         </div>
 
         <div class="lg:grid lg:grid-cols-3 lg:gap-8">
@@ -20,8 +20,8 @@
                         <div id="loadingOverlay" class="hidden absolute inset-0 bg-white/95 backdrop-blur-sm z-20 flex flex-col items-center justify-center rounded-2xl">
                             <div class="text-center p-6">
                                 <div class="inline-block animate-spin rounded-full h-14 w-14 border-4 border-emerald-200 border-t-emerald-600 mb-4"></div>
-                                <h3 class="text-xl font-semibold text-gray-900 mb-2">Commande en cours...</h3>
-                                <p class="text-gray-600">Veuillez patienter, nous traitons votre commande.</p>
+                                <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ __('checkout.processing_title') }}</h3>
+                                <p class="text-gray-600">{{ __('checkout.processing_message') }}</p>
                             </div>
                         </div>
 
@@ -35,14 +35,36 @@
                                         <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
                                             <i class="fas fa-truck text-emerald-600 text-lg"></i>
                                         </div>
-                                        <h2 class="text-xl font-bold text-gray-900">Informations de livraison</h2>
+                                        <h2 class="text-xl font-bold text-gray-900">{{ __('checkout.delivery_information') }}</h2>
                                     </div>
+
+                                    <label for="is_laayoune_delivery"
+                                           class="mb-6 flex cursor-pointer items-start gap-4 rounded-xl border-2 border-emerald-200 bg-emerald-50 p-4 transition-colors hover:border-emerald-400">
+                                        <input type="checkbox"
+                                               name="is_laayoune_delivery"
+                                               id="is_laayoune_delivery"
+                                               value="1"
+                                               @checked(old('is_laayoune_delivery'))
+                                               class="mt-1 h-5 w-5 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500">
+                                        <span class="flex-1">
+                                            <span class="flex flex-wrap items-center justify-between gap-2">
+                                                <span class="font-bold text-gray-900">{{ __('checkout.laayoune_delivery_title') }}</span>
+                                                <span class="rounded-full bg-emerald-600 px-3 py-1 text-xs font-bold text-white">
+                                                    {{ __('checkout.laayoune_delivery_free') }}
+                                                </span>
+                                            </span>
+                                            <span class="mt-1 block text-sm text-gray-600">{{ __('checkout.laayoune_delivery_description') }}</span>
+                                            <span class="mt-2 block text-xs font-medium text-gray-500">
+                                                {{ __('checkout.other_cities_delivery', ['price' => number_format($deliveryFee, 2)]) }}
+                                            </span>
+                                        </span>
+                                    </label>
 
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <!-- Customer Name -->
                                         <div class="md:col-span-2">
                                             <label for="customer_name" class="block text-sm font-semibold text-gray-700 mb-2">
-                                                Nom complet <span class="text-rose-500">*</span>
+                                                {{ __('checkout.full_name') }} <span class="text-rose-500">*</span>
                                             </label>
                                             <input type="text"
                                                    name="customer_name"
@@ -50,7 +72,7 @@
                                                    value="{{ old('customer_name', auth()->user()->name ?? '') }}"
                                                    required
                                                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 @error('customer_name') border-rose-500 @enderror"
-                                                   placeholder="Jean Dupont">
+                                                   placeholder="{{ __('checkout.full_name_placeholder') }}">
                                             @error('customer_name')
                                                 <p class="mt-1 text-sm text-rose-600">{{ $message }}</p>
                                             @enderror
@@ -59,7 +81,7 @@
                                         <!-- Phone -->
                                         <div>
                                             <label for="customer_phone" class="block text-sm font-semibold text-gray-700 mb-2">
-                                                Téléphone <span class="text-rose-500">*</span>
+                                                {{ __('checkout.phone') }} <span class="text-rose-500">*</span>
                                             </label>
                                             <input type="tel"
                                                    name="customer_phone"
@@ -67,7 +89,7 @@
                                                    value="{{ old('customer_phone', auth()->user()->phone ?? '') }}"
                                                    required
                                                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 @error('customer_phone') border-rose-500 @enderror"
-                                                   placeholder="06 12 34 56 78">
+                                                   placeholder="{{ __('checkout.phone_placeholder') }}">
                                             @error('customer_phone')
                                                 <p class="mt-1 text-sm text-rose-600">{{ $message }}</p>
                                             @enderror
@@ -76,7 +98,7 @@
                                         <!-- City -->
                                         <div>
                                             <label for="customer_city" class="block text-sm font-semibold text-gray-700 mb-2">
-                                                Ville <span class="text-rose-500">*</span>
+                                                {{ __('checkout.city') }} <span class="text-rose-500">*</span>
                                             </label>
                                             <input type="text"
                                                    name="customer_city"
@@ -84,7 +106,7 @@
                                                    value="{{ old('customer_city') }}"
                                                    required
                                                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 @error('customer_city') border-rose-500 @enderror"
-                                                   placeholder="Casablanca, Rabat, Marrakech...">
+                                                   placeholder="{{ __('checkout.city_placeholder') }}">
                                             @error('customer_city')
                                                 <p class="mt-1 text-sm text-rose-600">{{ $message }}</p>
                                             @enderror
@@ -93,14 +115,14 @@
                                         <!-- Address (full width) -->
                                         <div class="md:col-span-2">
                                             <label for="customer_address" class="block text-sm font-semibold text-gray-700 mb-2">
-                                                Adresse complète <span class="text-rose-500">*</span>
+                                                {{ __('checkout.address') }} <span class="text-rose-500">*</span>
                                             </label>
                                             <textarea name="customer_address"
                                                       id="customer_address"
                                                       rows="3"
                                                       required
                                                       class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 @error('customer_address') border-rose-500 @enderror"
-                                                      placeholder="Numéro, rue, quartier, immeuble, étage...">{{ old('customer_address') }}</textarea>
+                                                      placeholder="{{ __('checkout.address_placeholder') }}">{{ old('customer_address') }}</textarea>
                                             @error('customer_address')
                                                 <p class="mt-1 text-sm text-rose-600">{{ $message }}</p>
                                             @enderror
@@ -109,13 +131,13 @@
                                         <!-- Notes (optional) -->
                                         <div class="md:col-span-2">
                                             <label for="notes" class="block text-sm font-semibold text-gray-700 mb-2">
-                                                Notes supplémentaires (optionnel)
+                                                {{ __('checkout.notes') }}
                                             </label>
                                             <textarea name="notes"
                                                       id="notes"
                                                       rows="2"
                                                       class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
-                                                      placeholder="Instructions de livraison, code d'accès, horaires préférés...">{{ old('notes') }}</textarea>
+                                                      placeholder="{{ __('checkout.notes_placeholder') }}">{{ old('notes') }}</textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -126,7 +148,7 @@
                                         <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
                                             <i class="fas fa-money-bill-wave text-emerald-600 text-lg"></i>
                                         </div>
-                                        <h2 class="text-xl font-bold text-gray-900">Méthode de paiement</h2>
+                                        <h2 class="text-xl font-bold text-gray-900">{{ __('checkout.payment_method') }}</h2>
                                     </div>
 
                                     <div class="space-y-3">
@@ -144,8 +166,8 @@
                                                         <i class="fas fa-money-bill-wave text-emerald-600 text-xl"></i>
                                                     </div>
                                                     <div>
-                                                        <p class="font-bold text-gray-900">Paiement à la livraison</p>
-                                                        <p class="text-sm text-gray-500">Payez en espèces lorsque vous recevez votre commande</p>
+                                                        <p class="font-bold text-gray-900">{{ __('checkout.cash_on_delivery') }}</p>
+                                                        <p class="text-sm text-gray-500">{{ __('checkout.cash_on_delivery_description') }}</p>
                                                     </div>
                                                 </div>
                                                 <div class="w-6 h-6 rounded-full border-2 border-emerald-500 bg-emerald-500 flex items-center justify-center">
@@ -155,7 +177,7 @@
                                         </div>
 
                                         <div class="text-xs text-gray-500 text-center mt-4">
-                                            <i class="fas fa-lock mr-1"></i> Paiement 100% sécurisé
+                                            <i class="fas fa-lock mr-1"></i> {{ __('checkout.fully_secure_payment') }}
                                         </div>
                                     </div>
                                 </div>
@@ -169,15 +191,15 @@
                                     <span id="buttonText">
                                         @if($isDirect ?? false)
                                             <i class="fas fa-bolt mr-3 group-hover:rotate-12 transition-transform"></i>
-                                            Confirmer et commander
+                                            {{ __('checkout.confirm_and_order') }}
                                         @else
                                             <i class="fas fa-check-circle mr-3 group-hover:scale-110 transition-transform"></i>
-                                            Confirmer la commande
+                                            {{ __('checkout.confirm_order') }}
                                         @endif
                                     </span>
                                     <span id="buttonSpinner" class="hidden">
                                         <i class="fas fa-spinner fa-spin mr-3"></i>
-                                        Traitement...
+                                        {{ __('checkout.processing') }}
                                     </span>
                                 </button>
 
@@ -186,13 +208,13 @@
                                         <a href="{{ route('products.show', reset($cart)['slug'] ?? '#') }}"
                                            class="inline-flex items-center text-gray-500 hover:text-gray-700 transition-colors">
                                             <i class="fas fa-arrow-left mr-2"></i>
-                                            Retour au produit
+                                            {{ __('checkout.back_to_product') }}
                                         </a>
                                     @else
                                         <a href="{{ route('cart.index') }}"
                                            class="inline-flex items-center text-gray-500 hover:text-gray-700 transition-colors">
                                             <i class="fas fa-shopping-cart mr-2"></i>
-                                            Modifier le panier
+                                            {{ __('checkout.edit_cart') }}
                                         </a>
                                     @endif
                                 </div>
@@ -208,7 +230,7 @@
                     <div class="p-6 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
                         <h2 class="text-xl font-bold text-gray-900 flex items-center">
                             <i class="fas fa-shopping-bag mr-3 text-emerald-600"></i>
-                            Résumé de la commande
+                            {{ __('checkout.order_summary') }}
                         </h2>
                     </div>
 
@@ -244,7 +266,7 @@
                                             @endif
                                         </div>
                                         <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-                                            Qté: {{ $item['quantity'] }}
+                                            {{ __('checkout.quantity_short', ['quantity' => $item['quantity']]) }}
                                         </span>
                                     </div>
                                 </div>
@@ -265,33 +287,32 @@
                         @endphp
                         <div class="space-y-3">
                             <div class="flex justify-between text-sm">
-                                <span class="text-gray-600">Sous-total</span>
+                                <span class="text-gray-600">{{ __('checkout.subtotal') }}</span>
                                 <span class="font-medium text-gray-900">{{ number_format($subtotal, 2) }} DH</span>
                             </div>
                             <div class="flex justify-between text-sm">
-                                <span class="text-gray-600">Frais de livraison</span>
-                                @if($threshold && $subtotal > $threshold)
-                                    <span class="font-medium text-emerald-600">Gratuit</span>
-                                @else
-                                    <span class="font-medium text-gray-900">{{ number_format($deliveryFee, 2) }} DH</span>
-                                @endif
+                                <span class="text-gray-600">{{ __('checkout.delivery_fee') }}</span>
+                                <span id="deliveryFeeValue"
+                                      class="font-medium {{ $threshold && $subtotal > $threshold ? 'text-emerald-600' : 'text-gray-900' }}">
+                                    {{ $threshold && $subtotal > $threshold ? __('checkout.free') : number_format($deliveryFee, 2).' DH' }}
+                                </span>
                             </div>
 
                             @if($threshold && $subtotal > 0 && $subtotal <= $threshold)
-                                <div class="bg-amber-50 rounded-lg p-3 text-xs text-amber-700">
+                                <div id="freeDeliveryThresholdNotice" class="bg-amber-50 rounded-lg p-3 text-xs text-amber-700">
                                     <i class="fas fa-truck mr-1"></i> 
-                                    Ajoutez {{ number_format($threshold - $subtotal, 2) }} DH pour bénéficier de la livraison gratuite.
+                                    {{ __('checkout.free_delivery_remaining', ['amount' => number_format($threshold - $subtotal, 2)]) }}
                                 </div>
                             @endif
 
                             <div class="border-t border-gray-200 pt-3 mt-2">
                                 <div class="flex justify-between items-center">
-                                    <span class="text-lg font-bold text-gray-900">Total</span>
-                                    <span class="text-2xl font-bold text-emerald-600">
+                                    <span class="text-lg font-bold text-gray-900">{{ __('checkout.total') }}</span>
+                                    <span id="checkoutTotal" class="text-2xl font-bold text-emerald-600">
                                         {{ number_format($total, 2) }} DH
                                     </span>
                                 </div>
-                                <p class="text-xs text-gray-500 mt-1 text-right">TVA incluse</p>
+                                <p class="text-xs text-gray-500 mt-1 text-right">{{ __('checkout.tax_included') }}</p>
                             </div>
                         </div>
                     </div>
@@ -299,8 +320,8 @@
 
                 <!-- Secure Payment Badge -->
                 <div class="mt-4 text-center text-xs text-gray-500 flex items-center justify-center space-x-4">
-                    <span><i class="fas fa-lock text-emerald-600 mr-1"></i> Paiement sécurisé</span>
-                    <span><i class="fas fa-shield-alt text-emerald-600 mr-1"></i> Données protégées</span>
+                    <span><i class="fas fa-lock text-emerald-600 mr-1"></i> {{ __('checkout.secure_payment') }}</span>
+                    <span><i class="fas fa-shield-alt text-emerald-600 mr-1"></i> {{ __('checkout.protected_data') }}</span>
                 </div>
             </div>
         </div>
@@ -312,19 +333,55 @@
      class="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-gray-200 p-4 shadow-[0_-10px_30px_-8px_rgba(0,0,0,0.1)] transition-all duration-500 ease-out md:hidden translate-y-full opacity-0 pointer-events-none">
     <div class="flex items-center justify-between gap-3">
         <div class="flex flex-col">
-            <span class="text-xs text-gray-500">Total</span>
-            <span class="text-xl font-bold text-emerald-600">{{ number_format($total, 2) }} DH</span>
+            <span class="text-xs text-gray-500">{{ __('checkout.total') }}</span>
+            <span id="mobileCheckoutTotal" class="text-xl font-bold text-emerald-600">{{ number_format($total, 2) }} DH</span>
         </div>
         <button type="submit" 
                 form="checkoutForm"
                 class="flex-1 bg-gradient-to-r from-emerald-600 to-green-600 text-white font-bold py-3 px-4 rounded-xl hover:from-emerald-700 hover:to-green-700 transition-all shadow-lg flex items-center justify-center gap-2">
             <i class="fas fa-check-circle"></i>
-            <span>Confirmer</span>
+            <span>{{ __('checkout.confirm') }}</span>
         </button>
     </div>
 </div>
 
 <script>
+    const checkoutPricing = {
+        subtotal: @json((float) $subtotal),
+        configuredDeliveryFee: @json((float) $deliveryFee),
+        thresholdDeliveryIsFree: @json((bool) ($threshold && $subtotal > $threshold)),
+        freeLabel: @json(__('checkout.free')),
+        currency: 'DH',
+    };
+
+    function updateCheckoutPricing() {
+        const laayouneDelivery = document.getElementById('is_laayoune_delivery');
+        const deliveryFeeValue = document.getElementById('deliveryFeeValue');
+        const checkoutTotal = document.getElementById('checkoutTotal');
+        const mobileCheckoutTotal = document.getElementById('mobileCheckoutTotal');
+        const thresholdNotice = document.getElementById('freeDeliveryThresholdNotice');
+        if (!laayouneDelivery || !deliveryFeeValue || !checkoutTotal || !mobileCheckoutTotal) return;
+
+        const deliveryIsFree = checkoutPricing.thresholdDeliveryIsFree || laayouneDelivery.checked;
+        const deliveryFee = deliveryIsFree ? 0 : checkoutPricing.configuredDeliveryFee;
+        const formattedTotal = `${(checkoutPricing.subtotal + deliveryFee).toFixed(2)} ${checkoutPricing.currency}`;
+
+        deliveryFeeValue.textContent = deliveryIsFree
+            ? checkoutPricing.freeLabel
+            : `${checkoutPricing.configuredDeliveryFee.toFixed(2)} ${checkoutPricing.currency}`;
+        deliveryFeeValue.classList.toggle('text-emerald-600', deliveryIsFree);
+        deliveryFeeValue.classList.toggle('text-gray-900', !deliveryIsFree);
+        checkoutTotal.textContent = formattedTotal;
+        mobileCheckoutTotal.textContent = formattedTotal;
+
+        if (thresholdNotice) {
+            thresholdNotice.classList.toggle('hidden', laayouneDelivery.checked);
+        }
+    }
+
+    document.getElementById('is_laayoune_delivery')?.addEventListener('change', updateCheckoutPricing);
+    document.addEventListener('DOMContentLoaded', updateCheckoutPricing);
+
     // Format phone number as user types (Moroccan format)
     const phoneInput = document.getElementById('customer_phone');
     if (phoneInput) {
@@ -385,23 +442,23 @@
             
             // Validation
             if (!name.value.trim()) {
-                showFieldError(name, 'Veuillez entrer votre nom complet');
+                showFieldError(name, @json(__('checkout.validation_name')));
                 isValid = false;
             }
             
             const phoneClean = phone.value.replace(/\s/g, '');
             if (!phone.value.trim() || phoneClean.length < 9 || phoneClean.length > 10) {
-                showFieldError(phone, 'Veuillez entrer un numéro de téléphone valide (10 chiffres)');
+                showFieldError(phone, @json(__('checkout.validation_phone')));
                 isValid = false;
             }
             
             if (!city.value.trim()) {
-                showFieldError(city, 'Veuillez entrer votre ville');
+                showFieldError(city, @json(__('checkout.validation_city')));
                 isValid = false;
             }
             
             if (!address.value.trim()) {
-                showFieldError(address, 'Veuillez entrer votre adresse complète');
+                showFieldError(address, @json(__('checkout.validation_address')));
                 isValid = false;
             }
             
