@@ -516,7 +516,7 @@
                     @auth
                         <div x-data="{ open: false }" 
                              x-on:click.outside="open = false"
-                             class="relative">
+                             class="relative hidden lg:block">
                             <button x-on:click="open = !open" 
                                     class="flex items-center space-x-2 text-gray-700 hover:text-green-600 focus:outline-none">
                                 <div class="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center">
