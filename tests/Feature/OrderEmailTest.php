@@ -24,6 +24,10 @@ class OrderEmailTest extends TestCase
 
         $this->assertStringContainsString('Une nouvelle commande vous attend', $html);
         $this->assertStringContainsString('Maison Dorée', $html);
+        $this->assertStringContainsString('Informations client', $html);
+        $this->assertStringContainsString('Téléphone', $html);
+        $this->assertStringContainsString('Adresse', $html);
+        $this->assertStringContainsString('white-space:nowrap', $html);
         $this->assertStringContainsString('0600000000', $html);
         $this->assertStringContainsString('Voir et traiter la commande', $html);
     }

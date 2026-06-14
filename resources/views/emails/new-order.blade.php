@@ -106,18 +106,46 @@
                         <td style="padding:0 28px 28px;">
                             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%; border-collapse:collapse; background-color:#fafaf9;">
                                 <tr>
-                                    <td valign="top" style="padding:20px;">
-                                        <div style="font-size:12px; line-height:18px; font-weight:bold; text-transform:uppercase; letter-spacing:.8px; color:#78716c;">Livraison</div>
-                                        <div style="margin-top:7px; font-size:14px; line-height:22px; color:#292524;">
-                                            {{ $order->customer_name }}<br>
-                                            {{ $order->customer_address }}<br>
-                                            {{ $order->customer_city }}<br>
-                                            <a href="tel:{{ $order->customer_phone }}" style="color:{{ $primaryColor }}; text-decoration:underline;">{{ $order->customer_phone }}</a>
-                                        </div>
+                                    <td style="padding:20px 20px 8px;">
+                                        <div style="font-size:12px; line-height:18px; font-weight:bold; text-transform:uppercase; letter-spacing:.8px; color:#78716c;">Informations client</div>
                                     </td>
-                                    <td valign="top" style="padding:20px;">
-                                        <div style="font-size:12px; line-height:18px; font-weight:bold; text-transform:uppercase; letter-spacing:.8px; color:#78716c;">Paiement</div>
-                                        <div style="margin-top:7px; font-size:14px; line-height:22px; color:#292524;">Paiement à la livraison</div>
+                                </tr>
+                                <tr>
+                                    <td style="padding:0 20px 20px;">
+                                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%; border-collapse:collapse;">
+                                            <tr>
+                                                <td style="padding:5px 0; font-size:13px; line-height:20px; font-weight:bold; color:#78716c;">Nom</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:0 0 10px; font-size:15px; line-height:22px; color:#292524;">{{ $order->customer_name }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:5px 0; font-size:13px; line-height:20px; font-weight:bold; color:#78716c;">Téléphone</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:0 0 10px; font-size:15px; line-height:22px; color:#292524; white-space:nowrap;" nowrap>
+                                                    <a href="tel:{{ $order->customer_phone }}" dir="ltr" style="display:inline-block; color:{{ $primaryColor }}; text-decoration:underline; white-space:nowrap;">{{ $order->customer_phone }}</a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:5px 0; font-size:13px; line-height:20px; font-weight:bold; color:#78716c;">Adresse</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:0 0 10px; font-size:15px; line-height:22px; color:#292524;">{{ $order->customer_address }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:5px 0; font-size:13px; line-height:20px; font-weight:bold; color:#78716c;">Ville</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:0 0 10px; font-size:15px; line-height:22px; color:#292524;">{{ $order->customer_city }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:5px 0; font-size:13px; line-height:20px; font-weight:bold; color:#78716c;">Paiement</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:0; font-size:15px; line-height:22px; color:#292524;">Paiement à la livraison</td>
+                                            </tr>
+                                        </table>
                                     </td>
                                 </tr>
                             </table>
