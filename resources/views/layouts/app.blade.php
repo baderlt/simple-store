@@ -229,46 +229,78 @@
             .header-container {
                 position: relative;
                 flex-wrap: wrap;
-                min-height: 3.75rem;
-                padding-top: 0.5rem;
-                padding-bottom: 0.5rem;
+                min-height: 4.5rem;
+                padding-top: 0.375rem;
+                padding-bottom: 0.375rem;
+                direction: ltr;
             }
             .logo-container {
                 order: 1;
                 position: absolute;
-                top: 0.5rem;
+                top: 50%;
                 left: 50%;
-                width: auto;
-                max-width: calc(100% - 11rem);
-                transform: translateX(-50%);
+                right: auto;
+                width: min(9rem, calc(100% - 9.5rem));
+                max-width: none;
+                transform: translate(-50%, -50%);
                 z-index: 1;
             }
             .logo-container > a {
                 justify-content: center;
             }
+            .header-logo {
+                width: auto;
+                max-width: 100%;
+                height: 3.5rem;
+            }
             .mobile-buttons {
                 order: 2;
                 width: 100%;
                 justify-content: flex-end;
+                direction: ltr;
+                gap: 0.375rem;
             }
             #mobileMenuButton {
                 position: absolute;
                 left: 0;
+                right: auto;
                 top: 50%;
                 transform: translateY(-50%);
                 z-index: 2;
                 padding: 0.5rem;
             }
+            #mobile-search-toggle,
+            #cart-drawer-trigger {
+                position: relative;
+                z-index: 2;
+            }
+            #cart-count {
+                right: -0.25rem;
+                left: auto;
+            }
             .search-container-mobile {
                 order: 3;
                 width: 100%;
                 margin-top: 0.5rem;
+                direction: {{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }};
             }
             .desktop-nav {
                 display: none !important;
             }
             .mobile-search-visible {
                 display: block !important;
+            }
+        }
+
+        @media (max-width: 374px) {
+            .header-logo {
+                height: 3.125rem;
+            }
+            .logo-container {
+                width: min(7.5rem, calc(100% - 8.75rem));
+            }
+            .mobile-buttons {
+                gap: 0.125rem;
             }
         }
         
@@ -406,7 +438,7 @@
                         @if($logoPath && file_exists(public_path('storage/'.$logoPath)))
                             <img src="{{ asset('storage/'.$logoPath) }}" alt="{{ $storeName }}" 
                             loading="lazy"
-                                 class="h-11 sm:h-12 lg:h-16 w-auto max-w-full object-contain transition-transform duration-300 hover:scale-105">
+                                 class="header-logo h-11 sm:h-12 lg:h-16 w-auto max-w-full object-contain transition-transform duration-300 hover:scale-105">
                                      {{-- <span class="text-lg font-bold text-gray-800 lg:hidden">{{ $storeName }}</span> --}}
                         @else 
                             <div class="flex items-center space-x-2">
