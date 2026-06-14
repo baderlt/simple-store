@@ -45,7 +45,9 @@
                                                 Nom complet <span class="text-rose-500">*</span>
                                             </label>
                                             <div class="relative">
-                                                <i class="fas fa-user absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                                                    <i class="fas fa-user text-gray-400"></i>
+                                                </div>
                                                 <input type="text"
                                                        name="customer_name"
                                                        id="customer_name"
@@ -65,7 +67,9 @@
                                                 Téléphone <span class="text-rose-500">*</span>
                                             </label>
                                             <div class="relative">
-                                                <i class="fas fa-phone-alt absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                                                    <i class="fas fa-phone-alt text-gray-400"></i>
+                                                </div>
                                                 <input type="tel"
                                                        name="customer_phone"
                                                        id="customer_phone"
@@ -85,7 +89,9 @@
                                                 Ville <span class="text-rose-500">*</span>
                                             </label>
                                             <div class="relative">
-                                                <i class="fas fa-city absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                                                    <i class="fas fa-city text-gray-400"></i>
+                                                </div>
                                                 <input type="text"
                                                        name="customer_city"
                                                        id="customer_city"
@@ -105,7 +111,9 @@
                                                 Adresse complète <span class="text-rose-500">*</span>
                                             </label>
                                             <div class="relative">
-                                                <i class="fas fa-map-marker-alt absolute left-4 top-4 text-gray-400"></i>
+                                                <div class="absolute top-4 left-4 pointer-events-none">
+                                                    <i class="fas fa-map-marker-alt text-gray-400"></i>
+                                                </div>
                                                 <textarea name="customer_address"
                                                           id="customer_address"
                                                           rows="3"
@@ -124,7 +132,9 @@
                                                 Notes supplémentaires (optionnel)
                                             </label>
                                             <div class="relative">
-                                                <i class="fas fa-pen absolute left-4 top-4 text-gray-400"></i>
+                                                <div class="absolute top-4 left-4 pointer-events-none">
+                                                    <i class="fas fa-pen text-gray-400"></i>
+                                                </div>
                                                 <textarea name="notes"
                                                           id="notes"
                                                           rows="2"
@@ -135,11 +145,11 @@
                                     </div>
                                 </div>
 
-                                <!-- Payment Method Section -->
+                                <!-- Payment Method Section - Only Cash on Delivery -->
                                 <div>
                                     <div class="flex items-center space-x-3 mb-6 pb-2 border-b border-gray-200">
                                         <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
-                                            <i class="fas fa-credit-card text-emerald-600 text-lg"></i>
+                                            <i class="fas fa-money-bill-wave text-emerald-600 text-lg"></i>
                                         </div>
                                         <h2 class="text-xl font-bold text-gray-900">Méthode de paiement</h2>
                                     </div>
@@ -153,23 +163,22 @@
                                                    checked
                                                    class="peer hidden">
                                             <label for="cash_on_delivery" 
-                                                   class="flex items-center justify-between p-5 border-2 border-gray-200 rounded-xl cursor-pointer transition-all duration-200 peer-checked:border-emerald-500 peer-checked:bg-emerald-50 hover:border-emerald-300">
+                                                   class="flex items-center justify-between p-5 border-2 border-emerald-500 rounded-xl cursor-pointer bg-emerald-50">
                                                 <div class="flex items-center space-x-4">
                                                     <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
                                                         <i class="fas fa-money-bill-wave text-emerald-600 text-xl"></i>
                                                     </div>
                                                     <div>
                                                         <p class="font-bold text-gray-900">Paiement à la livraison</p>
-                                                        <p class="text-sm text-gray-500">Payez en espèces lors de la réception de votre commande</p>
+                                                        <p class="text-sm text-gray-500">Payez en espèces lorsque vous recevez votre commande</p>
                                                     </div>
                                                 </div>
-                                                <div class="w-6 h-6 rounded-full border-2 border-gray-300 peer-checked:border-emerald-500 peer-checked:bg-emerald-500 flex items-center justify-center transition-all">
-                                                    <i class="fas fa-check text-white text-xs opacity-0 peer-checked:opacity-100 transition-opacity"></i>
+                                                <div class="w-6 h-6 rounded-full border-2 border-emerald-500 bg-emerald-500 flex items-center justify-center">
+                                                    <i class="fas fa-check text-white text-xs"></i>
                                                 </div>
                                             </label>
                                         </div>
 
-                                        <!-- More payment methods can be added here -->
                                         <div class="text-xs text-gray-500 text-center mt-4">
                                             <i class="fas fa-lock mr-1"></i> Paiement 100% sécurisé
                                         </div>
@@ -177,7 +186,7 @@
                                 </div>
                             </div>
 
-                            <!-- Submit Button Section (Desktop - inside form, Mobile - sticky bar) -->
+                            <!-- Submit Button Section (Desktop - inside form) -->
                             <div class="mt-8 pt-6 border-t border-gray-200 hidden md:block">
                                 <button type="submit"
                                         id="submitButton"
@@ -469,17 +478,30 @@
         const existingError = field.parentElement.querySelector('.error-message');
         if (existingError) existingError.remove();
         
-        // Add new error message
+        // Create error message element
         const error = document.createElement('p');
         error.className = 'error-message mt-1 text-sm text-rose-600';
         error.innerHTML = `<i class="fas fa-exclamation-circle mr-1"></i>${message}`;
-        field.parentElement.appendChild(error);
+        
+        // Insert after the field's parent (the relative div)
+        field.parentElement.parentElement?.appendChild(error) || field.parentElement.appendChild(error);
     }
     
     function clearFieldError(field) {
         field.classList.remove('border-rose-500', 'bg-rose-50');
-        const existingError = field.parentElement.querySelector('.error-message');
-        if (existingError) existingError.remove();
+        // Remove error message - traverse up to find the container
+        let parent = field.parentElement;
+        while (parent && !parent.classList.contains('md\\:col-span-2') && parent !== document.body) {
+            const existingError = parent.querySelector('.error-message');
+            if (existingError) existingError.remove();
+            parent = parent.parentElement;
+        }
+        // Also check the direct parent of the relative div
+        const grandParent = field.parentElement?.parentElement;
+        if (grandParent) {
+            const existingError = grandParent.querySelector('.error-message');
+            if (existingError) existingError.remove();
+        }
     }
     
     // Clear errors on input
@@ -520,11 +542,6 @@
         transition-duration: 200ms;
     }
     
-    /* Radio button animation */
-    .peer:checked + label .peer-checked\:opacity-100 {
-        opacity: 1;
-    }
-    
     /* Responsive adjustments */
     @media (max-width: 768px) {
         body {
@@ -542,6 +559,17 @@
         opacity: 0.7;
         cursor: not-allowed;
         transform: none !important;
+    }
+    
+    /* Fix icon alignment for textarea */
+    .relative .absolute {
+        z-index: 1;
+    }
+    
+    /* Ensure proper spacing for error messages */
+    .error-message {
+        margin-top: 0.25rem;
+        font-size: 0.875rem;
     }
 </style>
 @endsection
