@@ -38,6 +38,28 @@
                                         <h2 class="text-xl font-bold text-gray-900">{{ __('checkout.delivery_information') }}</h2>
                                     </div>
 
+                                    <label for="is_laayoune_delivery"
+                                           class="mb-6 flex cursor-pointer items-start gap-4 rounded-xl border-2 border-emerald-200 bg-emerald-50 p-4 transition-colors hover:border-emerald-400">
+                                        <input type="checkbox"
+                                               name="is_laayoune_delivery"
+                                               id="is_laayoune_delivery"
+                                               value="1"
+                                               @checked(old('is_laayoune_delivery'))
+                                               class="mt-1 h-5 w-5 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500">
+                                        <span class="flex-1">
+                                            <span class="flex flex-wrap items-center justify-between gap-2">
+                                                <span class="font-bold text-gray-900">{{ __('checkout.laayoune_delivery_title') }}</span>
+                                                <span class="rounded-full bg-emerald-600 px-3 py-1 text-xs font-bold text-white">
+                                                    {{ __('checkout.laayoune_delivery_free') }}
+                                                </span>
+                                            </span>
+                                            <span class="mt-1 block text-sm text-gray-600">{{ __('checkout.laayoune_delivery_description') }}</span>
+                                            <span class="mt-2 block text-xs font-medium text-gray-500">
+                                                {{ __('checkout.other_cities_delivery', ['price' => number_format($deliveryFee, 2)]) }}
+                                            </span>
+                                        </span>
+                                    </label>
+
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <!-- Customer Name -->
                                         <div class="md:col-span-2">
@@ -86,9 +108,6 @@
                                                    required
                                                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 @error('customer_city') border-rose-500 @enderror"
                                                    placeholder="{{ __('checkout.city_placeholder') }}">
-                                            <datalist id="moroccanCities">
-                                                <option value="{{ __('checkout.free_delivery_city') }}"></option>
-                                            </datalist>
                                             @error('customer_city')
                                                 <p class="mt-1 text-sm text-rose-600">{{ $message }}</p>
                                             @enderror
@@ -336,28 +355,15 @@
         currency: 'DH',
     };
 
-    function normalizeCity(city) {
-        return city
-            .toLocaleLowerCase()
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')
-            .replace(/[^\p{L}\p{N}]+/gu, '');
-    }
-
-    function isFreeDeliveryCity(city) {
-        const normalizedCity = normalizeCity(city);
-        return normalizedCity.includes('laayoune') || normalizedCity.includes('العيون');
-    }
-
     function updateCheckoutPricing() {
-        const cityInput = document.getElementById('customer_city');
+        const laayouneDelivery = document.getElementById('is_laayoune_delivery');
         const deliveryFeeValue = document.getElementById('deliveryFeeValue');
         const checkoutTotal = document.getElementById('checkoutTotal');
         const mobileCheckoutTotal = document.getElementById('mobileCheckoutTotal');
         const thresholdNotice = document.getElementById('freeDeliveryThresholdNotice');
-        if (!cityInput || !deliveryFeeValue || !checkoutTotal || !mobileCheckoutTotal) return;
+        if (!laayouneDelivery || !deliveryFeeValue || !checkoutTotal || !mobileCheckoutTotal) return;
 
-        const deliveryIsFree = checkoutPricing.thresholdDeliveryIsFree || isFreeDeliveryCity(cityInput.value);
+        const deliveryIsFree = checkoutPricing.thresholdDeliveryIsFree || laayouneDelivery.checked;
         const deliveryFee = deliveryIsFree ? 0 : checkoutPricing.configuredDeliveryFee;
         const formattedTotal = `${(checkoutPricing.subtotal + deliveryFee).toFixed(2)} ${checkoutPricing.currency}`;
 
@@ -370,12 +376,11 @@
         mobileCheckoutTotal.textContent = formattedTotal;
 
         if (thresholdNotice) {
-            thresholdNotice.classList.toggle('hidden', isFreeDeliveryCity(cityInput.value));
+            thresholdNotice.classList.toggle('hidden', laayouneDelivery.checked);
         }
     }
 
-    document.getElementById('customer_city')?.addEventListener('input', updateCheckoutPricing);
-    document.getElementById('customer_city')?.addEventListener('change', updateCheckoutPricing);
+    document.getElementById('is_laayoune_delivery')?.addEventListener('change', updateCheckoutPricing);
     document.addEventListener('DOMContentLoaded', updateCheckoutPricing);
 
     // Format phone number as user types (Moroccan format)

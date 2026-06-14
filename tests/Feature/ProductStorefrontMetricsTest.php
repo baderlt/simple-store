@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Setting;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -96,9 +97,10 @@ class ProductStorefrontMetricsTest extends TestCase
         $this->assertSame(7, $product->fresh()->stock_quantity);
     }
 
-    public function test_checkout_delivery_is_free_for_laayoune_in_french_or_arabic(): void
+    public function test_checkout_delivery_is_free_when_laayoune_delivery_is_selected(): void
     {
         config(['mail.default' => 'array']);
+        Setting::set('delivery_fee', '47');
 
         $product = $this->createProduct([
             'price' => 100,
@@ -106,35 +108,61 @@ class ProductStorefrontMetricsTest extends TestCase
             'slug' => 'free-delivery-product',
         ]);
 
-        foreach (['Laâyoune', 'مدينة العيون'] as $city) {
-            session()->put('cart', [
-                $product->id => [
-                    'id' => $product->id,
-                    'name' => $product->name,
-                    'display_name' => $product->name,
-                    'price' => 100,
-                    'final_price' => 100,
-                    'quantity' => 1,
-                    'has_discount' => false,
-                    'image' => null,
-                ],
-            ]);
+        session()->put('cart', [
+            $product->id => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'display_name' => $product->name,
+                'price' => 100,
+                'final_price' => 100,
+                'quantity' => 1,
+                'has_discount' => false,
+                'image' => null,
+            ],
+        ]);
 
-            $response = $this->post(route('checkout.store'), [
-                'customer_name' => 'Test Customer',
-                'customer_phone' => '0612345678',
-                'customer_address' => 'Test address',
-                'customer_city' => $city,
-            ]);
+        $response = $this->post(route('checkout.store'), [
+            'customer_name' => 'Test Customer',
+            'customer_phone' => '0612345678',
+            'customer_address' => 'Test address',
+            'customer_city' => 'حي داخل العيون',
+            'is_laayoune_delivery' => '1',
+        ]);
 
-            $response->assertRedirect();
-            $this->assertDatabaseHas('orders', [
-                'customer_city' => $city,
-                'subtotal' => 100,
-                'delivery_fee' => 0,
-                'total' => 100,
-            ]);
-        }
+        $response->assertRedirect();
+        $this->assertDatabaseHas('orders', [
+            'customer_city' => 'حي داخل العيون',
+            'subtotal' => 100,
+            'delivery_fee' => 0,
+            'total' => 100,
+        ]);
+
+        session()->put('cart', [
+            $product->id => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'display_name' => $product->name,
+                'price' => 100,
+                'final_price' => 100,
+                'quantity' => 1,
+                'has_discount' => false,
+                'image' => null,
+            ],
+        ]);
+
+        $this->post(route('checkout.store'), [
+            'customer_name' => 'Other City Customer',
+            'customer_phone' => '0612345678',
+            'customer_address' => 'Other city address',
+            'customer_city' => 'Casablanca',
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('orders', [
+            'customer_city' => 'Casablanca',
+            'subtotal' => 100,
+            'delivery_fee' => 47,
+            'total' => 147,
+        ]);
     }
 
     private function createProduct(array $overrides = []): Product

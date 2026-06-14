@@ -103,6 +103,7 @@ class CheckoutController extends Controller
             'customer_address' => 'required|string',
             'customer_city' => 'required|string|max:100',
             'notes' => 'nullable|string',
+            'is_laayoune_delivery' => 'nullable|boolean',
         ]);
 
         // Check if we're doing direct checkout
@@ -157,7 +158,7 @@ class CheckoutController extends Controller
 
             $configuredDeliveryFee = (float) settings('delivery_fee', 30);
             $freeDeliveryThreshold = (float) settings('free_delivery_threshold', 0);
-            $hasFreeCityDelivery = $this->isFreeDeliveryCity($validated['customer_city']);
+            $hasFreeCityDelivery = (bool) ($validated['is_laayoune_delivery'] ?? false);
             $deliveryFee = $hasFreeCityDelivery || ($freeDeliveryThreshold > 0 && $subtotal > $freeDeliveryThreshold)
                 ? 0
                 : $configuredDeliveryFee;
@@ -306,13 +307,4 @@ class CheckoutController extends Controller
         return view('checkout.success', compact('order'));
     }
 
-    private function isFreeDeliveryCity(string $city): bool
-    {
-        $normalizedCity = Str::of($city)
-            ->lower()
-            ->ascii()
-            ->replaceMatches('/[^\pL\pN]+/u', '');
-
-        return $normalizedCity->contains('laayoune') || $normalizedCity->contains('العيون');
-    }
 }
