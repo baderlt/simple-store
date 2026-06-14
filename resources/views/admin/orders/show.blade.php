@@ -38,10 +38,10 @@
         ];
     @endphp
 
-    {{-- Order Summary Mobile Header --}}
-    <section class="md:hidden mb-6 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg shadow-gray-200/60"
-             aria-labelledby="mobile-order-heading">
-        <div class="relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-emerald-900 px-4 py-5">
+    {{-- Responsive Order Summary --}}
+    <section class="mb-6 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg shadow-gray-200/60 md:grid md:grid-cols-[minmax(0,1.05fr)_minmax(0,1.4fr)]"
+             aria-labelledby="order-summary-heading">
+        <div class="relative flex min-h-full items-center overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-emerald-900 px-4 py-5 sm:px-6 md:px-7 md:py-7">
             <div class="pointer-events-none absolute -right-8 -top-10 h-32 w-32 rounded-full bg-emerald-400/10"></div>
             <div class="pointer-events-none absolute -bottom-12 -left-8 h-28 w-28 rounded-full bg-white/5"></div>
 
@@ -50,43 +50,43 @@
                     <i class="fas fa-receipt" aria-hidden="true"></i>
                     {{ __('order_details') }}
                 </p>
-                <h1 id="mobile-order-heading" class="break-words text-xl font-bold leading-tight text-white">
+                <h1 id="order-summary-heading" class="break-words text-xl font-bold leading-tight text-white sm:text-2xl">
                     <span class="block text-sm font-medium text-gray-300">{{ __('order_number') }}</span>
-                    <span dir="ltr" class="mt-1 block font-mono">{{ $order->order_number }}</span>
+                    <span dir="ltr" class="mt-1 block font-mono tracking-tight">{{ $order->order_number }}</span>
                 </h1>
             </div>
         </div>
 
-        <div class="p-4">
-            <div class="grid grid-cols-2 gap-3">
-                <div class="min-w-0 rounded-xl bg-gray-50 p-3">
+        <div class="p-4 sm:p-5 md:flex md:items-center">
+            <div class="grid w-full grid-cols-2 gap-3 lg:grid-cols-[0.8fr_1fr_1.35fr] lg:gap-4">
+                <div class="min-w-0 rounded-xl border border-gray-100 bg-gray-50 p-3 sm:p-4">
                     <p class="mb-1 text-xs font-medium text-gray-500">{{ __('Date') }}</p>
                     <p dir="ltr" class="text-sm font-bold text-gray-800">{{ $order->created_at->format('d/m/Y') }}</p>
                     <p dir="ltr" class="mt-0.5 text-xs text-gray-500">{{ $order->created_at->format('H:i') }}</p>
                 </div>
 
-                <div class="min-w-0 rounded-xl bg-gray-50 p-3">
+                <div class="min-w-0 rounded-xl border border-gray-100 bg-gray-50 p-3 sm:p-4">
                     <p class="mb-2 text-xs font-medium text-gray-500">{{ __('order_status_section') }}</p>
                     <span class="inline-flex max-w-full items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset {{ $currentStatusStyle['badge'] }}">
                         <i class="fas {{ $currentStatusStyle['icon'] }} shrink-0" aria-hidden="true"></i>
                         <span class="truncate">{{ $order->status_label }}</span>
                     </span>
                 </div>
-            </div>
 
-            <div class="mt-3 flex items-center justify-between gap-3 rounded-xl border border-emerald-100 bg-gradient-to-r from-emerald-50 to-teal-50 p-3.5">
-                <div class="min-w-0">
-                    <p class="text-xs font-medium text-emerald-700">Total</p>
-                    <p dir="ltr" class="mt-0.5 whitespace-nowrap text-xl font-extrabold tracking-tight text-emerald-800">
-                        {{ number_format($order->total, 2) }} DH
-                    </p>
+                <div class="col-span-2 flex min-w-0 items-center justify-between gap-4 rounded-xl border-2 border-emerald-200 bg-gradient-to-r from-emerald-50 to-teal-50 p-4 shadow-sm lg:col-span-1 lg:px-5">
+                    <div class="min-w-0">
+                        <p class="text-xs font-semibold uppercase tracking-wide text-emerald-700">Total</p>
+                        <p dir="ltr" class="mt-1 whitespace-nowrap text-xl font-extrabold tracking-tight text-emerald-800 lg:text-2xl">
+                            {{ number_format($order->total, 2) }} DH
+                        </p>
+                    </div>
+                    @if($isFreeDelivery)
+                        <span class="inline-flex shrink-0 items-center rounded-full bg-white px-2.5 py-1.5 text-xs font-semibold text-emerald-700 shadow-sm ring-1 ring-emerald-100">
+                            <i class="fas fa-gift mr-1.5" aria-hidden="true"></i>
+                            {{ __('free_delivery') }}
+                        </span>
+                    @endif
                 </div>
-                @if($isFreeDelivery)
-                    <span class="inline-flex shrink-0 items-center rounded-full bg-white px-2.5 py-1.5 text-xs font-semibold text-emerald-700 shadow-sm ring-1 ring-emerald-100">
-                        <i class="fas fa-gift mr-1.5" aria-hidden="true"></i>
-                        {{ __('free_delivery') }}
-                    </span>
-                @endif
             </div>
         </div>
     </section>
