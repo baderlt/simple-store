@@ -252,7 +252,8 @@ class CheckoutController extends Controller
      */
     private function sendOrderNotifications(Order $order)
     {
-        // Send email notification
+        $order->loadMissing('items');
+
         $adminEmail = settings('email');
         if ($adminEmail) {
             Mail::to($adminEmail)->send(new NewOrderNotification($order));
