@@ -10,6 +10,8 @@ return [
     'order_placed' => 'Order placed successfully!',
     'select_variant' => 'Please select a variant before checkout.',
     'invalid_variant' => 'The selected variant is no longer available.',
+    'minimum_quantity_required' => 'The minimum quantity for this variant is :quantity.',
+    'minimum_quantity_for_product' => 'The minimum quantity for :product is :quantity.',
     'page_title' => 'Checkout',
     'heading' => 'Complete your order',
     'intro' => 'Check your information and securely confirm your purchase',

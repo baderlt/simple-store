@@ -62,6 +62,11 @@ class CheckoutController extends Controller
         }
 
         $quantity = (int) $request->input('quantity');
+        $minimumQuantity = $variant?->minimumOrderQuantity() ?? 1;
+        if ($quantity < $minimumQuantity) {
+            return redirect()->route('products.show', $product->slug)->with('error', __('checkout.minimum_quantity_required', ['quantity' => $minimumQuantity]));
+        }
+
         if ($quantity > $stock) {
             return redirect()->route('products.show', $product->slug)->with('error', __('checkout.only_units_available', ['stock' => $stock]));
         }
@@ -144,6 +149,14 @@ class CheckoutController extends Controller
 
                 if ($product->usesVariants() && !$variant) {
                     throw new \Exception(__('checkout.invalid_variant'));
+                }
+
+                $minimumQuantity = $variant?->minimumOrderQuantity() ?? 1;
+                if ($item['quantity'] < $minimumQuantity) {
+                    throw new \Exception(__('checkout.minimum_quantity_for_product', [
+                        'product' => $item['display_name'] ?? $product->name,
+                        'quantity' => $minimumQuantity,
+                    ]));
                 }
 
                 if ($product->getCurrentStock($variant) < $item['quantity']) {
