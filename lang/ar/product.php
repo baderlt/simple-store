@@ -9,6 +9,7 @@ return [
     'copy_link' => 'انسخ هذا الرابط:',
     'only_stock_available' => 'عذرًا، المتوفر في المخزون فقط :stock وحدات.',
     'invalid_quantity' => 'يرجى اختيار كمية صالحة.',
+    'minimum_quantity_required' => 'الحد الأدنى للكمية هو :quantity :unit.',
     'redirecting_checkout' => 'جارٍ التحويل إلى الدفع...',
     'select_variant' => 'اختر المتغير',
     'choose_option' => 'اختر خيارًا متاحًا',

@@ -66,6 +66,17 @@ class ProductVariantFlowTest extends TestCase
         $this->assertSame(10, $variant->minimumOrderQuantity());
     }
 
+    public function test_product_page_exposes_the_minimum_quantity_warning_and_unit(): void
+    {
+        [$product] = $this->variantProduct(['stock_quantity' => 20, 'unit' => 'g'], 'Poids', '1 gramme');
+
+        $this->get(route('products.show', $product->slug))
+            ->assertOk()
+            ->assertSee('id="quantityMinimumMessage"', false)
+            ->assertSee('"minimum_quantity":10', false)
+            ->assertSee('"quantity_unit":"g"', false);
+    }
+
     public function test_other_weights_keep_the_default_minimum_quantity(): void
     {
         [, $variant] = $this->variantProduct();

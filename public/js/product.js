@@ -20,19 +20,35 @@ function t(key, replacements = {}) {
     // Update quantity function
     function updateQuantity(change) {
         const quantityInput = document.getElementById('quantity');
-        let currentValue = parseInt(quantityInput.value);
+        if (!quantityInput) return true;
+
+        const minimumMessage = document.getElementById('quantityMinimumMessage');
+        let currentValue = parseInt(quantityInput.value, 10);
         const maxStock = parseInt(quantityInput.max);
         const minValue = parseInt(quantityInput.min);
-        console.log(currentValue);
+        if (Number.isNaN(currentValue)) currentValue = minValue;
+
         // Calculate new value
         let newValue = currentValue + change;
+        let isValid = true;
         
         // Validate bounds
         if (newValue < minValue) {
+            isValid = false;
+            if (minimumMessage) {
+                minimumMessage.textContent = t('product.minimum_quantity_required', {
+                    quantity: minValue,
+                    unit: document.getElementById('quantityUnit')?.textContent?.trim() || ''
+                });
+                minimumMessage.classList.remove('hidden');
+            }
             newValue = minValue;
         } else if (newValue > maxStock) {
             newValue = maxStock;
             alert(t('product.max_quantity_units', { stock: maxStock }));
+        } else if (minimumMessage) {
+            minimumMessage.textContent = '';
+            minimumMessage.classList.add('hidden');
         }
         
         // Update input value
@@ -41,6 +57,8 @@ function t(key, replacements = {}) {
         // Update hidden inputs in forms
         document.getElementById('formQuantity').value = newValue;
         document.getElementById('buyNowQuantity').value = newValue;
+
+        return isValid;
     }
 
     // Share product function
@@ -156,9 +174,10 @@ function t(key, replacements = {}) {
                     return false;
                 }
                 
-                if (quantity < 1) {
+                const minimumQuantity = parseInt(document.getElementById('quantity').min) || 1;
+                if (quantity < minimumQuantity) {
                     e.preventDefault();
-                    alert(t('product.invalid_quantity'));
+                    updateQuantity(0);
                     return false;
                 }
                 

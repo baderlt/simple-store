@@ -9,6 +9,7 @@ return [
     'copy_link' => 'Copy this link:',
     'only_stock_available' => 'Sorry, only :stock units are available in stock.',
     'invalid_quantity' => 'Please select a valid quantity.',
+    'minimum_quantity_required' => 'The minimum quantity is :quantity :unit.',
     'redirecting_checkout' => 'Redirecting to checkout...',
     'select_variant' => 'Select variant',
     'choose_option' => 'Choose an available option',
