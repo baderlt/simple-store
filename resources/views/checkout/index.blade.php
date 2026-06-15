@@ -153,7 +153,7 @@
                                         <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
                                             <i class="fas fa-money-bill-wave text-emerald-600 text-lg"></i>
                                         </div>
-                                        <!-- <h2 class="text-xl font-bold text-gray-900">{{ __('checkout.payment_method') }}</h2> -->
+                                        <h2 class="text-xl font-bold text-gray-900">{{ __('checkout.payment_method') }}</h2>
                                     </div>
 
                                     <div class="space-y-3">
@@ -172,7 +172,7 @@
                                                     </div>
                                                     <div>
                                                         <p class="font-bold text-gray-900">{{ __('checkout.cash_on_delivery') }}</p>
-                                                        <p class="text-sm text-gray-500">{{ __('checkout.cash_on_delivery_description') }}</p>
+                                                        <!-- <p class="text-sm text-gray-500">{{ __('checkout.cash_on_delivery_description') }}</p> -->
                                                     </div>
                                                 </div>
                                                 <div class="w-6 h-6 rounded-full border-2 border-emerald-500 bg-emerald-500 flex items-center justify-center">
@@ -181,9 +181,9 @@
                                             </label>
                                         </div>
 
-                                        <div class="text-xs text-gray-500 text-center mt-4">
+                                        <!-- <div class="text-xs text-gray-500 text-center mt-4">
                                             <i class="fas fa-lock mr-1"></i> {{ __('checkout.fully_secure_payment') }}
-                                        </div>
+                                        </div> -->
                                     </div>
                                 </div>
                             </div>
