@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
 use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -37,8 +37,20 @@ class ProductController extends Controller
                 break;
         }
 
-        $products = $query->paginate(12);
-        $categories = Category::where('is_active', true)->get();
+        $products = $query->orderByDesc('id')
+            ->paginate(12)
+            ->withQueryString();
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'html' => view('products._cards', compact('products'))->render(),
+                'next_page_url' => $products->nextPageUrl(),
+            ]);
+        }
+
+        $categories = Category::where('is_active', true)
+            ->withCount(['products' => fn ($query) => $query->where('is_active', true)])
+            ->get();
 
         return view('products.index', compact('products', 'categories'));
     }
