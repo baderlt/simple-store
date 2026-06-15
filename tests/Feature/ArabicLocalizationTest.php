@@ -17,6 +17,7 @@ class ArabicLocalizationTest extends TestCase
         $response = (new TranslateStaticHtml)->handle($request, fn () => new Response(
             '<!DOCTYPE html><html><body><a href="/produits" class="produits" title="Voir le produit">Produits</a>'
             .'<input placeholder="Rechercher une catégorie...">'
+            .'<p>Nouvelle commande</p><p>Chargement de plus de produits...</p><p>Aucun résultat trouvé</p>'
             .'<script>const label = "Produits"; const url = "/produits";</script></body></html>',
             headers: ['Content-Type' => 'text/html']
         ));
@@ -26,6 +27,9 @@ class ArabicLocalizationTest extends TestCase
         $this->assertStringContainsString('>المنتجات</a>', $content);
         $this->assertStringContainsString('title="عرض المنتج"', $content);
         $this->assertStringContainsString('placeholder="ابحث عن فئة..."', $content);
+        $this->assertStringContainsString('>طلب جديد</p>', $content);
+        $this->assertStringContainsString('>جارٍ تحميل المزيد من المنتجات...</p>', $content);
+        $this->assertStringContainsString('>لم يتم العثور على نتائج</p>', $content);
         $this->assertStringContainsString('href="/produits"', $content);
         $this->assertStringContainsString('class="produits"', $content);
         $this->assertStringContainsString('const label = "Produits"', $content);
