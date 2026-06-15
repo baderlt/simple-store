@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Banner;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Support\OptimizesImages;
 
 class BannerController extends Controller
 {
@@ -51,7 +52,7 @@ class BannerController extends Controller
         ]);
         
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('banners', 'public');
+            $path = OptimizesImages::store($request->file('image'), 'banners', 1600, 800);
             $validated['image_path'] = $path;
         }
         
@@ -86,13 +87,14 @@ class BannerController extends Controller
             'is_active' => 'boolean',
         ]);
         
+        if ($request->boolean('delete_image') && ! $request->hasFile('image')) {
+            $validated['image_path'] = null;
+            $validated['is_active'] = false;
+        }
+
         if ($request->hasFile('image')) {
-            // Delete old image
-            if ($banner->image_path) {
-                Storage::disk('public')->delete($banner->image_path);
-            }
-            
-            $path = $request->file('image')->store('banners', 'public');
+            // The Banner model removes the old file when image_path changes.
+            $path = OptimizesImages::store($request->file('image'), 'banners', 1600, 800);
             $validated['image_path'] = $path;
         }
         

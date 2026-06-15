@@ -7,6 +7,7 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use App\Support\OptimizesImages;
 
 class CategoryController extends Controller
 {
@@ -26,7 +27,7 @@ class CategoryController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5048',
             'is_active' => 'boolean',
         ]);
 
@@ -34,7 +35,7 @@ class CategoryController extends Controller
         $validated['is_active'] = $request->has('is_active');
 
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('categories', 'public');
+            $validated['image'] = OptimizesImages::store($request->file('image'), 'categories', 900, 900);
         }
 
         Category::create($validated);
@@ -53,18 +54,25 @@ class CategoryController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5048',
             'is_active' => 'boolean',
         ]);
 
         $validated['slug'] = Str::slug($validated['name']);
         $validated['is_active'] = $request->has('is_active');
 
+        if ($request->boolean('delete_image') && ! $request->hasFile('image')) {
+            if ($category->image) {
+                Storage::disk('public')->delete($category->image);
+            }
+            $validated['image'] = null;
+        }
+
         if ($request->hasFile('image')) {
             if ($category->image) {
                 Storage::disk('public')->delete($category->image);
             }
-            $validated['image'] = $request->file('image')->store('categories', 'public');
+            $validated['image'] = OptimizesImages::store($request->file('image'), 'categories', 900, 900);
         }
 
         $category->update($validated);
