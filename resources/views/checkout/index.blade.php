@@ -31,6 +31,7 @@
 
                         <form action="{{ route('checkout.store') }}" method="POST" id="checkoutForm" novalidate>
                             @csrf
+                            <input type="hidden" name="is_direct_checkout" value="{{ $isDirect ? 1 : 0 }}">
 
                             <div class="space-y-8">
                                 <!-- Delivery Information Section -->

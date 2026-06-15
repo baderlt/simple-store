@@ -92,9 +92,9 @@ class ProductVariantFlowTest extends TestCase
             'id' => $product->id,
             'variant_id' => $variant->id,
             'quantity' => 15,
-        ]))->assertRedirect(route('checkout.index'));
+        ]))->assertRedirect(route('checkout.index', ['direct' => 1]));
 
-        $this->get(route('checkout.index'))
+        $this->get(route('checkout.index', ['direct' => 1]))
             ->assertOk()
             ->assertSee(__('checkout.quantity_short', ['quantity' => '15 g']));
     }
