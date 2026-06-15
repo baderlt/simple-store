@@ -264,8 +264,8 @@
                                     data-product-name="{{ $product->name }}"
                                     data-product-stock="{{ $currentStock }}"
                                     class="add-to-cart-btn purchase-action-button w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center group">
-                                <i class="fas fa-shopping-cart relative z-10 mr-3 group-hover:rotate-12 transition-transform"></i>
-                                <span class="relative z-10">Ajouter au panier</span>
+                                <i class="fas fa-box-open relative z-10 mr-3 group-hover:rotate-12 transition-transform"></i>
+                                <span class="relative z-10">{{ __('cart.add_to_pack') }}</span>
                             </button>
 
                             <form action="{{ route('checkout.direct', $product->id) }}" method="GET" id="buyNowForm">

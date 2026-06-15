@@ -204,7 +204,7 @@ return [
     'order_status_section' => 'Statut de la Commande',
     'back_to_orders' => 'Retour aux Commandes',
       'site_management' => 'Gestion du site',
-    'view_cart' => 'Voir le panier',
+    'view_cart' => 'Voir le pack',
     'order_now' => 'Commander',
 
     'orders_management' => 'Gestion des Commandes',

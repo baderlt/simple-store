@@ -167,7 +167,7 @@ return [
     'order_status_section' => 'Order Status',
     'back_to_orders' => 'Back to Orders',
       'site_management' => 'Site Management',
-    'view_cart' => 'View Cart',
+    'view_cart' => 'View Pack',
     'order_now' => 'Order Now',
 
     'orders_management' => 'Orders Management',

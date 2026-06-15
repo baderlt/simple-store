@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'empty_cart' => 'Votre panier est vide.',
+    'empty_cart' => 'Votre pack est vide.',
     'out_of_stock' => 'Ce produit est en rupture de stock.',
     'only_units_available' => 'Seulement :stock unités disponibles.',
     'product_not_found' => 'Produit introuvable.',
@@ -41,7 +41,7 @@ return [
     'confirm_order' => 'Confirmer la commande',
     'processing' => 'Traitement...',
     'back_to_product' => 'Retour au produit',
-    'edit_cart' => 'Modifier le panier',
+    'edit_cart' => 'Modifier le pack',
     'order_summary' => 'Résumé de la commande',
     'quantity_short' => 'Qté : :quantity',
     'subtotal' => 'Sous-total',

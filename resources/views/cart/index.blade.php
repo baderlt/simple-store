@@ -1,14 +1,14 @@
 @extends('layouts.app')
 
-@section('title', 'Panier')
+@section('title', __('cart.page_title'))
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-8">Mon Panier</h1>
+    <h1 class="text-3xl font-bold mb-8">{{ __('cart.page_heading') }}</h1>
 
     @if(!empty($cart) && count($cart) > 0)
         <div class="grid md:grid-cols-3 gap-8">
-            {{-- Cart Items --}}
+            {{-- Pack Items --}}
             <div class="md:col-span-2">
                 @php
                     $subtotal = 0;
@@ -68,16 +68,16 @@
             {{-- Order Summary --}}
             <div>
                 <div class="bg-white p-6 rounded-lg shadow sticky top-24">
-                    <h2 class="font-bold text-xl mb-4">Résumé de la commande</h2>
+                    <h2 class="font-bold text-xl mb-4">{{ __('cart.order_summary') }}</h2>
 
                     <div class="space-y-2 mb-4">
                         <div class="flex justify-between">
-                            <span>Sous-total</span>
+                            <span>{{ __('cart.subtotal_label') }}</span>
                             <span>{{ number_format($subtotal, 2) }} DH</span>
                         </div>
                         <div class="flex justify-between">
-                            <span>Livraison</span>
-                            <span>Calculé à la caisse</span>
+                            <span>{{ __('cart.delivery') }}</span>
+                            <span>{{ __('cart.calculated_at_checkout') }}</span>
                         </div>
                     </div>
 
@@ -90,23 +90,23 @@
 
                     <a href="{{ route('checkout.index') }}"
                        class="block w-full bg-green-500 text-white text-center py-3 rounded-lg font-semibold hover:bg-green-600 transition">
-                        Passer la commande
+                        {{ __('cart.checkout') }}
                     </a>
 
                     <a href="{{ route('products.index') }}"
                        class="block w-full text-center mt-4 text-green-600 hover:text-green-700">
-                        Continuer mes achats
+                        {{ __('cart.continue_shopping') }}
                     </a>
                 </div>
             </div>
         </div>
     @else
         <div class="text-center py-16">
-            <i class="fas fa-shopping-cart text-8xl text-gray-300 mb-6"></i>
-            <h2 class="text-2xl font-bold mb-4">Votre panier est vide</h2>
+            <i class="fas fa-box-open text-8xl text-gray-300 mb-6"></i>
+            <h2 class="text-2xl font-bold mb-4">{{ __('cart.empty_title') }}</h2>
             <a href="{{ route('products.index') }}"
                class="inline-block bg-green-500 text-white px-8 py-3 rounded-lg hover:bg-green-600">
-                Découvrir nos produits
+                {{ __('cart.view_products') }}
             </a>
         </div>
     @endif
