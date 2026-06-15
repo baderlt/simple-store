@@ -226,6 +226,7 @@ class CartController extends Controller
             'image' => $variant?->image_path ?: ($product->primaryImage ? $product->primaryImage->image_path : null),
             'quantity' => $quantity,
             'minimum_quantity' => $variant?->minimumOrderQuantity() ?? 1,
+            'quantity_unit' => $variant?->quantityUnit() ?? '',
             'slug' => $product->slug,
             'has_discount' => $product->hasDiscount(),
         ];

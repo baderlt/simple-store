@@ -57,6 +57,7 @@ class ProductVariantFlowTest extends TestCase
         $item = session('cart')["product_{$product->id}_variant_{$variant->id}"];
         $this->assertSame(10, $item['quantity']);
         $this->assertSame(10, $item['minimum_quantity']);
+        $this->assertSame('g', $item['quantity_unit']);
     }
 
     public function test_one_gram_abbreviation_is_normalized_for_minimum_quantity(): void
@@ -77,6 +78,25 @@ class ProductVariantFlowTest extends TestCase
             ->assertSee('validateProductMinimumQuantity', false)
             ->assertSee('"minimum_quantity":10', false)
             ->assertSee('"quantity_unit":"g"', false);
+    }
+
+    public function test_one_gram_only_product_hides_variant_chooser_and_checkout_shows_grams(): void
+    {
+        [$product, $variant] = $this->variantProduct(['stock_quantity' => 20], 'Poids', '1 gramme');
+
+        $this->get(route('products.show', $product->slug))
+            ->assertOk()
+            ->assertSee('class="hidden p-5 bg-white rounded-xl border border-gray-200 space-y-4" id="variantChooser"', false);
+
+        $this->get(route('checkout.direct', [
+            'id' => $product->id,
+            'variant_id' => $variant->id,
+            'quantity' => 15,
+        ]))->assertRedirect(route('checkout.index'));
+
+        $this->get(route('checkout.index'))
+            ->assertOk()
+            ->assertSee(__('checkout.quantity_short', ['quantity' => '15 g']));
     }
 
     public function test_other_weights_keep_the_default_minimum_quantity(): void

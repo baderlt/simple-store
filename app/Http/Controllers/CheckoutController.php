@@ -90,6 +90,7 @@ class CheckoutController extends Controller
             'final_price' => (float) $finalPrice,
             'image' => $variant?->image_path ?: ($product->primaryImage ? $product->primaryImage->image_path : null),
             'quantity' => $quantity,
+            'quantity_unit' => $variant?->quantityUnit() ?? '',
             'slug' => $product->slug,
             'has_discount' => $product->hasDiscount(),
             'is_direct' => true,

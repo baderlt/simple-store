@@ -52,16 +52,24 @@ class ProductVariant extends Model
 
     public function minimumOrderQuantity(): int
     {
+        return $this->isOneGramWeightVariant() ? 10 : 1;
+    }
+
+    public function quantityUnit(): string
+    {
+        return $this->isOneGramWeightVariant() ? 'g' : ($this->unit ?: '');
+    }
+
+    public function isOneGramWeightVariant(): bool
+    {
         $this->loadMissing('items.attribute', 'items.value');
 
-        $hasOneGramWeight = $this->items->contains(function (ProductVariantItem $item): bool {
+        return $this->items->contains(function (ProductVariantItem $item): bool {
             $attribute = Str::of((string) $item->attribute?->name)->ascii()->lower()->replaceMatches('/[^a-z]/', '')->toString();
             $value = Str::of((string) $item->value?->value)->ascii()->lower()->replaceMatches('/[^a-z0-9.,]/', '')->toString();
 
             return in_array($attribute, ['weight', 'poids'], true)
                 && preg_match('/^1(?:g|gr|gram|gramme)s?$/', $value) === 1;
         });
-
-        return $hasOneGramWeight ? 10 : 1;
     }
 }

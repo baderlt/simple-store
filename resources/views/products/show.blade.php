@@ -7,6 +7,7 @@
     $activeVariants = $product->variants->where('is_active', true)->values();
     $hasConfiguredVariants = $product->variants->isNotEmpty();
     $usesVariants = $activeVariants->isNotEmpty();
+    $hideVariantChooser = $usesVariants && $activeVariants->every(fn ($variant) => $variant->isOneGramWeightVariant());
     $inStockVariants = $activeVariants->filter(fn ($variant) => $variant->stock_quantity >= $variant->minimumOrderQuantity())->values();
     $defaultVariant = $usesVariants
         ? ($inStockVariants->firstWhere('is_default', true) ?: $inStockVariants->first() ?: $activeVariants->firstWhere('is_default', true) ?: $activeVariants->first())
@@ -46,7 +47,7 @@
             'final_price' => (float) $product->getDiscountedPrice((float) $variant->price),
             'stock_quantity' => $variant->stock_quantity,
             'minimum_quantity' => $variant->minimumOrderQuantity(),
-            'quantity_unit' => $variant->unit ?: ($variant->minimumOrderQuantity() === 10 ? 'g' : ''),
+            'quantity_unit' => $variant->quantityUnit(),
             'image' => $variant->image_path ? asset('storage/' . $variant->image_path) : null,
             'is_default' => $variant->is_default,
             'values' => $variant->items->mapWithKeys(fn ($item) => [$item->attribute->id => $item->value->id])->all(),
@@ -194,7 +195,8 @@
                 </div>
 
                 @if($usesVariants)
-                    <div class="p-5 bg-white rounded-xl border border-gray-200 space-y-4" id="variantChooser"
+                    <div class="{{ $hideVariantChooser ? 'hidden' : '' }} p-5 bg-white rounded-xl border border-gray-200 space-y-4" id="variantChooser"
+                         @if($hideVariantChooser) aria-hidden="true" @endif
                          data-variants='@json($variantPayload)' data-default-id="{{ $defaultVariant?->id }}">
                         <div class="flex items-center justify-between">
                             <h3 class="font-bold text-gray-900">{{ __('product.select_variant') }}</h3>
@@ -239,7 +241,7 @@
                                            class="w-28 h-12 pl-3 pr-10 text-center border border-gray-300 rounded-lg text-lg font-semibold focus:ring-2 focus:ring-emerald-300 focus:border-emerald-400">
                                     <span id="quantityUnit"
                                           class="absolute inset-y-0 right-3 flex items-center text-sm font-bold text-gray-500 pointer-events-none">
-                                        {{ $defaultVariant?->unit ?: ($defaultVariant?->minimumOrderQuantity() === 10 ? 'g' : '') }}
+                                        {{ $defaultVariant?->quantityUnit() }}
                                     </span>
                                 </div>
                                 <button type="button" onclick="updateQuantity(1)" 
