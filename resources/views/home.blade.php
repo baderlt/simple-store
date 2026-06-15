@@ -327,16 +327,16 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-5  sm:px-0 space-y-2 sm:space-y-0">
         @if($product->hasDiscount())
             <div>
-                <div class="text-xl sm:text-2xl font-bold text-gray-900">{{ number_format($product->final_price, 2) }} DH</div>
+                <div class="text-xl sm:text-2xl font-bold text-gray-900">{{ format_price($product->final_price) }} DH</div>
                 <div class="flex items-center text-sm">
-                    <span class="text-xs md:text-lg md:mr-2 text-gray-400 line-through ">{{ number_format($product->price, 2) }} DH</span>
+                    <span class="text-xs md:text-lg md:mr-2 text-gray-400 line-through ">{{ format_price($product->price) }} DH</span>
                     <span class="bg-rose-50 text-rose-600 pl-1 ml-1 lg:px-2 py-0.5 rounded text-xs font-bold">
-                        - {{ number_format($product->price - $product->final_price, 2) }} DH
+                        - {{ format_price($product->price - $product->final_price) }} DH
                     </span>
                 </div>
             </div>
         @else
-            <div class="text-xl sm:text-2xl font-bold text-gray-900">{{ number_format($product->price, 2) }} DH</div>
+            <div class="text-xl sm:text-2xl font-bold text-gray-900">{{ format_price($product->price) }} DH</div>
         @endif
     </div>
     
@@ -888,4 +888,3 @@ document.addEventListener('DOMContentLoaded', function() {
 }
     
 </script>
-
