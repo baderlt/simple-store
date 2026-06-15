@@ -153,7 +153,7 @@
                                         <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
                                             <i class="fas fa-money-bill-wave text-emerald-600 text-lg"></i>
                                         </div>
-                                        <h2 class="text-xl font-bold text-gray-900">{{ __('checkout.payment_method') }}</h2>
+                                        <!-- <h2 class="text-xl font-bold text-gray-900">{{ __('checkout.payment_method') }}</h2> -->
                                     </div>
 
                                     <div class="space-y-3">
