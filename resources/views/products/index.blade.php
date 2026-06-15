@@ -185,8 +185,8 @@
                             @endphp
                             @if($hasVariantDiscount)
                                 <div class="flex">
-                                    <span class="text-red-400 text-xs line-through mr-2">{{ number_format($product->price, 0) }} DH</span>
-                                    <span class="text-xl font-bold text-gray-900">{{ number_format($product->final_price, 0) }} DH</span>
+                                    <span class="text-red-400 text-xs line-through mr-2">{{ format_price($product->price) }} DH</span>
+                                    <span class="text-xl font-bold text-gray-900">{{ format_price($product->final_price) }} DH</span>
                                 </div>
                             @elseif($product->usesVariants())
                                 @php
@@ -195,14 +195,14 @@
                                 @endphp
                                 @if($variantDiscount < $displayPrice)
                                     <div class="flex">
-                                        <span class="text-red-400 text-xs line-through mr-2">{{ number_format($displayPrice, 0) }} DH</span>
-                                        <span class="text-xl font-bold text-gray-900">{{ number_format($variantDiscount, 0) }} DH</span>
+                                        <span class="text-red-400 text-xs line-through mr-2">{{ format_price($displayPrice) }} DH</span>
+                                        <span class="text-xl font-bold text-gray-900">{{ format_price($variantDiscount) }} DH</span>
                                     </div>
                                 @else
-                                    <div class="text-xl font-bold text-gray-900">{{ number_format($displayPrice, 2) }} DH</div>
+                                    <div class="text-xl font-bold text-gray-900">{{ format_price($displayPrice) }} DH</div>
                                 @endif
                             @else
-                                <div class="text-xl font-bold text-gray-900">{{ number_format($product->price, 2) }} DH</div>
+                                <div class="text-xl font-bold text-gray-900">{{ format_price($product->price) }} DH</div>
                             @endif
                         </div>
 
