@@ -337,14 +337,16 @@
                                 
                                 <!-- Action buttons WITHOUT forms -->
                                 <button type="button" 
-                                        onclick="setAsPrimary(event,'{{ $image->id }}')"
+                                        data-image-action="set-primary"
+                                        data-url="{{ route('admin.products.images.set-primary', [$product, $image]) }}"
                                         class="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 {{ $image->is_primary ? 'hidden' : '' }}"
                                         title="Définir comme principale">
                                     <i class="fas fa-star"></i>
                                 </button>
                                 
                                 <button type="button" 
-                                        onclick="deleteImage( event,'{{ $image->id }}')"
+                                        data-image-action="delete"
+                                        data-url="{{ route('admin.products.images.delete', [$product, $image]) }}"
                                         class="bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
                                         title="Supprimer">
                                     <i class="fas fa-trash"></i>
@@ -776,108 +778,51 @@ document.getElementById('is_featured')?.addEventListener('change', function() {
     }
 });
 
-function setAsPrimary(event, imageId) {
-    event.preventDefault();
-    
-    if (confirm('Définir cette image comme principale ?')) {
-        // Show loading state
-        const button = event.target.closest('button');
-        const originalHTML = button.innerHTML;
-        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-        button.disabled = true;
-        
-        // Get CSRF token from meta tag
-        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-        
-        // Make the request
-        fetch(`{{ route('admin.products.images.set-primary', [$product, '__IMAGE__']) }}`.replace('__IMAGE__', imageId), {
-            method: 'PATCH',
-            headers: {
-                'X-CSRF-TOKEN': csrfToken || '{{ csrf_token() }}',
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({})
-        })
-        .then(response => {
-            // Check if response is JSON
-            const contentType = response.headers.get("content-type");
-            if (contentType && contentType.includes("application/json")) {
-                return response.json();
-            } else {
-                // If not JSON, get the text to see what's wrong
-                return response.text().then(text => {
-                    throw new Error(`Expected JSON but got: ${text.substring(0, 100)}`);
-                });
-            }
-        })
-        .then(data => {
-            if (data.success) {
-                // Success - reload the page
-                showNotification(data.message || 'Image principale mise à jour avec succès', 'success');
-                setTimeout(() => location.reload(), 1500);
-            } else {
-                throw new Error(data.message || 'Erreur inconnue');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showNotification('Erreur: ' + error.message, 'error');
-            // Restore button
-            button.innerHTML = originalHTML;
-            button.disabled = false;
-        });
-    }
-}
+document.querySelectorAll('[data-image-action]').forEach(button => {
+    button.addEventListener('click', async event => {
+        event.preventDefault();
 
-function deleteImage(event, imageId) {
-    event.preventDefault();
-    
-    if (confirm('Êtes-vous sûr de vouloir supprimer cette image ?')) {
-        // Show loading state
-        const button = event.target.closest('button');
+        const action = button.dataset.imageAction;
+        const confirmation = action === 'set-primary'
+            ? 'Définir cette image comme principale ?'
+            : 'Êtes-vous sûr de vouloir supprimer cette image ?';
+
+        if (!confirm(confirmation)) return;
+
         const originalHTML = button.innerHTML;
         button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
         button.disabled = true;
-        
-        // Get CSRF token
-        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-        
-        fetch(`{{ route('admin.products.images.delete', [$product, '__IMAGE__']) }}`.replace('__IMAGE__', imageId), {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': csrfToken || '{{ csrf_token() }}',
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
+
+        try {
+            const response = await fetch(button.dataset.url, {
+                method: action === 'set-primary' ? 'PATCH' : 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            const data = await response.json().catch(() => ({}));
+
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || `La requête a échoué (${response.status}).`);
             }
-        })
-        .then(response => {
-            const contentType = response.headers.get("content-type");
-            if (contentType && contentType.includes("application/json")) {
-                return response.json();
-            } else {
-                return response.text().then(text => {
-                    throw new Error(`Expected JSON but got: ${text.substring(0, 100)}`);
-                });
-            }
-        })
-        .then(data => {
-            if (data.success) {
-                showNotification(data.message || 'Image supprimée avec succès', 'success');
-                setTimeout(() => location.reload(), 1500);
-            } else {
-                throw new Error(data.message || 'Erreur inconnue');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showNotification('Erreur: ' + error.message, 'error');
-            // Restore button
+
+            showNotification(
+                data.message || (action === 'set-primary'
+                    ? 'Image principale mise à jour avec succès'
+                    : 'Image supprimée avec succès'),
+                'success'
+            );
+            window.setTimeout(() => window.location.reload(), 500);
+        } catch (error) {
+            console.error('Product image action failed:', error);
+            showNotification(error.message || 'Une erreur est survenue.', 'error');
             button.innerHTML = originalHTML;
             button.disabled = false;
-        });
-    }
-}
+        }
+    });
+});
 
 // Helper function to show notifications
 function showNotification(message, type = 'success') {
