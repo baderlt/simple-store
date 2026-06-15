@@ -134,4 +134,67 @@ class ProductImageManagementTest extends TestCase
             ->deleteJson(route('admin.products.images.delete', [$otherProduct, $first]))
             ->assertNotFound();
     }
+
+    public function test_edit_form_uses_exact_image_action_urls_and_csrf_metadata(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $category = Category::create(['name' => 'General', 'slug' => 'general', 'is_active' => true]);
+        $product = Product::create([
+            'category_id' => $category->id,
+            'name' => 'Editable Gallery',
+            'slug' => 'editable-gallery',
+            'price' => 50,
+            'stock_quantity' => 2,
+            'low_stock_alert' => 1,
+            'is_active' => true,
+        ]);
+        $image = $product->images()->create([
+            'image_path' => 'products/editable.jpg',
+            'is_primary' => false,
+            'order' => 0,
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.products.edit', $product));
+
+        $response->assertOk()
+            ->assertSee('meta name="csrf-token"', false)
+            ->assertSee('data-image-action="set-primary"', false)
+            ->assertSee('data-url="'.route('admin.products.images.set-primary', [$product, $image]).'"', false)
+            ->assertSee('data-image-action="delete"', false)
+            ->assertSee('data-url="'.route('admin.products.images.delete', [$product, $image]).'"', false)
+            ->assertDontSee('__IMAGE__', false);
+    }
+
+    public function test_deleting_an_image_repairs_a_gallery_without_a_primary_image(): void
+    {
+        Storage::fake('public');
+        $admin = User::factory()->create(['is_admin' => true]);
+        $category = Category::create(['name' => 'General', 'slug' => 'general', 'is_active' => true]);
+        $product = Product::create([
+            'category_id' => $category->id,
+            'name' => 'Broken Gallery',
+            'slug' => 'broken-gallery',
+            'price' => 50,
+            'stock_quantity' => 2,
+            'low_stock_alert' => 1,
+            'is_active' => true,
+        ]);
+        $first = $product->images()->create([
+            'image_path' => 'products/first.jpg',
+            'is_primary' => false,
+            'order' => 0,
+        ]);
+        $second = $product->images()->create([
+            'image_path' => 'products/second.jpg',
+            'is_primary' => false,
+            'order' => 1,
+        ]);
+
+        $this->actingAs($admin)
+            ->deleteJson(route('admin.products.images.delete', [$product, $second]))
+            ->assertOk()
+            ->assertJson(['success' => true]);
+
+        $this->assertTrue($first->fresh()->is_primary);
+    }
 }

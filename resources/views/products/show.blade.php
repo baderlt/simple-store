@@ -168,24 +168,24 @@
                         <div class="flex flex-wrap items-baseline gap-x-6 gap-y-2 mb-3">
                             <!-- Discounted Price -->
                             <span dir="ltr" class="inline-flex items-baseline gap-1 whitespace-nowrap text-4xl sm:text-5xl font-bold text-gray-900">
-                                <span id="variantFinalPrice">{{ number_format($currentFinalPrice, 0) }}</span> 
+                                <span id="variantFinalPrice">{{ format_price($currentFinalPrice) }}</span>
                                 <span>DH</span>
                             </span>
                             
                             <!-- Original Price (strikethrough) with increased spacing -->
                             <span dir="ltr" class="inline-flex items-baseline gap-1 whitespace-nowrap text-xl sm:text-2xl text-gray-400 line-through ml-4">
-                                <span id="variantBasePrice">{{ number_format($currentPrice, 0) }}</span> 
+                                <span id="variantBasePrice">{{ format_price($currentPrice) }}</span>
                                 <span>DH</span>
                             </span>
                         </div>
                         <div class="flex items-center mt-2">
                             <span class="bg-rose-50 text-rose-700 px-3 py-1.5 rounded-lg font-bold text-sm">
-                                Économisez {{ number_format($currentPrice - $currentFinalPrice, 2) }} DH
+                                Économisez {{ format_price($currentPrice - $currentFinalPrice) }} DH
                             </span>
                         </div>
                     @else
                         <span dir="ltr" class="inline-flex items-baseline gap-1 whitespace-nowrap text-3xl sm:text-5xl font-bold text-gray-900">
-                            <span id="variantBasePrice">{{ number_format($currentPrice, 0) }}</span> 
+                            <span id="variantBasePrice">{{ format_price($currentPrice) }}</span>
                             <span>DH</span>
                         </span>
                     @endif
@@ -274,12 +274,12 @@
                                     <div class="flex flex-col flex-shrink-0">
                                         @if($product->hasDiscount())
                                             <div class="flex items-baseline gap-2">
-                                                <span class="text-xl font-bold text-gray-900" id="stickyFinalPrice">{{ number_format($currentFinalPrice, 0) }} DH</span>
-                                                <span class="text-sm text-gray-400 line-through" id="stickyBasePrice">{{ number_format($currentPrice, 0) }} DH</span>
+                                                <span class="text-xl font-bold text-gray-900" id="stickyFinalPrice">{{ format_price($currentFinalPrice) }} DH</span>
+                                                <span class="text-sm text-gray-400 line-through" id="stickyBasePrice">{{ format_price($currentPrice) }} DH</span>
                                             </div>
                                             <span class="text-xs text-rose-600 font-medium">-{{ $product->activeDiscount->discount_percentage }}%</span>
                                         @else
-                                            <span class="text-xl font-bold text-gray-900" id="stickyFinalPrice">{{ number_format($currentPrice, 0) }} DH</span>
+                                            <span class="text-xl font-bold text-gray-900" id="stickyFinalPrice">{{ format_price($currentPrice) }} DH</span>
                                         @endif
                                     </div>
                                     
@@ -614,8 +614,8 @@ document.addEventListener('keydown', (e) => {
 let currentUnitBasePrice = Number(@json((float) $currentPrice));
 let currentUnitFinalPrice = Number(@json((float) $currentFinalPrice));
 
-function formatWholePrice(value) {
-    return Math.round(value).toLocaleString('en-US');
+function formatPrice(value) {
+    return Number(value.toFixed(2)).toString();
 }
 
 function updateDisplayedTotal(quantity) {
@@ -625,16 +625,16 @@ function updateDisplayedTotal(quantity) {
     const stickyFinalPrice = document.getElementById('stickyFinalPrice');
 
     if (basePrice) {
-        basePrice.textContent = formatWholePrice(currentUnitBasePrice * quantity);
+        basePrice.textContent = formatPrice(currentUnitBasePrice * quantity);
     }
     if (finalPrice) {
-        finalPrice.textContent = formatWholePrice(currentUnitFinalPrice * quantity);
+        finalPrice.textContent = formatPrice(currentUnitFinalPrice * quantity);
     }
     if (stickyFinalPrice) {
-        stickyFinalPrice.textContent = formatWholePrice(currentUnitFinalPrice * quantity) + ' DH';
+        stickyFinalPrice.textContent = formatPrice(currentUnitFinalPrice * quantity) + ' DH';
     }
     if (stickyBasePrice) {
-        stickyBasePrice.textContent = formatWholePrice(currentUnitBasePrice * quantity) + ' DH';
+        stickyBasePrice.textContent = formatPrice(currentUnitBasePrice * quantity) + ' DH';
     }
 }
 

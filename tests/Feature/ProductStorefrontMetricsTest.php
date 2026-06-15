@@ -55,7 +55,7 @@ class ProductStorefrontMetricsTest extends TestCase
         $this->assertSame(68, $product->fresh()->sales_count);
     }
 
-    public function test_product_page_shows_localized_delivery_information_and_whole_prices(): void
+    public function test_product_page_shows_localized_delivery_information_and_trims_only_zero_decimals(): void
     {
         $product = $this->createProduct(['price' => 125]);
 
@@ -74,6 +74,14 @@ class ProductStorefrontMetricsTest extends TestCase
             ->assertSee(__('product.delivery_time'))
             ->assertSee(__('product.delivery_free_city', ['city' => 'Laâyoune']))
             ->assertSee(__('product.delivery_other_cities', ['price' => '40']));
+
+        $product->update(['price' => 1.5]);
+
+        $this->get(route('products.show', $product->slug))
+            ->assertOk()
+            ->assertSee('>1.5</span>', false)
+            ->assertDontSee('>2</span>', false)
+            ->assertDontSee('1.50');
     }
 
     public function test_checkout_increments_sales_once_per_product_regardless_of_quantity(): void

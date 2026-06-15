@@ -463,10 +463,12 @@ class ProductController extends Controller
 
     public function setPrimaryImage(Product $product, ProductImage $image)
     {
-        abort_unless($image->product_id === $product->id, 404);
+        abort_unless($image->product()->is($product), 404);
 
         DB::transaction(function () use ($product, $image) {
-            $product->images()->update(['is_primary' => false]);
+            $product->images()
+                ->whereKeyNot($image->getKey())
+                ->update(['is_primary' => false]);
             $image->update(['is_primary' => true]);
         });
 
@@ -475,7 +477,7 @@ class ProductController extends Controller
 
     public function deleteImage(Product $product, ProductImage $image)
     {
-        abort_unless($image->product_id === $product->id, 404);
+        abort_unless($image->product()->is($product), 404);
 
         $wasPrimary = $image->is_primary;
         $path = $image->image_path;
@@ -483,7 +485,7 @@ class ProductController extends Controller
         DB::transaction(function () use ($product, $image, $wasPrimary) {
             $image->delete();
 
-            if ($wasPrimary) {
+            if ($wasPrimary || ! $product->images()->where('is_primary', true)->exists()) {
                 $product->images()->orderBy('order')->orderBy('id')->first()?->update(['is_primary' => true]);
             }
         });
