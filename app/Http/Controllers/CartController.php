@@ -28,6 +28,11 @@ class CartController extends Controller
         }
 
         $quantity = max(1, (int) $request->input('quantity', 1));
+        $minimumQuantity = $variant?->minimumOrderQuantity() ?? 1;
+        if ($quantity < $minimumQuantity) {
+            return $this->errorResponse($request, __('cart.minimum_quantity_required', ['quantity' => $minimumQuantity]));
+        }
+
         $cart = session()->get('cart', []);
         $key = $this->cartKey($product->id, $variant?->id);
         $newQuantity = ($cart[$key]['quantity'] ?? 0) + $quantity;
@@ -160,6 +165,12 @@ class CartController extends Controller
         $product = Product::with(['variants'])->find($item['id']);
         $variant = !empty($item['variant_id']) && $product ? ProductVariant::where('product_id', $product->id)->where('is_active', true)->find($item['variant_id']) : null;
         $stock = $product ? $product->getCurrentStock($variant) : 0;
+        $minimumQuantity = $variant?->minimumOrderQuantity() ?? 1;
+
+        if ($quantity < $minimumQuantity) {
+            $message = __('cart.minimum_quantity_required', ['quantity' => $minimumQuantity]);
+            return $json ? response()->json(['success' => false, 'message' => $message], 400) : back()->with('error', $message);
+        }
 
         if ($quantity > $stock) {
             $message = __('cart.max_quantity_available', ['stock' => $stock]);
@@ -214,6 +225,7 @@ class CartController extends Controller
             'final_price' => (float) $finalPrice,
             'image' => $variant?->image_path ?: ($product->primaryImage ? $product->primaryImage->image_path : null),
             'quantity' => $quantity,
+            'minimum_quantity' => $variant?->minimumOrderQuantity() ?? 1,
             'slug' => $product->slug,
             'has_discount' => $product->hasDiscount(),
         ];

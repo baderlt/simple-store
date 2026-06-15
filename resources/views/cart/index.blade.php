@@ -49,7 +49,7 @@
                         <form action="{{ route('cart.update', $id) }}" method="POST" class="flex items-center gap-2">
                             @csrf
                             @method('PUT')
-                            <input type="number" name="quantity" value="{{ $item['quantity'] }}" min="1"
+                            <input type="number" name="quantity" value="{{ $item['quantity'] }}" min="{{ $item['minimum_quantity'] ?? 1 }}"
                                    class="w-16 px-2 py-1 border rounded text-center"
                                    onchange="this.form.submit()">
                         </form>
