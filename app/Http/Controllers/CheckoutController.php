@@ -16,20 +16,23 @@ use Illuminate\Support\Str;
 
 class CheckoutController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $cart = session()->get('cart', []);
-        
-        // Check if we're doing direct checkout
-        $directProduct = session()->get('direct_checkout');
-        
+
+        $isDirect = $request->boolean('direct');
+        $directProduct = $isDirect ? session()->get('direct_checkout') : null;
+
         if ($directProduct) {
             // Use direct product as the only item in cart
             $cart = [
                 ($directProduct['cart_key'] ?? $directProduct['id']) => $directProduct
             ];
-            $isDirect = true;
         } else {
+            // A normal cart checkout must not reuse an abandoned "buy now" item.
+            session()->forget('direct_checkout');
+            $isDirect = false;
+
             // Normal cart checkout
             if (empty($cart)) {
                 return redirect()->route('cart.index')->with('error', __('checkout.empty_cart'));
@@ -98,7 +101,7 @@ class CheckoutController extends Controller
         
         session()->put('direct_checkout', $directProduct);
         
-        return redirect()->route('checkout.index');
+        return redirect()->route('checkout.index', ['direct' => 1]);
     }
 
     public function store(Request $request)
@@ -110,19 +113,22 @@ class CheckoutController extends Controller
             'customer_city' => 'required|string|max:100',
             'notes' => 'nullable|string',
             'is_laayoune_delivery' => 'nullable|boolean',
+            'is_direct_checkout' => 'nullable|boolean',
         ]);
 
-        // Check if we're doing direct checkout
-        $directProduct = session()->get('direct_checkout');
+        // Only consume the direct item when this form came from a direct checkout page.
+        $isDirect = (bool) ($validated['is_direct_checkout'] ?? false);
+        $directProduct = $isDirect ? session()->get('direct_checkout') : null;
         
         if ($directProduct) {
             // Use direct product as cart
             $cart = [($directProduct['cart_key'] ?? $directProduct['id']) => $directProduct];
-            $isDirect = true;
         } else {
+            session()->forget('direct_checkout');
+            $isDirect = false;
+
             // Normal cart checkout
             $cart = session()->get('cart', []);
-            $isDirect = false;
             
             if (empty($cart)) {
                 return redirect()->route('cart.index')->with('error', __('checkout.empty_cart'));
