@@ -59,7 +59,7 @@
                                             </span>
                                             <span class="mt-1 block text-sm text-gray-600">{{ __('checkout.laayoune_delivery_description') }}</span>
                                             <span class="mt-2 block text-xs font-medium text-gray-500">
-                                                {{ __('checkout.other_cities_delivery', ['price' => number_format($deliveryFee, 2)]) }}
+                                                {{ __('checkout.other_cities_delivery', ['price' => format_price($deliveryFee)]) }}
                                             </span>
                                         </span>
                                     </label>
@@ -262,11 +262,11 @@
                                     <div class="flex items-center justify-between mt-2">
                                         <div class="flex items-baseline space-x-2">
                                             <span class="font-bold text-gray-900 text-sm">
-                                                {{ number_format($item['final_price'] * $item['quantity'], 2) }} DH
+                                                {{ format_price($item['final_price'] * $item['quantity']) }} DH
                                             </span>
                                             @if($item['has_discount'] && $item['final_price'] < $item['price'])
                                                 <span class="text-xs text-gray-400 line-through">
-                                                    {{ number_format($item['price'] * $item['quantity'], 2) }} DH
+                                                    {{ format_price($item['price'] * $item['quantity']) }} DH
                                                 </span>
                                             @endif
                                         </div>
@@ -293,20 +293,20 @@
                         <div class="space-y-3">
                             <div class="flex justify-between text-sm">
                                 <span class="text-gray-600">{{ __('checkout.subtotal') }}</span>
-                                <span class="font-medium text-gray-900">{{ number_format($subtotal, 2) }} DH</span>
+                                <span class="font-medium text-gray-900">{{ format_price($subtotal) }} DH</span>
                             </div>
                             <div class="flex justify-between text-sm">
                                 <span class="text-gray-600">{{ __('checkout.delivery_fee') }}</span>
                                 <span id="deliveryFeeValue"
                                       class="font-medium {{ $threshold && $subtotal > $threshold ? 'text-emerald-600' : 'text-gray-900' }}">
-                                    {{ $threshold && $subtotal > $threshold ? __('checkout.free') : number_format($deliveryFee, 2).' DH' }}
+                                    {{ $threshold && $subtotal > $threshold ? __('checkout.free') : format_price($deliveryFee).' DH' }}
                                 </span>
                             </div>
 
                             @if($threshold && $subtotal > 0 && $subtotal <= $threshold)
                                 <div id="freeDeliveryThresholdNotice" class="bg-amber-50 rounded-lg p-3 text-xs text-amber-700">
                                     <i class="fas fa-truck mr-1"></i> 
-                                    {{ __('checkout.free_delivery_remaining', ['amount' => number_format($threshold - $subtotal, 2)]) }}
+                                    {{ __('checkout.free_delivery_remaining', ['amount' => format_price($threshold - $subtotal)]) }}
                                 </div>
                             @endif
 
@@ -314,7 +314,7 @@
                                 <div class="flex justify-between items-center">
                                     <span class="text-lg font-bold text-gray-900">{{ __('checkout.total') }}</span>
                                     <span id="checkoutTotal" class="text-2xl font-bold text-emerald-600">
-                                        {{ number_format($total, 2) }} DH
+                                        {{ format_price($total) }} DH
                                     </span>
                                 </div>
                                 <p class="text-xs text-gray-500 mt-1 text-right">{{ __('checkout.tax_included') }}</p>
@@ -339,7 +339,7 @@
     <div class="flex items-center justify-between gap-3">
         <div class="flex flex-col">
             <span class="text-xs text-gray-500">{{ __('checkout.total') }}</span>
-            <span id="mobileCheckoutTotal" class="text-xl font-bold text-emerald-600">{{ number_format($total, 2) }} DH</span>
+            <span id="mobileCheckoutTotal" class="text-xl font-bold text-emerald-600">{{ format_price($total) }} DH</span>
         </div>
         <button type="submit" 
                 form="checkoutForm"
@@ -366,6 +366,10 @@
         currency: 'DH',
     };
 
+    function formatPrice(value) {
+        return Number(Number(value).toFixed(2)).toString();
+    }
+
     function updateCheckoutPricing() {
         const laayouneDelivery = document.getElementById('is_laayoune_delivery');
         const deliveryFeeValue = document.getElementById('deliveryFeeValue');
@@ -376,11 +380,11 @@
 
         const deliveryIsFree = checkoutPricing.thresholdDeliveryIsFree || laayouneDelivery.checked;
         const deliveryFee = deliveryIsFree ? 0 : checkoutPricing.configuredDeliveryFee;
-        const formattedTotal = `${(checkoutPricing.subtotal + deliveryFee).toFixed(2)} ${checkoutPricing.currency}`;
+        const formattedTotal = `${formatPrice(checkoutPricing.subtotal + deliveryFee)} ${checkoutPricing.currency}`;
 
         deliveryFeeValue.textContent = deliveryIsFree
             ? checkoutPricing.freeLabel
-            : `${checkoutPricing.configuredDeliveryFee.toFixed(2)} ${checkoutPricing.currency}`;
+            : `${formatPrice(checkoutPricing.configuredDeliveryFee)} ${checkoutPricing.currency}`;
         deliveryFeeValue.classList.toggle('text-emerald-600', deliveryIsFree);
         deliveryFeeValue.classList.toggle('text-gray-900', !deliveryIsFree);
         checkoutTotal.textContent = formattedTotal;
