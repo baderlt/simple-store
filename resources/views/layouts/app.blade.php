@@ -907,6 +907,7 @@
             'product.copy_link' => __('product.copy_link'),
             'product.only_stock_available' => __('product.only_stock_available'),
             'product.invalid_quantity' => __('product.invalid_quantity'),
+            'product.minimum_quantity_required' => __('product.minimum_quantity_required'),
             'product.redirecting_checkout' => __('product.redirecting_checkout'),
             'products.none_found' => __('products.none_found'),
             'products.sku' => __('products.sku'),

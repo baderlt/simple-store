@@ -10,6 +10,8 @@ return [
     'order_placed' => 'تم إرسال الطلب بنجاح!',
     'select_variant' => 'يرجى اختيار متغير قبل إتمام الطلب.',
     'invalid_variant' => 'المتغير المحدد لم يعد متاحًا.',
+    'minimum_quantity_required' => 'الحد الأدنى للكمية لهذا المتغير هو :quantity.',
+    'minimum_quantity_for_product' => 'الحد الأدنى للكمية للمنتج :product هو :quantity.',
     'page_title' => 'إتمام الطلب',
     'heading' => 'إتمام طلبك',
     'intro' => 'تحقق من معلوماتك وأكد عملية الشراء بأمان',
