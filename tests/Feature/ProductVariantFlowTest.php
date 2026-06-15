@@ -73,6 +73,8 @@ class ProductVariantFlowTest extends TestCase
         $this->get(route('products.show', $product->slug))
             ->assertOk()
             ->assertSee('id="quantityMinimumMessage"', false)
+            ->assertSee('topQuantityWarning', false)
+            ->assertSee('validateProductMinimumQuantity', false)
             ->assertSee('"minimum_quantity":10', false)
             ->assertSee('"quantity_unit":"g"', false);
     }

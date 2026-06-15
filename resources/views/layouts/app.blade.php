@@ -1453,7 +1453,11 @@
                 const isCurrentProduct = variantInput?.dataset.productId === String(productId);
                 const variantId = isCurrentProduct ? variantInput.value : '';
                 const quantityInput = isCurrentProduct ? document.getElementById('quantity') : null;
-                const quantity = quantityInput ? Math.max(1, Number(quantityInput.value || 1)) : 1;
+                if (quantityInput && typeof validateProductMinimumQuantity === 'function' && !validateProductMinimumQuantity()) {
+                    return;
+                }
+
+                const quantity = quantityInput ? Number(quantityInput.value || 1) : 1;
                 
                 addToCart(productId, productName, button, variantId, quantity);
             }
@@ -1502,6 +1506,9 @@
                     }, 1500);
                     
                 } else {
+                    if (data.message && typeof showQuantityWarning === 'function') {
+                        showQuantityWarning(data.message);
+                    }
                     button.innerHTML = originalContent;
                     button.disabled = false;
                 }

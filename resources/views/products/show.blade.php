@@ -651,14 +651,68 @@ function updateDisplayedTotal(quantity) {
     }
 }
 
+function showQuantityWarning(message) {
+    let warning = document.getElementById('topQuantityWarning');
+
+    if (!warning) {
+        warning = document.createElement('div');
+        warning.id = 'topQuantityWarning';
+        warning.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-[calc(100%-2rem)] max-w-xl rounded-xl border border-amber-300 bg-amber-50 px-5 py-4 text-amber-900 shadow-2xl';
+        warning.setAttribute('role', 'alert');
+        warning.setAttribute('aria-live', 'assertive');
+        document.body.appendChild(warning);
+    }
+
+    warning.replaceChildren();
+    const content = document.createElement('div');
+    content.className = 'flex items-center gap-3';
+    const icon = document.createElement('i');
+    icon.className = 'fas fa-exclamation-triangle text-xl text-amber-600';
+    const text = document.createElement('span');
+    text.className = 'font-bold';
+    text.textContent = message;
+    content.append(icon, text);
+    warning.appendChild(content);
+    warning.classList.remove('hidden');
+
+    clearTimeout(window.quantityWarningTimeout);
+    window.quantityWarningTimeout = setTimeout(() => warning.classList.add('hidden'), 5000);
+}
+
+function validateProductMinimumQuantity() {
+    const quantityInput = document.getElementById('quantity');
+    if (!quantityInput) return true;
+
+    const quantity = parseInt(quantityInput.value, 10);
+    const minimumQuantity = parseInt(quantityInput.min, 10) || 1;
+    if (!Number.isNaN(quantity) && quantity >= minimumQuantity) return true;
+
+    const unit = document.getElementById('quantityUnit')?.textContent?.trim() || '';
+    const message = window.appTranslations['product.minimum_quantity_required']
+        .replace(':quantity', minimumQuantity)
+        .replace(':unit', unit);
+    const inlineMessage = document.getElementById('quantityMinimumMessage');
+
+    if (inlineMessage) {
+        inlineMessage.textContent = message;
+        inlineMessage.classList.remove('hidden');
+    }
+
+    showQuantityWarning(message);
+    quantityInput.focus();
+
+    return false;
+}
+
 function updateQuantity(change) {
     const input = document.getElementById('quantity');
     const formQuantity = document.getElementById('formQuantity');
     const buyNowQuantity = document.getElementById('buyNowQuantity');
     const fixedBuyNowQuantity = document.getElementById('fixedBuyNowQuantity');
+    const minimumQuantity = parseInt(input.min, 10) || 1;
 
-    let newValue = (parseInt(input.value, 10) || 1) + change;
-    newValue = Math.max(1, Math.min(newValue, parseInt(input.max || 1)));
+    let newValue = (parseInt(input.value, 10) || minimumQuantity) + change;
+    newValue = Math.max(minimumQuantity, Math.min(newValue, parseInt(input.max || minimumQuantity, 10)));
     
     input.value = newValue;
     formQuantity.value = newValue;
@@ -669,7 +723,25 @@ function updateQuantity(change) {
     updateDisplayedTotal(newValue);
 }
 
-document.getElementById('quantity')?.addEventListener('input', () => updateQuantity(0));
+document.getElementById('quantity')?.addEventListener('input', event => {
+    const value = event.target.value;
+    document.getElementById('formQuantity').value = value;
+    document.getElementById('buyNowQuantity').value = value;
+
+    const minimumMessage = document.getElementById('quantityMinimumMessage');
+    if (minimumMessage) {
+        minimumMessage.textContent = '';
+        minimumMessage.classList.add('hidden');
+    }
+});
+
+document.querySelectorAll('#buyNowForm, #fixedBuyNowForm').forEach(form => {
+    form.addEventListener('submit', event => {
+        if (!validateProductMinimumQuantity()) {
+            event.preventDefault();
+        }
+    });
+});
 
 // Share product
 function shareProduct() {
