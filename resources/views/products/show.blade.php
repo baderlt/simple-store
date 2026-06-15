@@ -7,7 +7,8 @@
     $activeVariants = $product->variants->where('is_active', true)->values();
     $hasConfiguredVariants = $product->variants->isNotEmpty();
     $usesVariants = $activeVariants->isNotEmpty();
-    $inStockVariants = $activeVariants->where('stock_quantity', '>', 0)->values();
+    $hideVariantChooser = $usesVariants && $activeVariants->every(fn ($variant) => $variant->isOneGramWeightVariant());
+    $inStockVariants = $activeVariants->filter(fn ($variant) => $variant->stock_quantity >= $variant->minimumOrderQuantity())->values();
     $defaultVariant = $usesVariants
         ? ($inStockVariants->firstWhere('is_default', true) ?: $inStockVariants->first() ?: $activeVariants->firstWhere('is_default', true) ?: $activeVariants->first())
         : null;
@@ -45,6 +46,8 @@
             'price' => (float) $variant->price,
             'final_price' => (float) $product->getDiscountedPrice((float) $variant->price),
             'stock_quantity' => $variant->stock_quantity,
+            'minimum_quantity' => $variant->minimumOrderQuantity(),
+            'quantity_unit' => $variant->quantityUnit(),
             'image' => $variant->image_path ? asset('storage/' . $variant->image_path) : null,
             'is_default' => $variant->is_default,
             'values' => $variant->items->mapWithKeys(fn ($item) => [$item->attribute->id => $item->value->id])->all(),
@@ -192,7 +195,8 @@
                 </div>
 
                 @if($usesVariants)
-                    <div class="p-5 bg-white rounded-xl border border-gray-200 space-y-4" id="variantChooser"
+                    <div class="{{ $hideVariantChooser ? 'hidden' : '' }} p-5 bg-white rounded-xl border border-gray-200 space-y-4" id="variantChooser"
+                         @if($hideVariantChooser) aria-hidden="true" @endif
                          data-variants='@json($variantPayload)' data-default-id="{{ $defaultVariant?->id }}">
                         <div class="flex items-center justify-between">
                             <h3 class="font-bold text-gray-900">{{ __('product.select_variant') }}</h3>
@@ -227,22 +231,33 @@
                                         class="w-12 h-12 border border-gray-300 rounded-lg hover:border-emerald-500 hover:bg-emerald-50 transition-colors flex items-center justify-center">
                                     <i class="fas fa-minus text-gray-600"></i>
                                 </button>
-                                <input type="number" 
-                                       id="quantity" 
-                                       value="1" 
-                                       min="1" 
-                                       max="{{ $currentStock }}"
-                                       class="w-24 h-12 text-center border border-gray-300 rounded-lg text-lg font-semibold focus:ring-2 focus:ring-emerald-300 focus:border-emerald-400">
+                                <div class="relative">
+                                    <input type="number"
+                                           id="quantity"
+                                           value="{{ $defaultVariant?->minimumOrderQuantity() ?? 1 }}"
+                                           min="{{ $defaultVariant?->minimumOrderQuantity() ?? 1 }}"
+                                           max="{{ $currentStock }}"
+                                           aria-describedby="quantityMinimumMessage"
+                                           class="w-28 h-12 pl-3 pr-10 text-center border border-gray-300 rounded-lg text-lg font-semibold focus:ring-2 focus:ring-emerald-300 focus:border-emerald-400">
+                                    <span id="quantityUnit"
+                                          class="absolute inset-y-0 right-3 flex items-center text-sm font-bold text-gray-500 pointer-events-none">
+                                        {{ $defaultVariant?->quantityUnit() }}
+                                    </span>
+                                </div>
                                 <button type="button" onclick="updateQuantity(1)" 
                                         class="w-12 h-12 border border-gray-300 rounded-lg hover:border-emerald-500 hover:bg-emerald-50 transition-colors flex items-center justify-center">
                                     <i class="fas fa-plus text-gray-600"></i>
                                 </button>
                             </div>
+                            <p id="quantityMinimumMessage"
+                               class="hidden mt-2 text-sm font-semibold text-red-600"
+                               role="alert"
+                               aria-live="polite"></p>
                         </div>
 
                         <!-- Action Buttons -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <input type="hidden" name="quantity" id="formQuantity" value="1">
+                            <input type="hidden" name="quantity" id="formQuantity" value="{{ $defaultVariant?->minimumOrderQuantity() ?? 1 }}">
                             <input type="hidden" name="variant_id" id="selectedVariantId" data-product-id="{{ $product->id }}" value="{{ $defaultVariant?->id }}">
                             <button type="button" 
                                     data-product-id="{{ $product->id }}"
@@ -254,7 +269,7 @@
                             </button>
 
                             <form action="{{ route('checkout.direct', $product->id) }}" method="GET" id="buyNowForm">
-                                <input type="hidden" name="quantity" id="buyNowQuantity" value="1">
+                                <input type="hidden" name="quantity" id="buyNowQuantity" value="{{ $defaultVariant?->minimumOrderQuantity() ?? 1 }}">
                                     <input type="hidden" name="variant_id" class="selectedVariantInput" value="{{ $defaultVariant?->id }}">
                                 <button type="submit" 
                                         class="buy-now-btn purchase-action-button order-now-attention relative overflow-hidden w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center group">
@@ -638,14 +653,68 @@ function updateDisplayedTotal(quantity) {
     }
 }
 
+function showQuantityWarning(message) {
+    let warning = document.getElementById('topQuantityWarning');
+
+    if (!warning) {
+        warning = document.createElement('div');
+        warning.id = 'topQuantityWarning';
+        warning.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-[calc(100%-2rem)] max-w-xl rounded-xl border border-amber-300 bg-amber-50 px-5 py-4 text-amber-900 shadow-2xl';
+        warning.setAttribute('role', 'alert');
+        warning.setAttribute('aria-live', 'assertive');
+        document.body.appendChild(warning);
+    }
+
+    warning.replaceChildren();
+    const content = document.createElement('div');
+    content.className = 'flex items-center gap-3';
+    const icon = document.createElement('i');
+    icon.className = 'fas fa-exclamation-triangle text-xl text-amber-600';
+    const text = document.createElement('span');
+    text.className = 'font-bold';
+    text.textContent = message;
+    content.append(icon, text);
+    warning.appendChild(content);
+    warning.classList.remove('hidden');
+
+    clearTimeout(window.quantityWarningTimeout);
+    window.quantityWarningTimeout = setTimeout(() => warning.classList.add('hidden'), 5000);
+}
+
+function validateProductMinimumQuantity() {
+    const quantityInput = document.getElementById('quantity');
+    if (!quantityInput) return true;
+
+    const quantity = parseInt(quantityInput.value, 10);
+    const minimumQuantity = parseInt(quantityInput.min, 10) || 1;
+    if (!Number.isNaN(quantity) && quantity >= minimumQuantity) return true;
+
+    const unit = document.getElementById('quantityUnit')?.textContent?.trim() || '';
+    const message = window.appTranslations['product.minimum_quantity_required']
+        .replace(':quantity', minimumQuantity)
+        .replace(':unit', unit);
+    const inlineMessage = document.getElementById('quantityMinimumMessage');
+
+    if (inlineMessage) {
+        inlineMessage.textContent = message;
+        inlineMessage.classList.remove('hidden');
+    }
+
+    showQuantityWarning(message);
+    quantityInput.focus();
+
+    return false;
+}
+
 function updateQuantity(change) {
     const input = document.getElementById('quantity');
     const formQuantity = document.getElementById('formQuantity');
     const buyNowQuantity = document.getElementById('buyNowQuantity');
     const fixedBuyNowQuantity = document.getElementById('fixedBuyNowQuantity');
+    const minimumQuantity = parseInt(input.min, 10) || 1;
 
-    let newValue = (parseInt(input.value, 10) || 1) + change;
-    newValue = Math.max(1, Math.min(newValue, parseInt(input.max || 1)));
+    let newValue = (parseInt(input.value, 10) || minimumQuantity) + change;
+    newValue = Math.max(minimumQuantity, Math.min(newValue, parseInt(input.max || minimumQuantity, 10)));
     
     input.value = newValue;
     formQuantity.value = newValue;
@@ -656,7 +725,25 @@ function updateQuantity(change) {
     updateDisplayedTotal(newValue);
 }
 
-document.getElementById('quantity')?.addEventListener('input', () => updateQuantity(0));
+document.getElementById('quantity')?.addEventListener('input', event => {
+    const value = event.target.value;
+    document.getElementById('formQuantity').value = value;
+    document.getElementById('buyNowQuantity').value = value;
+
+    const minimumMessage = document.getElementById('quantityMinimumMessage');
+    if (minimumMessage) {
+        minimumMessage.textContent = '';
+        minimumMessage.classList.add('hidden');
+    }
+});
+
+document.querySelectorAll('#buyNowForm, #fixedBuyNowForm').forEach(form => {
+    form.addEventListener('submit', event => {
+        if (!validateProductMinimumQuantity()) {
+            event.preventDefault();
+        }
+    });
+});
 
 // Share product
 function shareProduct() {
@@ -680,6 +767,7 @@ if (variantChooser) {
     const selected = {};
     const selectedVariantId = document.getElementById('selectedVariantId');
     const quantityInput = document.getElementById('quantity');
+    const quantityUnit = document.getElementById('quantityUnit');
     const mainImage = document.getElementById('mainImage');
     const basePrice = document.getElementById('variantBasePrice');
     const finalPrice = document.getElementById('variantFinalPrice');
@@ -700,7 +788,7 @@ if (variantChooser) {
 
     function possible(attributeId, valueId) {
         return variants.some(variant => {
-            if (variant.stock_quantity < 1) return false;
+            if (variant.stock_quantity < Number(variant.minimum_quantity || 1)) return false;
             return Object.entries(selected).every(([attr, val]) => attr === String(attributeId) || String(variant.values[attr]) === String(val))
                 && String(variant.values[attributeId]) === String(valueId);
         });
@@ -738,9 +826,15 @@ if (variantChooser) {
         currentUnitFinalPrice = Number(variant.final_price);
         if (sku) sku.textContent = variant.sku || '';
         if (unit) unit.textContent = variant.unit || '';
+        if (quantityUnit) quantityUnit.textContent = variant.quantity_unit || '';
         if (quantityInput) {
+            const minimumQuantity = Number(variant.minimum_quantity || 1);
+            quantityInput.min = minimumQuantity;
             quantityInput.max = variant.stock_quantity;
-            quantityInput.value = Math.min(Number(quantityInput.value || 1), Math.max(1, variant.stock_quantity));
+            quantityInput.value = Math.min(
+                Math.max(Number(quantityInput.value || minimumQuantity), minimumQuantity),
+                variant.stock_quantity
+            );
             updateQuantity(0);
         }
         if (variant.image && mainImage) {
@@ -748,8 +842,9 @@ if (variantChooser) {
             const galleryIndex = images.indexOf(variant.image);
             syncGallerySelection(galleryIndex >= 0 ? galleryIndex + 1 : 0);
         }
-        updateStockDisplay(variant.stock_quantity);
-        if (message) message.classList.toggle('hidden', variant.stock_quantity > 0);
+        const hasMinimumStock = variant.stock_quantity >= Number(variant.minimum_quantity || 1);
+        updateStockDisplay(hasMinimumStock ? variant.stock_quantity : 0);
+        if (message) message.classList.toggle('hidden', hasMinimumStock);
     }
 
     function refreshOptions() {

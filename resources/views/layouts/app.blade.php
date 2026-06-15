@@ -907,6 +907,7 @@
             'product.copy_link' => __('product.copy_link'),
             'product.only_stock_available' => __('product.only_stock_available'),
             'product.invalid_quantity' => __('product.invalid_quantity'),
+            'product.minimum_quantity_required' => __('product.minimum_quantity_required'),
             'product.redirecting_checkout' => __('product.redirecting_checkout'),
             'products.none_found' => __('products.none_found'),
             'products.sku' => __('products.sku'),
@@ -1452,7 +1453,11 @@
                 const isCurrentProduct = variantInput?.dataset.productId === String(productId);
                 const variantId = isCurrentProduct ? variantInput.value : '';
                 const quantityInput = isCurrentProduct ? document.getElementById('quantity') : null;
-                const quantity = quantityInput ? Math.max(1, Number(quantityInput.value || 1)) : 1;
+                if (quantityInput && typeof validateProductMinimumQuantity === 'function' && !validateProductMinimumQuantity()) {
+                    return;
+                }
+
+                const quantity = quantityInput ? Number(quantityInput.value || 1) : 1;
                 
                 addToCart(productId, productName, button, variantId, quantity);
             }
@@ -1501,6 +1506,9 @@
                     }, 1500);
                     
                 } else {
+                    if (data.message && typeof showQuantityWarning === 'function') {
+                        showQuantityWarning(data.message);
+                    }
                     button.innerHTML = originalContent;
                     button.disabled = false;
                 }

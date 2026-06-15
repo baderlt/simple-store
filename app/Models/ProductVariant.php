@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class ProductVariant extends Model
 {
@@ -47,5 +48,28 @@ class ProductVariant extends Model
     public function inStock(): bool
     {
         return $this->stock_quantity > 0;
+    }
+
+    public function minimumOrderQuantity(): int
+    {
+        return $this->isOneGramWeightVariant() ? 10 : 1;
+    }
+
+    public function quantityUnit(): string
+    {
+        return $this->isOneGramWeightVariant() ? 'g' : '';
+    }
+
+    public function isOneGramWeightVariant(): bool
+    {
+        $this->loadMissing('items.attribute', 'items.value');
+
+        return $this->items->contains(function (ProductVariantItem $item): bool {
+            $attribute = Str::of((string) $item->attribute?->name)->ascii()->lower()->replaceMatches('/[^a-z]/', '')->toString();
+            $value = Str::of((string) $item->value?->value)->ascii()->lower()->replaceMatches('/[^a-z0-9.,]/', '')->toString();
+
+            return in_array($attribute, ['weight', 'poids'], true)
+                && preg_match('/^1(?:g|gr|gram|gramme)s?$/', $value) === 1;
+        });
     }
 }

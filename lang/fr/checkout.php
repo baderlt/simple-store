@@ -10,6 +10,8 @@ return [
     'order_placed' => 'Commande passée avec succès !',
     'select_variant' => 'Veuillez sélectionner une variante avant de commander.',
     'invalid_variant' => 'La variante sélectionnée n’est plus disponible.',
+    'minimum_quantity_required' => 'La quantité minimale pour cette variante est de :quantity.',
+    'minimum_quantity_for_product' => 'La quantité minimale pour :product est de :quantity.',
     'page_title' => 'Paiement',
     'heading' => 'Finaliser votre commande',
     'intro' => 'Vérifiez vos informations et confirmez votre achat en toute sécurité',
