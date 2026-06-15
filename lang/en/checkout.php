@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'empty_cart' => 'Your cart is empty.',
+    'empty_cart' => 'Your pack is empty.',
     'out_of_stock' => 'This product is out of stock.',
     'only_units_available' => 'Only :stock units available.',
     'product_not_found' => 'Product not found.',
@@ -41,7 +41,7 @@ return [
     'confirm_order' => 'Confirm order',
     'processing' => 'Processing...',
     'back_to_product' => 'Back to product',
-    'edit_cart' => 'Edit cart',
+    'edit_cart' => 'Edit pack',
     'order_summary' => 'Order summary',
     'quantity_short' => 'Qty: :quantity',
     'subtotal' => 'Subtotal',

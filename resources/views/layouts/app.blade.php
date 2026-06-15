@@ -483,10 +483,10 @@
                         <i class="fas fa-search text-xl"></i>
                     </button>
                     
-                    <!-- Cart Icon -->
+                    <!-- Pack Icon -->
                     <button type="button" id="cart-drawer-trigger" class="relative group focus:outline-none">
                         <div class="bg-green-50 p-2 rounded-full group-hover:bg-green-100 transition-colors">
-                            <i class="fas fa-shopping-cart text-lg lg:text-xl text-green-600"></i>
+                            <i class="fas fa-box-open text-lg lg:text-xl text-green-600"></i>
                             <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-sm">
                                 @if(session('cart'))
                                     {{ array_sum(array_column(session('cart'), 'quantity')) }}
@@ -809,7 +809,7 @@
         <i class="fas fa-chevron-up"></i>
     </button>
 
-    {{-- Cart Drawer --}}
+    {{-- Pack Drawer --}}
     <div id="cart-drawer" class="fixed inset-0 z-50 overflow-hidden hidden">
         <!-- Backdrop -->
         <div id="cart-drawer-backdrop" class="absolute inset-0 bg-black bg-opacity-50 transition-opacity"></div>
@@ -822,7 +822,7 @@
                     <!-- Header -->
                     <div class="flex items-center justify-between px-6 py-4 border-b">
                         <h2 class="text-lg font-semibold text-gray-900">
-                            <i class="fas fa-shopping-cart mr-2 text-emerald-600"></i>
+                            <i class="fas fa-box-open mr-2 text-emerald-600"></i>
                             {{ __('cart.drawer_title') }}
                         </h2>
                         <button type="button" id="close-cart-drawer" class="text-gray-400 hover:text-gray-500 focus:outline-none">
@@ -830,7 +830,7 @@
                         </button>
                     </div>
                     
-                    <!-- Cart Content -->
+                    <!-- Pack Content -->
                     <div class="flex-1 overflow-y-auto">
                         <div id="cart-drawer-content" class="px-6 py-4" style="display: block">
                             <!-- Loading State -->
@@ -841,10 +841,10 @@
                                 <p class="text-center text-gray-500 mt-4">{{ __('cart.loading') }}</p>
                             </div>
                             
-                            <!-- Empty Cart -->
+                            <!-- Empty Pack -->
                             <div id="cart-empty" class="hidden py-8 text-center">
                                 <div class="text-gray-400 mb-4">
-                                    <i class="fas fa-shopping-cart text-5xl"></i>
+                                    <i class="fas fa-box-open text-5xl"></i>
                                 </div>
                                 <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('cart.empty_title') }}</h3>
                                 <p class="text-gray-500 mb-6">{{ __('cart.empty_description') }}</p>
@@ -854,7 +854,7 @@
                                 </button>
                             </div>
                             
-                            <!-- Cart Items -->
+                            <!-- Pack Items -->
                             <div id="cart-items" class="space-y-4">
                                 <!-- Items will be loaded here via AJAX -->
                             </div>

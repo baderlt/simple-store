@@ -166,7 +166,7 @@ return [
     'order_status_section' => 'حالة الطلب',
     'back_to_orders' => 'العودة إلى الطلبات',
     'site_management' => 'إدارة الموقع',
-    'view_cart' => 'عرض السلة',
+    'view_cart' => 'عرض الباقة',
     'order_now' => 'اطلب الآن',
 
     'orders_management' => 'إدارة الطلبات',

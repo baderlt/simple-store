@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'empty_cart' => 'سلتك فارغة.',
+    'empty_cart' => 'باقتك فارغة.',
     'out_of_stock' => 'هذا المنتج غير متوفر في المخزون.',
     'only_units_available' => 'متوفر فقط :stock وحدات.',
     'product_not_found' => 'المنتج غير موجود.',
@@ -41,7 +41,7 @@ return [
     'confirm_order' => 'تأكيد الطلب',
     'processing' => 'جارٍ المعالجة...',
     'back_to_product' => 'العودة إلى المنتج',
-    'edit_cart' => 'تعديل السلة',
+    'edit_cart' => 'تعديل الباقة',
     'order_summary' => 'ملخص الطلب',
     'quantity_short' => 'الكمية: :quantity',
     'subtotal' => 'المجموع الفرعي',
