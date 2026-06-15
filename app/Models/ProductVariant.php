@@ -57,7 +57,7 @@ class ProductVariant extends Model
 
     public function quantityUnit(): string
     {
-        return $this->isOneGramWeightVariant() ? 'g' : ($this->unit ?: '');
+        return $this->isOneGramWeightVariant() ? 'g' : '';
     }
 
     public function isOneGramWeightVariant(): bool

@@ -104,6 +104,7 @@ class ProductVariantFlowTest extends TestCase
         [, $variant] = $this->variantProduct();
 
         $this->assertSame(1, $variant->minimumOrderQuantity());
+        $this->assertSame('', $variant->quantityUnit());
     }
 
     public function test_checkout_records_variant_and_decrements_only_variant_stock(): void
