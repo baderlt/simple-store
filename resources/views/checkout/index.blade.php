@@ -271,7 +271,9 @@
                                             @endif
                                         </div>
                                         <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-                                            {{ __('checkout.quantity_short', ['quantity' => $item['quantity']]) }}
+                                            {{ __('checkout.quantity_short', [
+                                                'quantity' => $item['quantity'] . (!empty($item['quantity_unit']) ? ' ' . $item['quantity_unit'] : ''),
+                                            ]) }}
                                         </span>
                                     </div>
                                 </div>

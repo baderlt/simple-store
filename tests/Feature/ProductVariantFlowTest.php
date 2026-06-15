@@ -41,6 +41,71 @@ class ProductVariantFlowTest extends TestCase
         $this->assertEmpty(session('cart', []));
     }
 
+    public function test_one_gram_variant_requires_a_minimum_quantity_of_ten(): void
+    {
+        [$product, $variant] = $this->variantProduct(['stock_quantity' => 20], 'Poids', '1 gramme');
+
+        $this->postJson(route('cart.add', $product), ['variant_id' => $variant->id, 'quantity' => 9])
+            ->assertStatus(400)
+            ->assertJsonPath('message', __('cart.minimum_quantity_required', ['quantity' => 10]));
+
+        $this->assertEmpty(session('cart', []));
+
+        $this->post(route('cart.add', $product), ['variant_id' => $variant->id, 'quantity' => 10])
+            ->assertRedirect();
+
+        $item = session('cart')["product_{$product->id}_variant_{$variant->id}"];
+        $this->assertSame(10, $item['quantity']);
+        $this->assertSame(10, $item['minimum_quantity']);
+        $this->assertSame('g', $item['quantity_unit']);
+    }
+
+    public function test_one_gram_abbreviation_is_normalized_for_minimum_quantity(): void
+    {
+        [, $variant] = $this->variantProduct([], 'Weight', '1 g');
+
+        $this->assertSame(10, $variant->minimumOrderQuantity());
+    }
+
+    public function test_product_page_exposes_the_minimum_quantity_warning_and_unit(): void
+    {
+        [$product] = $this->variantProduct(['stock_quantity' => 20, 'unit' => 'g'], 'Poids', '1 gramme');
+
+        $this->get(route('products.show', $product->slug))
+            ->assertOk()
+            ->assertSee('id="quantityMinimumMessage"', false)
+            ->assertSee('topQuantityWarning', false)
+            ->assertSee('validateProductMinimumQuantity', false)
+            ->assertSee('"minimum_quantity":10', false)
+            ->assertSee('"quantity_unit":"g"', false);
+    }
+
+    public function test_one_gram_only_product_hides_variant_chooser_and_checkout_shows_grams(): void
+    {
+        [$product, $variant] = $this->variantProduct(['stock_quantity' => 20], 'Poids', '1 gramme');
+
+        $this->get(route('products.show', $product->slug))
+            ->assertOk()
+            ->assertSee('class="hidden p-5 bg-white rounded-xl border border-gray-200 space-y-4" id="variantChooser"', false);
+
+        $this->get(route('checkout.direct', [
+            'id' => $product->id,
+            'variant_id' => $variant->id,
+            'quantity' => 15,
+        ]))->assertRedirect(route('checkout.index'));
+
+        $this->get(route('checkout.index'))
+            ->assertOk()
+            ->assertSee(__('checkout.quantity_short', ['quantity' => '15 g']));
+    }
+
+    public function test_other_weights_keep_the_default_minimum_quantity(): void
+    {
+        [, $variant] = $this->variantProduct();
+
+        $this->assertSame(1, $variant->minimumOrderQuantity());
+    }
+
     public function test_checkout_records_variant_and_decrements_only_variant_stock(): void
     {
         [$product, $variant] = $this->variantProduct(['stock_quantity' => 5]);
@@ -102,7 +167,7 @@ class ProductVariantFlowTest extends TestCase
             ->assertDontSee('data-default-id="' . $outOfStockVariant->id . '"', false);
     }
 
-    private function variantProduct(array $variantOverrides = []): array
+    private function variantProduct(array $variantOverrides = [], string $attributeName = 'Weight', string $attributeValue = '1kg'): array
     {
         $category = Category::create([
             'name' => 'Honey',
@@ -118,11 +183,11 @@ class ProductVariantFlowTest extends TestCase
             'low_stock_alert' => 5,
             'is_active' => true,
         ]);
-        $attribute = ProductAttribute::create(['name' => 'Weight', 'slug' => 'weight']);
+        $attribute = ProductAttribute::create(['name' => $attributeName, 'slug' => str($attributeName)->slug()]);
         $value = ProductAttributeValue::create([
             'product_attribute_id' => $attribute->id,
-            'value' => '1kg',
-            'slug' => '1kg',
+            'value' => $attributeValue,
+            'slug' => str($attributeValue)->slug(),
         ]);
         $variant = ProductVariant::create(array_merge([
             'product_id' => $product->id,

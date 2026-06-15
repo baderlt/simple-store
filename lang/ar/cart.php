@@ -12,6 +12,7 @@ return [
     'product_removed_named' => 'تمت إزالة :product من السلة.',
     'cleared' => 'تم إفراغ السلة.',
     'max_quantity_available' => 'الكمية القصوى المتاحة: :stock',
+    'minimum_quantity_required' => 'الحد الأدنى للكمية لهذا المتغير هو :quantity.',
     'product_not_found' => 'المنتج غير موجود في السلة.',
     'drawer_title' => 'سلتي',
     'loading' => 'جارٍ تحميل السلة...',
