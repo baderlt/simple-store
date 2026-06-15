@@ -12,6 +12,7 @@ return [
     'product_removed_named' => ':product removed from cart.',
     'cleared' => 'Cart cleared.',
     'max_quantity_available' => 'Maximum available quantity: :stock',
+    'minimum_quantity_required' => 'The minimum quantity for this variant is :quantity.',
     'product_not_found' => 'Product not found in cart.',
     'drawer_title' => 'My Cart',
     'loading' => 'Loading cart...',

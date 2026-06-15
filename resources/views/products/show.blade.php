@@ -7,7 +7,7 @@
     $activeVariants = $product->variants->where('is_active', true)->values();
     $hasConfiguredVariants = $product->variants->isNotEmpty();
     $usesVariants = $activeVariants->isNotEmpty();
-    $inStockVariants = $activeVariants->where('stock_quantity', '>', 0)->values();
+    $inStockVariants = $activeVariants->filter(fn ($variant) => $variant->stock_quantity >= $variant->minimumOrderQuantity())->values();
     $defaultVariant = $usesVariants
         ? ($inStockVariants->firstWhere('is_default', true) ?: $inStockVariants->first() ?: $activeVariants->firstWhere('is_default', true) ?: $activeVariants->first())
         : null;
@@ -45,6 +45,7 @@
             'price' => (float) $variant->price,
             'final_price' => (float) $product->getDiscountedPrice((float) $variant->price),
             'stock_quantity' => $variant->stock_quantity,
+            'minimum_quantity' => $variant->minimumOrderQuantity(),
             'image' => $variant->image_path ? asset('storage/' . $variant->image_path) : null,
             'is_default' => $variant->is_default,
             'values' => $variant->items->mapWithKeys(fn ($item) => [$item->attribute->id => $item->value->id])->all(),
@@ -229,8 +230,8 @@
                                 </button>
                                 <input type="number" 
                                        id="quantity" 
-                                       value="1" 
-                                       min="1" 
+                                       value="{{ $defaultVariant?->minimumOrderQuantity() ?? 1 }}"
+                                       min="{{ $defaultVariant?->minimumOrderQuantity() ?? 1 }}"
                                        max="{{ $currentStock }}"
                                        class="w-24 h-12 text-center border border-gray-300 rounded-lg text-lg font-semibold focus:ring-2 focus:ring-emerald-300 focus:border-emerald-400">
                                 <button type="button" onclick="updateQuantity(1)" 
@@ -242,7 +243,7 @@
 
                         <!-- Action Buttons -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <input type="hidden" name="quantity" id="formQuantity" value="1">
+                            <input type="hidden" name="quantity" id="formQuantity" value="{{ $defaultVariant?->minimumOrderQuantity() ?? 1 }}">
                             <input type="hidden" name="variant_id" id="selectedVariantId" data-product-id="{{ $product->id }}" value="{{ $defaultVariant?->id }}">
                             <button type="button" 
                                     data-product-id="{{ $product->id }}"
@@ -254,7 +255,7 @@
                             </button>
 
                             <form action="{{ route('checkout.direct', $product->id) }}" method="GET" id="buyNowForm">
-                                <input type="hidden" name="quantity" id="buyNowQuantity" value="1">
+                                <input type="hidden" name="quantity" id="buyNowQuantity" value="{{ $defaultVariant?->minimumOrderQuantity() ?? 1 }}">
                                     <input type="hidden" name="variant_id" class="selectedVariantInput" value="{{ $defaultVariant?->id }}">
                                 <button type="submit" 
                                         class="buy-now-btn purchase-action-button order-now-attention relative overflow-hidden w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center group">
@@ -700,7 +701,7 @@ if (variantChooser) {
 
     function possible(attributeId, valueId) {
         return variants.some(variant => {
-            if (variant.stock_quantity < 1) return false;
+            if (variant.stock_quantity < Number(variant.minimum_quantity || 1)) return false;
             return Object.entries(selected).every(([attr, val]) => attr === String(attributeId) || String(variant.values[attr]) === String(val))
                 && String(variant.values[attributeId]) === String(valueId);
         });
@@ -739,8 +740,13 @@ if (variantChooser) {
         if (sku) sku.textContent = variant.sku || '';
         if (unit) unit.textContent = variant.unit || '';
         if (quantityInput) {
+            const minimumQuantity = Number(variant.minimum_quantity || 1);
+            quantityInput.min = minimumQuantity;
             quantityInput.max = variant.stock_quantity;
-            quantityInput.value = Math.min(Number(quantityInput.value || 1), Math.max(1, variant.stock_quantity));
+            quantityInput.value = Math.min(
+                Math.max(Number(quantityInput.value || minimumQuantity), minimumQuantity),
+                variant.stock_quantity
+            );
             updateQuantity(0);
         }
         if (variant.image && mainImage) {
@@ -748,8 +754,9 @@ if (variantChooser) {
             const galleryIndex = images.indexOf(variant.image);
             syncGallerySelection(galleryIndex >= 0 ? galleryIndex + 1 : 0);
         }
-        updateStockDisplay(variant.stock_quantity);
-        if (message) message.classList.toggle('hidden', variant.stock_quantity > 0);
+        const hasMinimumStock = variant.stock_quantity >= Number(variant.minimum_quantity || 1);
+        updateStockDisplay(hasMinimumStock ? variant.stock_quantity : 0);
+        if (message) message.classList.toggle('hidden', hasMinimumStock);
     }
 
     function refreshOptions() {

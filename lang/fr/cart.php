@@ -12,6 +12,7 @@ return [
     'product_removed_named' => ':product retiré du panier.',
     'cleared' => 'Panier vidé.',
     'max_quantity_available' => 'Quantité maximale disponible : :stock',
+    'minimum_quantity_required' => 'La quantité minimale pour cette variante est de :quantity.',
     'product_not_found' => 'Produit non trouvé dans le panier.',
     'drawer_title' => 'Mon Panier',
     'loading' => 'Chargement du panier...',
