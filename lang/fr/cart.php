@@ -34,5 +34,12 @@ return [
     'checkout' => 'Commander mon pack',
     'continue_shopping' => 'Continuer à composer mon pack',
     'add_to_pack' => 'Ajouter au pack',
+    'edit_quantity' => 'Modifier quantité',
+    'choose_variant' => 'Choisir une variante',
+    'choose_variant_help' => 'Choisissez la variante souhaitée ; l’image et le prix se mettent à jour avant l’ajout au pack.',
+    'stock_available' => ':stock disponible',
+    'selected_price' => 'Prix sélectionné',
+    'choose_variant_first' => 'Choisissez une variante',
+    'variant' => 'Variante',
     'select_variant' => 'Veuillez sélectionner une variante valide avant d’ajouter ce produit.',
 ];

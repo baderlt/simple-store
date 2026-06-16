@@ -34,5 +34,12 @@ return [
     'checkout' => 'اطلب باقتي',
     'continue_shopping' => 'متابعة تكوين باقتي',
     'add_to_pack' => 'أضف إلى الباقة',
+    'edit_quantity' => 'تعديل الكمية',
+    'choose_variant' => 'اختر المتغير',
+    'choose_variant_help' => 'اختر المتغير المناسب؛ سيتم تحديث الصورة والسعر فوراً قبل إضافته إلى الباقة.',
+    'stock_available' => ':stock متوفر',
+    'selected_price' => 'السعر المختار',
+    'choose_variant_first' => 'اختر متغيراً أولاً',
+    'variant' => 'متغير',
     'select_variant' => 'يرجى اختيار متغير صالح قبل إضافة المنتج.',
 ];
