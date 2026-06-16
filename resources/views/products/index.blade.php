@@ -113,7 +113,7 @@
 @if($products->count() > 0)
     <div class="">
         <!-- Products Grid -->
-        <div id="productsGrid" class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 items-stretch">
+        <div id="productsGrid" class="products-grid grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6 items-stretch">
             @include('products._cards', ['products' => $products])
         </div>
         <div id="infiniteScrollStatus"
