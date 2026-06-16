@@ -263,9 +263,10 @@
       @if($featuredProducts->count() > 0)
     <div class="mb-6 md:mb-8">
         <!-- Products Grid -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        <div class="products-grid grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6 items-stretch">
             @foreach($featuredProducts as $product)
-                <div class="group relative bg-gradient-to-br from-white to-gray-50 rounded-2xl border border-gray-100 hover:border-emerald-200 transition-all duration-300 hover:shadow-xl overflow-hidden">
+                <div class="product-grid-item flex h-full min-w-0">
+                    <div class="card-product group relative h-full w-full bg-gradient-to-br from-white to-gray-50 rounded-2xl border border-gray-100 hover:border-emerald-200 transition-all duration-300 hover:shadow-xl overflow-hidden flex flex-col">
                     <!-- Premium Ribbon -->
                     @if($product->hasDiscount())
                         <div class="absolute top-3  z-10">
@@ -277,13 +278,13 @@
                     @endif
                     
                     <!-- Product Image -->
-                    <div class="relative overflow-hidden aspect-square">
-                        <a href="{{ route('products.show', $product->slug) }}" class="block">
+                    <div class="product-card-media relative overflow-hidden h-36 sm:h-48 md:h-56 lg:h-52 xl:h-48 2xl:h-56">
+                        <a href="{{ route('products.show', $product->slug) }}" class="block h-full">
                             @if($product->primaryImage)
                                 <img src="{{ asset('storage/' . $product->primaryImage->image_path) }}" 
                                      alt="{{ $product->name }}" 
                                      loading="lazy"  
-                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                                     class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700">
                             @else
                                 <div class="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
                                     <div class="text-center">
@@ -306,55 +307,62 @@
                     </div>
 
 
-                    <div class="p-4 md:p-5">
+                    <div class="product-content p-3 md:p-5 flex flex-1 flex-col">
     <!-- Category -->
-    <div class="mb-2">
+    <div class="mb-2 sm:mb-3 min-h-5">
         <a href="{{ route('products.index', ['category' => $product->category_id]) }}" 
-           class="inline-flex items-center text-xs text-emerald-600 font-semibold uppercase tracking-wider hover:text-emerald-700">
+           class="inline-flex max-w-full items-center text-[10px] text-emerald-600 font-semibold uppercase tracking-wider hover:text-emerald-700">
             <i class="fas fa-tag mr-1.5"></i>
-            {{ $product->category->name ?? 'Catégorie' }}
+            <span class="truncate">{{ $product->category->name ?? 'Catégorie' }}</span>
         </a>
     </div>
     
     <!-- Product Name -->
-    <h3 class="font-bold text-gray-900 text-sm sm:text-base mb-2 sm:mb-3 line-clamp-2 group-hover:text-emerald-700 transition-colors leading-tight sm:px-0">
+    <h3 class="font-bold text-gray-900 text-sm sm:text-base mb-3 min-h-10 sm:min-h-12 line-clamp-2 group-hover:text-emerald-700 transition-colors leading-tight">
         <a href="{{ route('products.show', $product->slug) }}" class="hover:text-emerald-700">
             {{ $product->name }}
         </a>
     </h3>
     
     <!-- Price -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-5  sm:px-0 space-y-2 sm:space-y-0">
+    <div class="product-card-price flex items-end justify-between mb-4 min-h-12">
         @if($product->hasDiscount())
             <div>
-                <div class="text-xl sm:text-2xl font-bold text-gray-900">{{ format_price($product->final_price) }} DH</div>
+                <div class="text-base sm:text-xl font-bold text-gray-900 whitespace-nowrap">{{ format_price($product->final_price) }} DH</div>
                 <div class="flex items-center text-sm">
-                    <span class="text-xs md:text-lg md:mr-2 text-gray-400 line-through ">{{ format_price($product->price) }} DH</span>
-                    <span class="bg-rose-50 text-rose-600 pl-1 ml-1 lg:px-2 py-0.5 rounded text-xs font-bold">
+                    <span class="text-red-400 text-xs line-through mr-2 whitespace-nowrap">{{ format_price($product->price) }} DH</span>
+                    <span class="bg-rose-50 text-rose-600 px-1 lg:px-2 py-0.5 rounded text-xs font-bold whitespace-nowrap">
                         - {{ format_price($product->price - $product->final_price) }} DH
                     </span>
                 </div>
             </div>
         @else
-            <div class="text-xl sm:text-2xl font-bold text-gray-900">{{ format_price($product->price) }} DH</div>
+            <div class="text-base sm:text-xl font-bold text-gray-900 whitespace-nowrap">{{ format_price($product->price) }} DH</div>
         @endif
     </div>
     
     <!-- Action Button -->
-    <div>
+    <div class="add-to-pack-button-wrapper mt-auto">
         <!-- Add to Pack -->
-        @if($product->stock_quantity > 0)
+        @if($product->usesVariants())
+            <a href="{{ route('products.show', $product->slug) }}"
+               class="add-to-pack-btn w-full bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 py-2.5 sm:py-3 px-2 sm:px-4 font-semibold text-xs sm:text-sm"
+               title="{{ __('products.choose_quantity') }}">
+                <i class="fas fa-sliders-h"></i>
+                <span>{{ __('products.choose_quantity') }}</span>
+            </a>
+        @elseif($product->stock_quantity > 0)
             <button type="button" 
                     data-product-id="{{ $product->id }}"
                     data-product-name="{{ $product->name }}"
                     data-product-stock="{{ $product->stock_quantity }}"
-                    class="add-to-cart-btn w-full bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 py-3 px-4 font-semibold text-sm group/btn">
+                    class="add-to-pack-btn add-to-cart-btn w-full bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 py-2.5 sm:py-3 px-2 sm:px-4 font-semibold text-xs sm:text-sm group/btn">
                 <i class="fas fa-box-open group-hover/btn:scale-110 transition-transform"></i>
                 <span>{{ __('products.add_to_pack') }}</span>
             </button>
         @else
             <button disabled 
-                    class="w-full bg-gray-200 text-gray-400 rounded-xl cursor-not-allowed flex items-center justify-center gap-2 py-3 px-4 font-semibold text-sm">
+                    class="add-to-pack-btn w-full bg-gray-200 text-gray-400 rounded-xl cursor-not-allowed flex items-center justify-center gap-2 py-2.5 sm:py-3 px-2 sm:px-4 font-semibold text-xs sm:text-sm">
                 <i class="fas fa-box-open"></i>
                 <span>{{ __('products.add_to_pack') }}</span>
             </button>
@@ -362,26 +370,27 @@
     </div>
 </div>
 
-<!-- Toast Notification -->
-<div id="cart-toast" class="fixed top-5 right-5 bg-emerald-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 hidden transform translate-x-full transition-transform duration-300">
-    <div class="flex items-center">
-        <i class="fas fa-check-circle mr-3"></i>
-        <span id="toast-message">{{ __('notifications.cart.added') }}</span>
-    </div>
-</div>
-
-<!-- Error Toast -->
-<div id="error-toast" class="fixed top-5 right-5 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 hidden transform translate-x-full transition-transform duration-300">
-    <div class="flex items-center">
-        <i class="fas fa-exclamation-circle mr-3"></i>
-        <span id="error-message">Erreur</span>
-    </div>
-</div>
-                    
                     <!-- Hover Effect Border -->
                     <div class="absolute inset-0 border-2 border-transparent group-hover:border-emerald-300 rounded-2xl transition-all duration-300 pointer-events-none"></div>
+                    </div>
                 </div>
             @endforeach
+        </div>
+
+        <!-- Toast Notification -->
+        <div id="cart-toast" class="fixed top-5 right-5 bg-emerald-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 hidden transform translate-x-full transition-transform duration-300">
+            <div class="flex items-center">
+                <i class="fas fa-check-circle mr-3"></i>
+                <span id="toast-message">{{ __('notifications.cart.added') }}</span>
+            </div>
+        </div>
+
+        <!-- Error Toast -->
+        <div id="error-toast" class="fixed top-5 right-5 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 hidden transform translate-x-full transition-transform duration-300">
+            <div class="flex items-center">
+                <i class="fas fa-exclamation-circle mr-3"></i>
+                <span id="error-message">Erreur</span>
+            </div>
         </div>
 
         <!-- View All Button -->
