@@ -229,6 +229,66 @@
             });
         });
 
+
+        document.addEventListener('click', function(event) {
+            const openButton = event.target.closest('[data-variant-modal-open]');
+            const closeButton = event.target.closest('[data-variant-modal-close]');
+            const optionButton = event.target.closest('[data-card-variant-option]');
+
+            if (openButton) {
+                event.preventDefault();
+                const card = openButton.closest('[data-product-card]');
+                const modal = card?.querySelector('[data-variant-modal]');
+                document.querySelectorAll('[data-variant-modal]').forEach((item) => {
+                    if (item !== modal) item.classList.add('hidden');
+                });
+                modal?.classList.toggle('hidden');
+                return;
+            }
+
+            if (closeButton) {
+                event.preventDefault();
+                closeButton.closest('[data-variant-modal]')?.classList.add('hidden');
+                return;
+            }
+
+            if (optionButton) {
+                event.preventDefault();
+                const card = optionButton.closest('[data-product-card]');
+                const finalPrice = card.querySelector('[data-card-final-price]');
+                const basePrice = card.querySelector('[data-card-base-price]');
+                const image = card.querySelector('[data-product-card-image]');
+                const addButton = card.querySelector('.product-card-add-btn');
+                const label = card.querySelector('[data-card-button-label]');
+                const hasDiscount = Number(optionButton.dataset.rawFinalPrice) < Number(optionButton.dataset.rawPrice);
+
+                finalPrice.textContent = `${optionButton.dataset.finalPrice} DH`;
+                basePrice.textContent = `${optionButton.dataset.price} DH`;
+                basePrice.classList.toggle('hidden', !hasDiscount);
+                if (image && optionButton.dataset.image) image.src = optionButton.dataset.image;
+
+                card.querySelectorAll('[data-card-variant-option]').forEach((button) => {
+                    button.classList.remove('border-emerald-500', 'bg-emerald-50', 'ring-2', 'ring-emerald-100');
+                });
+                optionButton.classList.add('border-emerald-500', 'bg-emerald-50', 'ring-2', 'ring-emerald-100');
+
+                addButton.dataset.variantId = optionButton.dataset.variantId;
+                addButton.dataset.productStock = optionButton.dataset.stock;
+                addButton.disabled = false;
+                addButton.classList.remove('bg-orange-500');
+                addButton.classList.add('add-to-cart-btn', 'bg-green-600');
+                addButton.querySelector('i').className = 'fas fa-box-open';
+                label.textContent = '{{ __('products.add_to_pack') }}';
+                card.querySelector('[data-variant-modal]')?.classList.add('hidden');
+            }
+        });
+
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('[data-product-card]')) {
+                document.querySelectorAll('[data-variant-modal]').forEach((modal) => modal.classList.add('hidden'));
+            }
+        });
+
         const productsGrid = document.getElementById('productsGrid');
         const scrollStatus = document.getElementById('infiniteScrollStatus');
 
