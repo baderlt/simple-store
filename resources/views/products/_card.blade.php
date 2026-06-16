@@ -89,34 +89,31 @@
                             @endif
                         </div>
 
-                        <!-- Action Buttons -->
-                        <div class="flex items-center space-x-2">
-                            <!-- View Details -->
-                            <a href="{{ route('products.show', $product->slug) }}"
-                               class="flex-1 text-center bg-gray-100 text-gray-700 hover:bg-gray-200 py-2 rounded-xl font-medium text-sm transition-colors duration-300">
-                                <i class="fas fa-eye mr-2"></i>Détails
-                            </a>
-
-                            <!-- Add to Cart / Select Options -->
+                        <!-- Action Button -->
+                        <div>
+                            <!-- Add to Pack / Select Options -->
                             @if($product->usesVariants())
                                 <!-- Product with variants - go to product page to select -->
                                 <a href="{{ route('products.show', $product->slug) }}"
-                                   class="w-10 h-10 bg-orange-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center"
-                                   title="Sélectionner les options" style="background-color: rgb(238, 164, 26)">
-                                    <i class="fas fa-cog"></i>
+                                   class="w-full bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 py-3 px-4 font-semibold text-sm"
+                                   title="{{ __('products.add_to_pack') }}">
+                                    <i class="fas fa-box-open"></i>
+                                    <span>{{ __('products.add_to_pack') }}</span>
                                 </a>
                             @elseif($product->stock_quantity > 0)
                                 <button type="button"
                                     data-product-id="{{ $product->id }}"
                                     data-product-name="{{ $product->name }}"
                                     data-product-stock="{{ $product->stock_quantity }}"
-                                    class="add-to-cart-btn w-10 h-10 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center group/btn">
-                                    <i class="fas fa-shopping-cart group-hover/btn:scale-110 transition-transform"></i>
+                                    class="add-to-cart-btn w-full bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 py-3 px-4 font-semibold text-sm group/btn">
+                                    <i class="fas fa-box-open group-hover/btn:scale-110 transition-transform"></i>
+                                    <span>{{ __('products.add_to_pack') }}</span>
                                 </button>
                             @else
                                 <button disabled
-                                        class="w-6 h-6 md:w-12 md:h-12 bg-gray-200 text-gray-400 rounded-xl cursor-not-allowed flex items-center justify-center">
-                                    <i class="fas fa-ban"></i>
+                                        class="w-full bg-gray-200 text-gray-400 rounded-xl cursor-not-allowed flex items-center justify-center gap-2 py-3 px-4 font-semibold text-sm">
+                                    <i class="fas fa-box-open"></i>
+                                    <span>{{ __('products.add_to_pack') }}</span>
                                 </button>
                             @endif
                         </div>

@@ -340,27 +340,23 @@
         @endif
     </div>
     
-    <!-- Action Buttons -->
-    <div class="flex items-center space-x-2">
-        <!-- View Details -->
-        <a href="{{ route('products.show', $product->slug) }}" 
-           class="flex-1 text-center bg-gray-100 text-gray-700 hover:bg-gray-200 py-3 rounded-xl font-medium text-sm transition-colors duration-300">
-            <i class="fas fa-eye mr-2"></i>Détails
-        </a>
-        
-        <!-- Add to Cart -->
+    <!-- Action Button -->
+    <div>
+        <!-- Add to Pack -->
         @if($product->stock_quantity > 0)
             <button type="button" 
                     data-product-id="{{ $product->id }}"
                     data-product-name="{{ $product->name }}"
                     data-product-stock="{{ $product->stock_quantity }}"
-                    class="add-to-cart-btn w-9 h-9 md:w-12 md:h-12 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center group/btn">
-                <i class="fas fa-shopping-cart group-hover/btn:scale-110 transition-transform"></i>
+                    class="add-to-cart-btn w-full bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 py-3 px-4 font-semibold text-sm group/btn">
+                <i class="fas fa-box-open group-hover/btn:scale-110 transition-transform"></i>
+                <span>{{ __('products.add_to_pack') }}</span>
             </button>
         @else
             <button disabled 
-                    class="w-9 h-9 md:w-12 md:h-12 bg-gray-200 text-gray-400 rounded-xl cursor-not-allowed flex items-center justify-center">
-                <i class="fas fa-ban"></i>
+                    class="w-full bg-gray-200 text-gray-400 rounded-xl cursor-not-allowed flex items-center justify-center gap-2 py-3 px-4 font-semibold text-sm">
+                <i class="fas fa-box-open"></i>
+                <span>{{ __('products.add_to_pack') }}</span>
             </button>
         @endif
     </div>
