@@ -1,4 +1,4 @@
-                <div class="group relative bg-gradient-to-br from-white to-gray-50 rounded-2xl border border-gray-100 hover:border-emerald-200 transition-all duration-300 hover:shadow-xl overflow-hidden">
+                <div class="card-product group relative h-full bg-gradient-to-br from-white to-gray-50 rounded-2xl border border-gray-100 hover:border-emerald-200 transition-all duration-300 hover:shadow-xl overflow-hidden flex flex-col">
                     <!-- Premium Ribbon -->
                     @if($product->hasDiscount())
                         <div class="absolute top-3 left-0 z-10">
@@ -42,9 +42,9 @@
                     </div>
 
                     <!-- Product Content -->
-                    <div class="p-2 md:p-5">
+                    <div class="product-content p-2 md:p-5 flex flex-1 flex-col">
                         <!-- Category -->
-                        <div class="mb-3">
+                        <div class="mb-3 min-h-5">
                             <a href="{{ route('products.index', ['category' => $product->category_id]) }}"
                                class="inline-flex items-center text-[10px] text-emerald-600 font-semibold uppercase tracking-wider hover:text-emerald-700">
                                 <i class="fas fa-tag mr-1.5"></i>
@@ -53,13 +53,13 @@
                         </div>
 
                         <!-- Product Name -->
-                        <h3 class="font-bold text-gray-900 text-sm sm:text-base mb-2 sm:mb-3 line-clamp-2 group-hover:text-emerald-700 transition-colors leading-tight sm:px-0">
+                        <h3 class="font-bold text-gray-900 text-sm sm:text-base mb-2 sm:mb-3 min-h-10 sm:min-h-12 line-clamp-2 group-hover:text-emerald-700 transition-colors leading-tight sm:px-0">
                             <a href="{{ route('products.show', $product->slug) }}" class="hover:text-emerald-700">
                                 {{ $product->name }}
                             </a>
                         </h3>
                         <!-- Price -->
-                        <div class="flex items-center justify-between mb-3 lg:mb-5">
+                        <div class="flex items-center justify-between mb-3 lg:mb-5 min-h-8">
                             @php
                                 $displayPrice = $product->usesVariants()
                                     ? $product->getCurrentPrice($product->defaultVariant ?? $product->variants->first())
@@ -90,12 +90,12 @@
                         </div>
 
                         <!-- Action Button -->
-                        <div>
+                        <div class="add-to-pack-button-wrapper mt-auto">
                             <!-- Add to Pack / Select Options -->
                             @if($product->usesVariants())
                                 <!-- Product with variants - go to product page to select -->
                                 <a href="{{ route('products.show', $product->slug) }}"
-                                   class="w-full bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 py-3 px-4 font-semibold text-sm"
+                                   class="add-to-pack-btn w-full bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 py-3 px-4 font-semibold text-sm"
                                    title="{{ __('products.add_to_pack') }}">
                                     <i class="fas fa-box-open"></i>
                                     <span>{{ __('products.add_to_pack') }}</span>
@@ -105,13 +105,13 @@
                                     data-product-id="{{ $product->id }}"
                                     data-product-name="{{ $product->name }}"
                                     data-product-stock="{{ $product->stock_quantity }}"
-                                    class="add-to-cart-btn w-full bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 py-3 px-4 font-semibold text-sm group/btn">
+                                    class="add-to-pack-btn add-to-cart-btn w-full bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 py-3 px-4 font-semibold text-sm group/btn">
                                     <i class="fas fa-box-open group-hover/btn:scale-110 transition-transform"></i>
                                     <span>{{ __('products.add_to_pack') }}</span>
                                 </button>
                             @else
                                 <button disabled
-                                        class="w-full bg-gray-200 text-gray-400 rounded-xl cursor-not-allowed flex items-center justify-center gap-2 py-3 px-4 font-semibold text-sm">
+                                        class="add-to-pack-btn w-full bg-gray-200 text-gray-400 rounded-xl cursor-not-allowed flex items-center justify-center gap-2 py-3 px-4 font-semibold text-sm">
                                     <i class="fas fa-box-open"></i>
                                     <span>{{ __('products.add_to_pack') }}</span>
                                 </button>
