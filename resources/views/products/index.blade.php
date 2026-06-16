@@ -275,7 +275,7 @@
                 addButton.dataset.variantId = optionButton.dataset.variantId;
                 addButton.dataset.productStock = optionButton.dataset.stock;
                 addButton.disabled = false;
-                addButton.classList.remove('bg-orange-500');
+                addButton.removeAttribute('data-variant-modal-open');
                 addButton.classList.add('add-to-cart-btn', 'bg-green-600');
                 addButton.querySelector('i').className = 'fas fa-box-open';
                 label.textContent = '{{ __('products.add_to_pack') }}';
