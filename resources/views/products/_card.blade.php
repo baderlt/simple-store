@@ -8,13 +8,13 @@
                         </div>
                     @endif
                     <!-- Product Image -->
-                    <div class="relative overflow-hidden aspect-square">
-                        <a href="{{ route('products.show', $product->slug) }}" class="block">
+                    <div class="relative overflow-hidden h-40 sm:h-48 md:h-56 lg:h-64">
+                        <a href="{{ route('products.show', $product->slug) }}" class="block h-full">
                             @if($product->primaryImage)
                                 <img src="{{ asset('storage/' . $product->primaryImage->image_path) }}" 
                                      alt="{{ $product->name }}" 
                                      loading="lazy"
-                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                                     class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700">
                             @else
                                 <div class="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
                                     <div class="text-center">
