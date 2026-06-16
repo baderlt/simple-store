@@ -8,13 +8,13 @@
                         </div>
                     @endif
                     <!-- Product Image -->
-                    <div class="relative overflow-hidden aspect-square">
-                        <a href="{{ route('products.show', $product->slug) }}" class="block">
+                    <div class="relative overflow-hidden h-40 sm:h-48 md:h-56 lg:h-64">
+                        <a href="{{ route('products.show', $product->slug) }}" class="block h-full">
                             @if($product->primaryImage)
                                 <img src="{{ asset('storage/' . $product->primaryImage->image_path) }}" 
                                      alt="{{ $product->name }}" 
                                      loading="lazy"
-                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                                     class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700">
                             @else
                                 <div class="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
                                     <div class="text-center">
@@ -44,7 +44,7 @@
                     <!-- Product Content -->
                     <div class="product-content p-2 md:p-5">
                         <!-- Category -->
-                        <div class="mb-3">
+                        <div class="mb-3 min-h-5">
                             <a href="{{ route('products.index', ['category' => $product->category_id]) }}"
                                class="inline-flex items-center text-[10px] text-emerald-600 font-semibold uppercase tracking-wider hover:text-emerald-700">
                                 <i class="fas fa-tag mr-1.5"></i>
@@ -53,13 +53,13 @@
                         </div>
 
                         <!-- Product Name -->
-                        <h3 class="font-bold text-gray-900 text-sm sm:text-base mb-2 sm:mb-3 line-clamp-2 group-hover:text-emerald-700 transition-colors leading-tight sm:px-0">
+                        <h3 class="font-bold text-gray-900 text-sm sm:text-base mb-2 sm:mb-3 min-h-10 sm:min-h-12 line-clamp-2 group-hover:text-emerald-700 transition-colors leading-tight sm:px-0">
                             <a href="{{ route('products.show', $product->slug) }}" class="hover:text-emerald-700">
                                 {{ $product->name }}
                             </a>
                         </h3>
                         <!-- Price -->
-                        <div class="flex items-center justify-between mb-3 lg:mb-5">
+                        <div class="flex items-center justify-between mb-3 lg:mb-5 min-h-8">
                             @php
                                 $displayPrice = $product->usesVariants()
                                     ? $product->getCurrentPrice($product->defaultVariant ?? $product->variants->first())
