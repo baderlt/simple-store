@@ -126,3 +126,18 @@
     [dir="rtl"] .lg\:mr-4 { margin-right: 0; margin-left: 1rem; }
     [dir="rtl"] .lg\:ml-10 { margin-left: 0; margin-right: 2.5rem; }
 }
+@layer components {
+    .card-product {
+        position: relative;
+        height: 100%;
+        padding-bottom: 90px;
+    }
+
+    .card-product .add-to-pack-button-wrapper {
+        position: absolute;
+        right: 16px;
+        bottom: 18px;
+        left: 16px;
+        width: auto;
+    }
+}

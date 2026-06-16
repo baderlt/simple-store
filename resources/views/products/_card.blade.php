@@ -1,4 +1,4 @@
-                <div class="card-product group relative h-full bg-gradient-to-br from-white to-gray-50 rounded-2xl border border-gray-100 hover:border-emerald-200 transition-all duration-300 hover:shadow-xl overflow-hidden flex flex-col">
+                <div class="card-product group relative bg-gradient-to-br from-white to-gray-50 rounded-2xl border border-gray-100 hover:border-emerald-200 transition-all duration-300 hover:shadow-xl overflow-hidden">
                     <!-- Premium Ribbon -->
                     @if($product->hasDiscount())
                         <div class="absolute top-3 left-0 z-10">
@@ -42,7 +42,7 @@
                     </div>
 
                     <!-- Product Content -->
-                    <div class="product-content p-2 md:p-5 flex flex-1 flex-col">
+                    <div class="product-content p-2 md:p-5">
                         <!-- Category -->
                         <div class="mb-3 min-h-5">
                             <a href="{{ route('products.index', ['category' => $product->category_id]) }}"
@@ -90,7 +90,7 @@
                         </div>
 
                         <!-- Action Button -->
-                        <div class="mt-auto">
+                        <div class="add-to-pack-button-wrapper">
                             <!-- Add to Pack / Select Options -->
                             @if($product->usesVariants())
                                 <!-- Product with variants - go to product page to select -->
