@@ -97,7 +97,7 @@
                                 <a href="{{ route('products.show', $product->slug) }}"
                                    class="w-full bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 py-3 px-4 font-semibold text-sm"
                                    title="{{ __('products.add_to_pack') }}">
-                                    <i class="fas fa-cog"></i>
+                                    <i class="fas fa-box-open"></i>
                                     <span>{{ __('products.add_to_pack') }}</span>
                                 </a>
                             @elseif($product->stock_quantity > 0)
@@ -106,13 +106,13 @@
                                     data-product-name="{{ $product->name }}"
                                     data-product-stock="{{ $product->stock_quantity }}"
                                     class="add-to-cart-btn w-full bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 py-3 px-4 font-semibold text-sm group/btn">
-                                    <i class="fas fa-shopping-cart group-hover/btn:scale-110 transition-transform"></i>
+                                    <i class="fas fa-box-open group-hover/btn:scale-110 transition-transform"></i>
                                     <span>{{ __('products.add_to_pack') }}</span>
                                 </button>
                             @else
                                 <button disabled
                                         class="w-full bg-gray-200 text-gray-400 rounded-xl cursor-not-allowed flex items-center justify-center gap-2 py-3 px-4 font-semibold text-sm">
-                                    <i class="fas fa-ban"></i>
+                                    <i class="fas fa-box-open"></i>
                                     <span>{{ __('products.add_to_pack') }}</span>
                                 </button>
                             @endif
