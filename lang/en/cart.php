@@ -34,5 +34,12 @@ return [
     'checkout' => 'Order my pack',
     'continue_shopping' => 'Keep building my pack',
     'add_to_pack' => 'Add to pack',
+    'edit_quantity' => 'Edit quantity',
+    'choose_variant' => 'Choose a variant',
+    'choose_variant_help' => 'Pick the variant you want; the product image and price update instantly before adding it to your pack.',
+    'stock_available' => ':stock available',
+    'selected_price' => 'Selected price',
+    'choose_variant_first' => 'Choose a variant first',
+    'variant' => 'Variant',
     'select_variant' => 'Please select a valid variant before adding this product.',
 ];
