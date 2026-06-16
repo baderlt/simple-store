@@ -121,10 +121,10 @@
                 </button>
             </div>
 
-            <div class="max-h-52 space-y-2 overflow-y-auto pr-1">
+            <div class="max-h-48 space-y-1.5 overflow-y-auto pr-1">
                 @foreach($variantPayload as $variant)
                     <button type="button"
-                            class="w-full rounded-2xl border border-gray-200 p-2 text-left transition hover:border-emerald-400 hover:bg-emerald-50"
+                            class="flex w-full items-center justify-between gap-3 rounded-xl border border-gray-200 px-3 py-2 text-left transition hover:border-emerald-400 hover:bg-emerald-50"
                             data-card-variant-option
                             data-variant-id="{{ $variant['id'] }}"
                             data-price="{{ format_price($variant['price']) }}"
@@ -134,15 +134,8 @@
                             data-image="{{ $variant['image'] }}"
                             data-minimum="{{ $variant['minimum_quantity'] }}"
                             data-stock="{{ $variant['stock_quantity'] }}">
-                        <span class="flex items-center gap-2">
-                            @if($variant['image'])
-                                <img src="{{ $variant['image'] }}" alt="{{ $variant['label'] }}" loading="lazy" class="h-10 w-10 shrink-0 rounded-xl object-cover">
-                            @endif
-                            <span class="min-w-0 flex-1">
-                                <span class="block truncate text-xs font-black text-gray-900">{{ $variant['label'] }}</span>
-                            </span>
-                            <span class="text-xs font-black text-emerald-600">{{ format_price($variant['final_price']) }} DH</span>
-                        </span>
+                        <span class="min-w-0 truncate text-xs font-black text-gray-900">{{ $variant['label'] }}</span>
+                        <span class="shrink-0 whitespace-nowrap text-xs font-black text-emerald-600">{{ format_price($variant['final_price']) }} DH</span>
                     </button>
                 @endforeach
             </div>
