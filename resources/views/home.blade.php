@@ -344,7 +344,14 @@
     <!-- Action Button -->
     <div class="add-to-pack-button-wrapper mt-auto">
         <!-- Add to Pack -->
-        @if($product->stock_quantity > 0)
+        @if($product->usesVariants())
+            <a href="{{ route('products.show', $product->slug) }}"
+               class="add-to-pack-btn w-full bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 py-2.5 sm:py-3 px-2 sm:px-4 font-semibold text-xs sm:text-sm"
+               title="{{ __('products.choose_quantity') }}">
+                <i class="fas fa-sliders-h"></i>
+                <span>{{ __('products.choose_quantity') }}</span>
+            </a>
+        @elseif($product->stock_quantity > 0)
             <button type="button" 
                     data-product-id="{{ $product->id }}"
                     data-product-name="{{ $product->name }}"
