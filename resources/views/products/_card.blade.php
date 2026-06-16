@@ -92,7 +92,7 @@
                         data-variant-modal-open
                         class="add-to-pack-btn product-card-add-btn w-full bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 py-2.5 sm:py-3 px-2 sm:px-4 font-semibold text-xs sm:text-sm">
                     <i class="fas fa-box-open"></i>
-                    <span data-card-button-label>{{ __('products.add_to_pack') }}</span>
+                    <span data-card-button-label>{{ __('products.choose_quantity') }}</span>
                 </button>
             @elseif($product->stock_quantity > 0)
                 <button type="button"
