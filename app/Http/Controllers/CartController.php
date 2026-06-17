@@ -10,7 +10,9 @@ class CartController extends Controller
     public function index()
     {
         $cart = session()->get('cart', []);
-        return view('cart.index', compact('cart'));
+        $variantOptions = $this->cartVariantOptions($cart);
+
+        return view('cart.index', compact('cart', 'variantOptions'));
     }
 
     public function add(Request $request, $id)
@@ -150,6 +152,50 @@ class CartController extends Controller
         }
 
         return abort(404);
+    }
+
+
+    private function cartVariantOptions(array $cart): array
+    {
+        $productIds = collect($cart)->pluck('id')->filter()->unique()->values();
+
+        if ($productIds->isEmpty()) {
+            return [];
+        }
+
+        return Product::with(['activeDiscount', 'primaryImage', 'category.activeDiscounts', 'variants.items.attribute', 'variants.items.value'])
+            ->whereIn('id', $productIds)
+            ->get()
+            ->mapWithKeys(function (Product $product) {
+                $variants = $product->variants
+                    ->where('is_active', true)
+                    ->filter(fn (ProductVariant $variant) => $variant->stock_quantity >= $variant->minimumOrderQuantity())
+                    ->values()
+                    ->map(function (ProductVariant $variant) use ($product) {
+                        $basePrice = (float) $variant->price;
+                        $attributes = $variant->option_values;
+
+                        return [
+                            'id' => $variant->id,
+                            'label' => $attributes ? implode(' / ', array_values($attributes)) : ($variant->sku ?: __('cart.variant')),
+                            'attributes' => $attributes,
+                            'sku' => $variant->sku,
+                            'price' => $basePrice,
+                            'final_price' => (float) $product->getDiscountedPrice($basePrice),
+                            'stock_quantity' => (int) $variant->stock_quantity,
+                            'minimum_quantity' => $variant->minimumOrderQuantity(),
+                            'quantity_unit' => $variant->quantityUnit(),
+                            'image' => $variant->image_path
+                                ? asset('storage/' . $variant->image_path)
+                                : ($product->primaryImage ? asset('storage/' . $product->primaryImage->image_path) : null),
+                            'add_url' => route('cart.add', $product->id),
+                        ];
+                    })
+                    ->all();
+
+                return [$product->id => $variants];
+            })
+            ->all();
     }
 
     private function updateCartItem(Request $request, string $key, bool $json)
