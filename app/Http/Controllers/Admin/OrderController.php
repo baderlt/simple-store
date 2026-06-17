@@ -12,13 +12,30 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Order::with(['items.product', 'items.variant'])->latest();
+        $search = trim((string) $request->query('search', ''));
 
-        if ($request->has('status') && $request->status != '') {
-            $query->where('status', $request->status);
-        }
-
-        $orders = $query->paginate(15);
+        $orders = Order::with(['items.product', 'items.variant'])
+            ->when($request->filled('status'), fn ($query) => $query->where('status', $request->query('status')))
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('order_number', 'like', "%{$search}%")
+                        ->orWhere('customer_name', 'like', "%{$search}%")
+                        ->orWhere('customer_phone', 'like', "%{$search}%")
+                        ->orWhere('customer_address', 'like', "%{$search}%")
+                        ->orWhere('customer_city', 'like', "%{$search}%")
+                        ->orWhereHas('items.product', function ($query) use ($search) {
+                            $query->where('name', 'like', "%{$search}%")
+                                ->orWhere('sku', 'like', "%{$search}%");
+                        });
+                });
+            })
+            ->when($request->filled('date_from'), fn ($query) => $query->whereDate('created_at', '>=', $request->date('date_from')))
+            ->when($request->filled('date_to'), fn ($query) => $query->whereDate('created_at', '<=', $request->date('date_to')))
+            ->when($request->filled('min_total'), fn ($query) => $query->where('total', '>=', $request->query('min_total')))
+            ->when($request->filled('max_total'), fn ($query) => $query->where('total', '<=', $request->query('max_total')))
+            ->latest()
+            ->paginate(15)
+            ->withQueryString();
 
         return view('admin.orders.index', compact('orders'));
     }

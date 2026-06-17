@@ -11,9 +11,23 @@ use App\Support\OptimizesImages;
 
 class CategoryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $categories = Category::withCount('products')->paginate(15);
+        $search = trim((string) $request->query('search', ''));
+
+        $categories = Category::withCount('products')
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('name', 'like', "%{$search}%")
+                        ->orWhere('slug', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%");
+                });
+            })
+            ->when($request->filled('status'), fn ($query) => $query->where('is_active', $request->query('status') === 'active'))
+            ->latest()
+            ->paginate(15)
+            ->withQueryString();
+
         return view('admin.categories.index', compact('categories'));
     }
 
