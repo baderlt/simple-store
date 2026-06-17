@@ -1457,7 +1457,7 @@
                     return;
                 }
 
-                const quantity = quantityInput ? Number(quantityInput.value || 1) : 1;
+                const quantity = button.getAttribute('data-quantity') || (quantityInput ? Number(quantityInput.value || 1) : 1);
                 
                 addToCart(productId, productName, button, variantId, quantity);
             }

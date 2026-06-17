@@ -19,6 +19,7 @@
             'final_price' => (float) $product->getDiscountedPrice($basePrice),
             'stock_quantity' => (int) $variant->stock_quantity,
             'minimum_quantity' => $variant->minimumOrderQuantity(),
+            'quantity_unit' => $variant->quantityUnit(),
             'image' => $variant->image_path ? asset('storage/' . $variant->image_path) : $productImageUrl,
         ];
     })->values();
@@ -89,6 +90,7 @@
                         data-product-name="{{ $product->name }}"
                         data-product-stock="{{ $displayStock }}"
                         data-variant-id=""
+                        data-quantity="1"
                         data-variant-modal-open
                         class="add-to-pack-btn product-card-add-btn w-full bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 py-2.5 sm:py-3 px-2 sm:px-4 font-semibold text-xs sm:text-sm">
                     <i class="fas fa-box-open"></i>
@@ -133,11 +135,28 @@
                             data-raw-final-price="{{ $variant['final_price'] }}"
                             data-image="{{ $variant['image'] }}"
                             data-minimum="{{ $variant['minimum_quantity'] }}"
+                            data-unit="{{ $variant['quantity_unit'] }}"
                             data-stock="{{ $variant['stock_quantity'] }}">
                         <span class="min-w-0 truncate text-xs font-black text-gray-900">{{ $variant['label'] }}</span>
                         <span class="shrink-0 whitespace-nowrap text-xs font-black text-emerald-600">{{ format_price($variant['final_price']) }} DH</span>
                     </button>
                 @endforeach
+            </div>
+
+            <div class="mt-3 hidden rounded-2xl bg-emerald-50 p-3" data-card-quantity-panel>
+                <div class="flex items-center justify-between gap-3">
+                    <button type="button" class="flex h-9 w-9 items-center justify-center rounded-full bg-white text-emerald-700 shadow-sm" data-card-quantity-change="-1">
+                        <i class="fas fa-minus text-xs"></i>
+                    </button>
+                    <div class="text-center">
+                        <div class="text-[11px] font-bold uppercase tracking-wide text-emerald-700">{{ __('products.choose_quantity') }}</div>
+                        <div class="text-xl font-black text-gray-900"><span data-card-quantity-value>1</span><span data-card-quantity-unit></span></div>
+                    </div>
+                    <button type="button" class="flex h-9 w-9 items-center justify-center rounded-full bg-white text-emerald-700 shadow-sm" data-card-quantity-change="1">
+                        <i class="fas fa-plus text-xs"></i>
+                    </button>
+                </div>
+                <p class="mt-2 hidden text-center text-xs font-bold text-emerald-700" data-card-minimum-message></p>
             </div>
         </div>
     @endif
