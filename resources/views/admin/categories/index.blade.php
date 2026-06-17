@@ -12,22 +12,28 @@
             <h1 class="text-2xl font-bold text-gray-800">Catégories</h1>
             <p class="text-gray-600 mt-1">Organisez et gérez vos catégories de produits</p>
         </div>
-        <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
+        <form id="categoryFilterForm" method="GET" action="{{ route('admin.categories.index') }}" class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
             <!-- Recherche -->
             <div class="relative w-full sm:w-64">
-                <input type="text" 
-                       placeholder="Rechercher une catégorie..." 
+                <input type="text"
+                       placeholder="{{ __('admin.search_database_placeholder') }}"
                        id="searchInput"
+                       name="search"
+                       value="{{ request('search') }}"
                        class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:bg-white">
                 <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
             </div>
+            <button type="submit" class="inline-flex items-center justify-center px-4 py-2.5 bg-gray-800 text-white font-medium rounded-lg hover:bg-gray-900">
+                <i class="fas fa-search mr-2"></i>
+                {{ __('admin.search') }}
+            </button>
             <!-- Bouton d'ajout -->
-            <a href="{{ route('admin.categories.create') }}" 
+            <a href="{{ route('admin.categories.create') }}"
                class="inline-flex items-center justify-center px-5 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-medium rounded-lg hover:shadow-lg hover:shadow-green-200 transition-all duration-200 transform hover:-translate-y-0.5">
                 <i class="fas fa-plus mr-2"></i>
                 Nouvelle catégorie
             </a>
-        </div>
+        </form>
     </div>
 
     <!-- Statistiques rapides -->
@@ -43,7 +49,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
             <div class="flex items-center justify-between">
                 <div>
@@ -57,7 +63,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
             <div class="flex items-center justify-between">
                 <div>
@@ -78,20 +84,20 @@
         <div class="flex flex-wrap items-center justify-between gap-4">
             <div class="flex flex-wrap items-center gap-3">
                 <div class="relative">
-                    <select id="statusFilter" class="appearance-none bg-gray-50 border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 cursor-pointer text-sm">
-                        <option value="">Tous les statuts</option>
-                        <option value="active">Actives</option>
-                        <option value="inactive">Inactives</option>
+                    <select id="statusFilter" name="status" form="categoryFilterForm" class="appearance-none bg-gray-50 border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 cursor-pointer text-sm">
+                        <option value="">{{ __('admin.all_statuses') }}</option>
+                        <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>{{ __('admin.active_feminine_plural') }}</option>
+                        <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>{{ __('admin.inactive_feminine_plural') }}</option>
                     </select>
                     <i class="fas fa-chevron-down absolute right-3 top-3 text-gray-400 pointer-events-none"></i>
                 </div>
-                
-                <button id="resetFilters" class="text-gray-600 hover:text-gray-900 text-sm flex items-center">
+
+                <a href="{{ route('admin.categories.index') }}" id="resetFilters" class="text-gray-600 hover:text-gray-900 text-sm flex items-center">
                     <i class="fas fa-redo mr-2"></i>
-                    Réinitialiser
-                </button>
+                    {{ __('admin.reset') }}
+                </a>
             </div>
-            
+
             <div class="flex items-center text-sm text-gray-500">
                 <i class="fas fa-info-circle mr-2"></i>
                 {{ $categories->total() }} catégorie(s) au total
@@ -115,7 +121,7 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200" id="categoriesTableBody">
                     @forelse($categories as $category)
-                        <tr class="hover:bg-gray-50 transition-colors duration-150 category-row" 
+                        <tr class="hover:bg-gray-50 transition-colors duration-150 category-row"
                             data-name="{{ strtolower($category->name) }}"
                             data-slug="{{ strtolower($category->slug) }}"
                             data-status="{{ $category->is_active ? 'active' : 'inactive' }}">
@@ -124,8 +130,8 @@
                                 <div class="flex items-center">
                                     <div class="flex-shrink-0 h-12 w-12 mr-4">
                                         @if($category->image)
-                                            <img src="{{ asset('storage/' . $category->image) }}" 
-                                                 alt="{{ $category->name }}" 
+                                            <img src="{{ asset('storage/' . $category->image) }}"
+                                                 alt="{{ $category->name }}"
                                                  class="h-12 w-12 rounded-lg object-cover border border-gray-200">
                                         @else
                                             <div class="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
@@ -135,7 +141,7 @@
                                     </div>
                                     <div class="flex-1 min-w-0">
                                         <p class="font-medium text-gray-900 truncate">
-                                            <a href="{{ route('admin.products.index', ['category_id' => $category->id]) }}" 
+                                            <a href="{{ route('admin.products.index', ['category_id' => $category->id]) }}"
                                                class="hover:text-blue-600 hover:underline">
                                                 {{ $category->name }}
                                             </a>
@@ -149,7 +155,7 @@
                                     </div>
                                 </div>
                             </td>
-                            
+
                             <!-- Colonne Description -->
                             <td class="px-6 py-4">
                                 @if($category->description)
@@ -158,13 +164,13 @@
                                     <span class="text-gray-400 text-sm">Aucune description</span>
                                 @endif
                             </td>
-                            
+
                             <!-- Colonne Produits -->
                             <td class="px-6 py-4">
                                 <div class="flex items-center">
                                     @if($category->products_count > 0)
                                         <div class="relative group">
-                                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-100 to-indigo-100 flex items-center justify-center cursor-pointer" 
+                                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-100 to-indigo-100 flex items-center justify-center cursor-pointer"
                                                  title="{{ $category->products_count }} produits">
                                                 <span class="font-bold text-blue-700">{{ $category->products_count }}</span>
                                             </div>
@@ -175,7 +181,7 @@
                                             @if($category->products_count > 0)
                                                 <div class="absolute left-0 top-full mt-2 w-64 bg-white shadow-lg rounded-lg border border-gray-200 p-3 z-10 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200">
                                                     <p class="text-sm font-medium text-gray-900 mb-2">{{ $category->products_count }} produit(s)</p>
-                                                    <a href="{{ route('admin.products.index', ['category_id' => $category->id]) }}" 
+                                                    <a href="{{ route('admin.products.index', ['category_id' => $category->id]) }}"
                                                        class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800">
                                                         <i class="fas fa-eye mr-2"></i>
                                                         Voir tous les produits
@@ -185,7 +191,7 @@
                                         </div>
                                         <div class="ml-3">
                                             @if($category->products_count > 0)
-                                                <a href="{{ route('admin.products.index', ['category_id' => $category->id]) }}" 
+                                                <a href="{{ route('admin.products.index', ['category_id' => $category->id]) }}"
                                                    class="text-sm text-blue-600 hover:text-blue-800 hover:underline flex items-center">
                                                     <i class="fas fa-external-link-alt mr-1 text-xs"></i>
                                                     Voir les produits
@@ -204,7 +210,7 @@
                                     @endif
                                 </div>
                             </td>
-                            
+
                             <!-- Colonne Statut -->
                             <td class="px-6 py-4">
                                 <div class="flex flex-col space-y-2">
@@ -221,31 +227,31 @@
                                     @endif
                                 </div>
                             </td>
-                            
+
                             <!-- Colonne Actions -->
                             <td class="px-6 py-4">
                                 <div class="flex items-center space-x-3">
-                                    <a href="{{ route('admin.categories.edit', $category) }}" 
+                                    <a href="{{ route('admin.categories.edit', $category) }}"
                                        class="text-blue-500 hover:text-blue-700 p-1.5 rounded-full hover:bg-blue-50 transition"
                                        title="Modifier">
                                         <i class="fas fa-edit w-5 h-5"></i>
                                     </a>
-                                    
-                                    <form action="{{ route('admin.categories.destroy', $category) }}" 
-                                          method="POST" 
+
+                                    <form action="{{ route('admin.categories.destroy', $category) }}"
+                                          method="POST"
                                           class="inline"
                                           onsubmit="return confirmDelete('{{ addslashes($category->name) }}', {{ $category->products_count }})">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" 
+                                        <button type="submit"
                                                 class="text-red-500 hover:text-red-700 p-1.5 rounded-full hover:bg-red-50 transition"
                                                 title="Supprimer">
                                             <i class="fas fa-trash w-5 h-5"></i>
                                         </button>
                                     </form>
-                                    
+
                                     @if($category->products_count > 0)
-                                        <a href="{{ route('admin.products.create', ['category_id' => $category->id]) }}" 
+                                        <a href="{{ route('admin.products.create', ['category_id' => $category->id]) }}"
                                            class="text-green-500 hover:text-green-700 p-1.5 rounded-full hover:bg-green-50 transition"
                                            title="Ajouter un produit">
                                             <i class="fas fa-plus w-5 h-5"></i>
@@ -262,7 +268,7 @@
                                 </div>
                                 <h3 class="text-lg font-medium text-gray-900 mb-2">Aucune catégorie trouvée</h3>
                                 <p class="text-gray-500 mb-6">Commencez par créer votre première catégorie</p>
-                                <a href="{{ route('admin.categories.create') }}" 
+                                <a href="{{ route('admin.categories.create') }}"
                                    class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
                                     <i class="fas fa-plus mr-2"></i>
                                     Créer une catégorie
@@ -277,7 +283,7 @@
         <!-- Vue mobile -->
         <div class="lg:hidden space-y-4 p-4" id="mobileCategoriesList">
             @forelse($categories as $category)
-                <div class="bg-gray-50 rounded-xl p-4 border border-gray-200 mobile-category-card" 
+                <div class="bg-gray-50 rounded-xl p-4 border border-gray-200 mobile-category-card"
                      data-name="{{ strtolower($category->name) }}"
                      data-slug="{{ strtolower($category->slug) }}"
                      data-status="{{ $category->is_active ? 'active' : 'inactive' }}">
@@ -285,8 +291,8 @@
                     <div class="flex items-start justify-between mb-4">
                         <div class="flex items-start space-x-3">
                             @if($category->image)
-                                <img src="{{ asset('storage/' . $category->image) }}" 
-                                     alt="{{ $category->name }}" 
+                                <img src="{{ asset('storage/' . $category->image) }}"
+                                     alt="{{ $category->name }}"
                                      class="h-16 w-16 rounded-lg object-cover border border-gray-200">
                             @else
                                 <div class="h-16 w-16 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
@@ -332,7 +338,7 @@
                                         <span class="font-bold text-blue-700 text-sm">{{ $category->products_count }}</span>
                                     </div>
                                     @if($category->products_count > 0)
-                                        <a href="{{ route('admin.products.index', ['category_id' => $category->id]) }}" 
+                                        <a href="{{ route('admin.products.index', ['category_id' => $category->id]) }}"
                                            class="text-xs text-blue-600 hover:text-blue-800 ml-2">
                                             Voir
                                         </a>
@@ -345,7 +351,7 @@
                                 @endif
                             </div>
                         </div>
-                        
+
                         <!-- Dans la vue mobile, partie Promotions -->
                         <div class="mb-4">
                             <p class="text-xs text-gray-500 mb-1">Promotions</p>
@@ -357,7 +363,7 @@
                                     <div class="w-8 h-8 rounded-full bg-gradient-to-r from-amber-100 to-orange-100 flex items-center justify-center">
                                         <span class="font-bold text-amber-700 text-sm">{{ $activeDiscountsCount }}</span>
                                     </div>
-                                    <a href="{{ route('admin.discounts.index', ['category_id' => $category->id]) }}" 
+                                    <a href="{{ route('admin.discounts.index', ['category_id' => $category->id]) }}"
                                        class="text-xs text-amber-600 hover:text-amber-800 ml-2">
                                         Voir
                                     </a>
@@ -374,22 +380,22 @@
                     <!-- Actions mobile -->
                     <div class="flex items-center justify-between pt-4 border-t border-gray-200">
                         <div class="flex items-center space-x-4">
-                            <a href="{{ route('admin.categories.edit', $category) }}" 
+                            <a href="{{ route('admin.categories.edit', $category) }}"
                                class="text-blue-600 hover:text-blue-800 flex items-center">
                                 <i class="fas fa-edit mr-2"></i>
                                 Modifier
                             </a>
-                            
+
                             @if($category->products_count > 0)
-                                <a href="{{ route('admin.products.create', ['category_id' => $category->id]) }}" 
+                                <a href="{{ route('admin.products.create', ['category_id' => $category->id]) }}"
                                    class="text-green-600 hover:text-green-800 flex items-center">
                                     <i class="fas fa-plus mr-2"></i>
                                     Ajouter produit
                                 </a>
                             @endif
                         </div>
-                        
-                        <form action="{{ route('admin.categories.destroy', $category) }}" 
+
+                        <form action="{{ route('admin.categories.destroy', $category) }}"
                               method="POST"
                               onsubmit="return confirmDelete('{{ addslashes($category->name) }}', {{ $category->products_count }})">
                             @csrf
@@ -407,7 +413,7 @@
                     </div>
                     <h3 class="text-lg font-medium text-gray-900 mb-2">Aucune catégorie trouvée</h3>
                     <p class="text-gray-500 mb-6">Commencez par créer votre première catégorie</p>
-                    <a href="{{ route('admin.categories.create') }}" 
+                    <a href="{{ route('admin.categories.create') }}"
                        class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
                         <i class="fas fa-plus mr-2"></i>
                         Créer une catégorie
@@ -438,14 +444,14 @@
 <script>
 function confirmDelete(categoryName, productsCount) {
     let message = `Êtes-vous sûr de vouloir supprimer la catégorie "${categoryName}" ?`;
-    
+
     if (productsCount > 0) {
         message += `\n\n⚠️ ATTENTION : Cette catégorie contient ${productsCount} produit(s).\n` +
                    `Tous les produits deviendront non classés.`;
     }
-    
+
     message += `\n\nCette action est irréversible.`;
-    
+
     return confirm(message);
 }
 
@@ -454,34 +460,34 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('searchInput');
     const statusFilter = document.getElementById('statusFilter');
     const resetBtn = document.getElementById('resetFilters');
-    
+
     // Éléments à filtrer
     const desktopRows = document.querySelectorAll('.category-row');
     const mobileCards = document.querySelectorAll('.mobile-category-card');
     const emptyRow = document.getElementById('emptyRow');
     const mobileEmptyState = document.getElementById('mobileEmptyState');
-    
+
     function filterCategories() {
         const searchTerm = searchInput.value.toLowerCase().trim();
         const statusValue = statusFilter.value;
-        
+
         let hasVisibleDesktop = false;
         let hasVisibleMobile = false;
-        
+
         // Filtrer le tableau desktop
         desktopRows.forEach(row => {
             const categoryName = row.getAttribute('data-name') || '';
             const categorySlug = row.getAttribute('data-slug') || '';
             const status = row.getAttribute('data-status');
-            
+
             // Vérifier recherche
-            const matchesSearch = searchTerm === '' || 
-                categoryName.includes(searchTerm) || 
+            const matchesSearch = searchTerm === '' ||
+                categoryName.includes(searchTerm) ||
                 categorySlug.includes(searchTerm);
-            
+
             // Vérifier filtre statut
             const matchesStatus = statusValue === '' || status === statusValue;
-            
+
             // Afficher/masquer
             if (matchesSearch && matchesStatus) {
                 row.style.display = '';
@@ -490,21 +496,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 row.style.display = 'none';
             }
         });
-        
+
         // Filtrer les cartes mobile
         mobileCards.forEach(card => {
             const categoryName = card.getAttribute('data-name') || '';
             const categorySlug = card.getAttribute('data-slug') || '';
             const status = card.getAttribute('data-status');
-            
+
             // Vérifier recherche
-            const matchesSearch = searchTerm === '' || 
-                categoryName.includes(searchTerm) || 
+            const matchesSearch = searchTerm === '' ||
+                categoryName.includes(searchTerm) ||
                 categorySlug.includes(searchTerm);
-            
+
             // Vérifier filtre statut
             const matchesStatus = statusValue === '' || status === statusValue;
-            
+
             // Afficher/masquer
             if (matchesSearch && matchesStatus) {
                 card.style.display = '';
@@ -513,19 +519,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 card.style.display = 'none';
             }
         });
-        
+
         // Gérer l'état vide
         const allCategories = @json($categories->items());
         const hasCategories = allCategories.length > 0;
-        
+
         if (emptyRow) {
             emptyRow.style.display = !hasCategories ? '' : 'none';
         }
-        
+
         if (mobileEmptyState) {
             mobileEmptyState.style.display = !hasCategories ? '' : 'none';
         }
-        
+
         // Si aucune catégorie ne correspond aux filtres mais qu'il y a des catégories
         if (hasCategories && !hasVisibleDesktop && !hasVisibleMobile) {
             // Montrer un message d'absence de résultats
@@ -534,11 +540,11 @@ document.addEventListener('DOMContentLoaded', function() {
             hideNoResultsMessage();
         }
     }
-    
+
     function showNoResultsMessage(searchTerm, statusValue) {
         // Vérifier si le message existe déjà
         let messageElement = document.getElementById('noResultsMessage');
-        
+
         if (!messageElement) {
             messageElement = document.createElement('tr');
             messageElement.id = 'noResultsMessage';
@@ -551,17 +557,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     <p class="text-gray-500 mb-6" id="filterMessage"></p>
                     <button onclick="resetFilters()" class="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
                         <i class="fas fa-redo mr-2"></i>
-                        Réinitialiser les filtres
+                        {{ __('admin.reset') }} les filtres
                     </button>
                 </td>
             `;
-            
+
             // Ajouter au tableau desktop
             const tbody = document.querySelector('#categoriesTableBody');
             if (tbody) {
                 tbody.appendChild(messageElement);
             }
-            
+
             // Ajouter aussi pour mobile
             const mobileContainer = document.getElementById('mobileCategoriesList');
             if (mobileContainer) {
@@ -576,13 +582,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     <p class="text-gray-500 mb-6" id="mobileFilterMessage"></p>
                     <button onclick="resetFilters()" class="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
                         <i class="fas fa-redo mr-2"></i>
-                        Réinitialiser les filtres
+                        {{ __('admin.reset') }} les filtres
                     </button>
                 `;
                 mobileContainer.appendChild(mobileMessage);
             }
         }
-        
+
         // Mettre à jour le message
         let message = 'Aucune catégorie ne correspond à vos critères.';
         if (searchTerm && statusValue) {
@@ -592,22 +598,22 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (statusValue) {
             message = `Aucune catégorie avec le statut "${getStatusLabel(statusValue)}" trouvée.`;
         }
-        
+
         const filterMessage = document.getElementById('filterMessage');
         const mobileFilterMessage = document.getElementById('mobileFilterMessage');
-        
+
         if (filterMessage) filterMessage.textContent = message;
         if (mobileFilterMessage) mobileFilterMessage.textContent = message;
     }
-    
+
     function hideNoResultsMessage() {
         const messageElement = document.getElementById('noResultsMessage');
         const mobileMessageElement = document.getElementById('mobileNoResultsMessage');
-        
+
         if (messageElement) messageElement.remove();
         if (mobileMessageElement) mobileMessageElement.remove();
     }
-    
+
     function getStatusLabel(statusValue) {
         switch(statusValue) {
             case 'active': return 'Active';
@@ -615,23 +621,23 @@ document.addEventListener('DOMContentLoaded', function() {
             default: return statusValue;
         }
     }
-    
+
     // Fonction pour réinitialiser les filtres
     window.resetFilters = function() {
         searchInput.value = '';
         statusFilter.value = '';
         filterCategories();
     };
-    
+
     // Événements
     searchInput.addEventListener('input', filterCategories);
     statusFilter.addEventListener('change', filterCategories);
-    
+
     // Événement pour le bouton reset
     if (resetBtn) {
         resetBtn.addEventListener('click', resetFilters);
     }
-    
+
     // Initialiser le filtrage
     filterCategories();
 });
@@ -639,14 +645,14 @@ document.addEventListener('DOMContentLoaded', function() {
 // Gestion des tooltips
 document.addEventListener('DOMContentLoaded', function() {
     const tooltipTriggers = document.querySelectorAll('.group.relative');
-    
+
     tooltipTriggers.forEach(trigger => {
         const tooltip = trigger.querySelector('.absolute');
         if (tooltip) {
             trigger.addEventListener('mouseenter', () => {
                 tooltip.classList.remove('invisible', 'opacity-0');
             });
-            
+
             trigger.addEventListener('mouseleave', () => {
                 tooltip.classList.add('invisible', 'opacity-0');
             });

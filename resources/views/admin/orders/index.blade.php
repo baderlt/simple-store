@@ -4,16 +4,46 @@
 @section('header', __('orders_management'))
 
 @section('content')
-    <div class="mb-6">
-        <form method="GET" action="{{ route('admin.orders.index') }}">
-            <select name="status" class="w-full sm:w-auto px-4 py-2 border rounded-lg" onchange="this.form.submit()">
-                <option value="">Tous les statuts</option>
-                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>{{ __('status_pending') }}</option>
-                <option value="preparing" {{ request('status') == 'preparing' ? 'selected' : '' }}>{{ __('status_preparing') }}</option>
-                <option value="out_for_delivery" {{ request('status') == 'out_for_delivery' ? 'selected' : '' }}>{{ __('status_out_for_delivery') }}</option>
-                <option value="delivered" {{ request('status') == 'delivered' ? 'selected' : '' }}>{{ __('status_delivered') }}</option>
-                <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>{{ __('status_cancelled') }}</option>
-            </select>
+    <div class="mb-6 bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+        <form method="GET" action="{{ route('admin.orders.index') }}" class="grid grid-cols-1 md:grid-cols-6 gap-3 items-end">
+            <div class="md:col-span-2">
+                <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">{{ __('admin.global_search') }}</label>
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('admin.order_search_placeholder') }}" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">{{ __('admin.status') }}</label>
+                <select name="status" class="w-full px-4 py-2 border rounded-lg">
+                    <option value="">{{ __('admin.all_statuses') }}</option>
+                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>{{ __('status_pending') }}</option>
+                    <option value="preparing" {{ request('status') == 'preparing' ? 'selected' : '' }}>{{ __('status_preparing') }}</option>
+                    <option value="out_for_delivery" {{ request('status') == 'out_for_delivery' ? 'selected' : '' }}>{{ __('status_out_for_delivery') }}</option>
+                    <option value="delivered" {{ request('status') == 'delivered' ? 'selected' : '' }}>{{ __('status_delivered') }}</option>
+                    <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>{{ __('status_cancelled') }}</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">{{ __('admin.date_from') }}</label>
+                <input type="date" name="date_from" value="{{ request('date_from') }}" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">{{ __('admin.date_to') }}</label>
+                <input type="date" name="date_to" value="{{ request('date_to') }}" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500">
+            </div>
+            <div class="flex gap-2">
+                <button type="submit" class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"><i class="fas fa-filter mr-1"></i> {{ __('admin.filter') }}</button>
+                <a href="{{ route('admin.orders.index') }}" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200" title="{{ __('admin.reset') }}"><i class="fas fa-redo"></i></a>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">{{ __('admin.min_total') }}</label>
+                <input type="number" step="0.01" name="min_total" value="{{ request('min_total') }}" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">{{ __('admin.max_total') }}</label>
+                <input type="number" step="0.01" name="max_total" value="{{ request('max_total') }}" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500">
+            </div>
+            <div class="md:col-span-4 text-sm text-gray-500">
+                {{ trans_choice('admin.orders_found_database', $orders->total(), ['count' => $orders->total()]) }}
+            </div>
         </form>
     </div>
 
@@ -27,6 +57,7 @@
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Téléphone') }}</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Total') }}</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Statut') }}</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('admin.details') }}</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Date') }}</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Actions') }}</th>
                 </tr>
@@ -62,6 +93,12 @@
                             <span class="px-2 py-1 rounded text-xs font-semibold {{ $statusColors[$order->status] ?? 'bg-gray-100 text-gray-800' }}">
                                 {{ $statusLabels[$order->status] ?? $order->status }}
                             </span>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-600">
+                            <div class="font-medium">{{ trans_choice('admin.items_count', $order->items->count(), ['count' => $order->items->count()]) }}</div>
+                            <div class="text-xs text-gray-500 truncate max-w-xs">
+                                {{ $order->items->pluck('product.name')->filter()->take(2)->join(', ') }}@if($order->items->count() > 2) ... @endif
+                            </div>
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-500">
                             {{ $order->created_at->format('d/m/Y H:i') }}
@@ -135,6 +172,10 @@
                         <i class="fas fa-phone text-gray-400 w-5"></i>
                         <span class="ml-2">{{ $order->customer_phone }}</span>
                     </div>
+                    <div class="flex items-start">
+                        <i class="fas fa-box text-gray-400 w-5 mt-1"></i>
+                        <span class="ml-2">{{ trans_choice('admin.items_count', $order->items->count(), ['count' => $order->items->count()]) }} — {{ $order->items->pluck('product.name')->filter()->take(2)->join(', ') }}</span>
+                    </div>
                 </div>
 
                 <div class="flex justify-end space-x-3 mt-4 pt-4 border-t">
@@ -142,7 +183,7 @@
                        class="text-blue-600 hover:text-blue-800 flex items-center text-sm"
                        title="Voir détails">
                         <i class="fas fa-eye mr-1"></i>
-                        <span>Détails</span>
+                        <span>{{ __('admin.details') }}</span>
                     </a>
                     <a href="{{ route('admin.orders.invoice', $order) }}" 
                        class="text-green-600 hover:text-green-800 flex items-center text-sm"

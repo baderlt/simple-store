@@ -14,75 +14,82 @@
                 <h1 class="text-xl font-bold text-gray-800 truncate">Produits</h1>
                 <p class="text-sm text-gray-600 truncate hidden sm:block">Gérez votre catalogue</p>
             </div>
-            
+
+            <form method="GET" action="{{ route('admin.products.index') }}" class="w-full sm:w-auto sm:flex-1 flex flex-col sm:flex-row gap-2">
+            @if(request('category_id'))
+                <input type="hidden" name="category_id" value="{{ request('category_id') }}">
+            @endif
             <!-- Barre de recherche - Pleine largeur sur mobile -->
             <div class="w-full sm:w-auto sm:flex-1">
                 <div class="relative">
-                    <input type="text" 
-                           placeholder="Rechercher..." 
+                    <input type="text"
+                           placeholder="{{ __('admin.search_database_placeholder') }}"
                            id="searchInput"
+                           name="search"
+                           value="{{ request('search') }}"
                            class="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:bg-white text-sm">
                     <i class="fas fa-search absolute left-3 top-2.5 text-gray-400 text-sm"></i>
                 </div>
             </div>
-            
+
             <!-- Boutons d'action -->
             <div class="flex items-center gap-2 w-full sm:w-auto">
                 <!-- Bouton Filtres avec dropdown -->
                 <div class="relative flex-1 sm:flex-none">
-                    <button id="filterToggle" class="flex items-center justify-center gap-1 px-3 py-2 text-sm text-gray-700 bg-gray-50 border border-gray-300 rounded-lg hover:bg-gray-100 w-full sm:w-auto">
+                    <button type="button" id="filterToggle" class="flex items-center justify-center gap-1 px-3 py-2 text-sm text-gray-700 bg-gray-50 border border-gray-300 rounded-lg hover:bg-gray-100 w-full sm:w-auto">
                         <i class="fas fa-filter text-gray-500"></i>
-                        <span class="hidden sm:inline">Filtres</span>
-                        <span class="sm:hidden">Filtrer</span>
+                        <span class="hidden sm:inline">{{ __('admin.filters') }}</span>
+                        <span class="sm:hidden">{{ __('admin.filter') }}</span>
                     </button>
-                    
+
                     <!-- Dropdown Filtres -->
                     <div id="filterDropdown" class="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 z-50 hidden p-4">
                         <div class="space-y-4">
                             <!-- Statut -->
                             <div>
-                                <label class="block text-xs font-medium text-gray-700 mb-2">Statut</label>
-                                <select id="statusFilter" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 text-sm">
-                                    <option value="">Tous les statuts</option>
-                                    <option value="active">Actifs</option>
-                                    <option value="inactive">Inactifs</option>
+                                <label class="block text-xs font-medium text-gray-700 mb-2">{{ __('admin.status') }}</label>
+                                <select id="statusFilter" name="status" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 text-sm">
+                                    <option value="">{{ __('admin.all_statuses') }}</option>
+                                    <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>{{ __('admin.active_plural') }}</option>
+                                    <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>{{ __('admin.inactive_plural') }}</option>
                                 </select>
                             </div>
-                            
+
                             <!-- Stock -->
                             <div>
-                                <label class="block text-xs font-medium text-gray-700 mb-2">Stock</label>
-                                <select id="stockFilter" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 text-sm">
-                                    <option value="">Tous les stocks</option>
-                                    <option value="low">Faible stock</option>
-                                    <option value="out">Rupture</option>
-                                    <option value="sufficient">Stock suffisant</option>
+                                <label class="block text-xs font-medium text-gray-700 mb-2">{{ __('admin.stock') }}</label>
+                                <select id="stockFilter" name="stock" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 text-sm">
+                                    <option value="">{{ __('admin.all_stock_levels') }}</option>
+                                    <option value="low" {{ request('stock') === 'low' ? 'selected' : '' }}>{{ __('admin.low_stock') }}</option>
+                                    <option value="out" {{ request('stock') === 'out' ? 'selected' : '' }}>{{ __('admin.out_of_stock') }}</option>
+                                    <option value="sufficient" {{ request('stock') === 'sufficient' ? 'selected' : '' }}>{{ __('admin.sufficient_stock') }}</option>
                                 </select>
                             </div>
-                            
+
                             <!-- Actions -->
                             <div class="flex justify-between pt-3 border-t">
-                                <button id="resetFilters" class="text-sm text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded hover:bg-gray-100">
-                                    <i class="fas fa-redo mr-1"></i>Réinitialiser
-                                </button>
-                                <button id="applyFilters" class="text-sm bg-green-600 text-white px-3 py-1.5 rounded hover:bg-green-700">
-                                    Appliquer
+                                <a href="{{ route('admin.products.index') }}" id="resetFilters" class="text-sm text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded hover:bg-gray-100">
+                                    <i class="fas fa-redo mr-1"></i>{{ __('admin.reset') }}
+                                </a>
+                                <button type="submit" id="applyFilters" class="text-sm bg-green-600 text-white px-3 py-1.5 rounded hover:bg-green-700">
+                                    {{ __('admin.apply') }}
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Bouton Ajouter -->
-                <a href="{{ route('admin.products.create') }}" 
+                <a href="{{ route('admin.products.create') }}"
                    class="inline-flex items-center justify-center px-3 sm:px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 whitespace-nowrap w-full sm:w-auto">
                     <i class="fas fa-plus"></i>
-                    <span class="hidden sm:inline ml-1">Ajouter</span>
-                    <span class="sm:hidden ml-1">Nouveau</span>
+                    <span class="hidden sm:inline ml-1">{{ __('admin.add') }}</span>
+                    <span class="sm:hidden ml-1">{{ __('admin.new') }}</span>
                 </a>
             </div>
+            </form>
         </div>
-        
+
         <!-- Compteur et infos -->
         <div class="mt-2 flex items-center justify-between text-xs text-gray-500">
             <div class="flex items-center gap-3">
@@ -96,7 +103,7 @@
                 </span>
             </div>
             <div class="text-xs hidden sm:block">
-                Ctrl+F pour rechercher
+                {{ __('admin.enter_to_search_database') }}
             </div>
         </div>
     </div>
@@ -114,7 +121,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="bg-white rounded-lg p-4 border border-gray-200">
             <div class="flex items-center justify-between">
                 <div>
@@ -128,7 +135,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="bg-white rounded-lg p-4 border border-gray-200">
             <div class="flex items-center justify-between">
                 <div>
@@ -142,7 +149,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="bg-white rounded-lg p-4 border border-gray-200">
             <div class="flex items-center justify-between">
                 <div>
@@ -181,8 +188,8 @@
                                 <div class="flex items-center">
                                     <div class="flex-shrink-0 h-10 w-10 mr-3">
                                         @if($product->primaryImage)
-                                            <img src="{{ asset('storage/' . $product->primaryImage->image_path) }}" 
-                                                 alt="{{ $product->name }}" 
+                                            <img src="{{ asset('storage/' . $product->primaryImage->image_path) }}"
+                                                 alt="{{ $product->name }}"
                                                  class="h-10 w-10 rounded-lg object-cover border border-gray-200">
                                         @else
                                             <div class="h-10 w-10 rounded-lg bg-gray-100 flex items-center justify-center">
@@ -196,7 +203,7 @@
                                     </div>
                                 </div>
                             </td>
-                            
+
                             <!-- Colonne Catégorie -->
                             <td class="px-4 py-3">
                                 @if($product->category)
@@ -207,7 +214,7 @@
                                     <span class="text-xs text-gray-400">-</span>
                                 @endif
                             </td>
-                            
+
                             <!-- Colonne Prix -->
                             <td class="px-4 py-3">
                                 <div class="flex flex-col">
@@ -219,7 +226,7 @@
                                     @endif
                                 </div>
                             </td>
-                            
+
                             <!-- Colonne Stock -->
                             <td class="px-4 py-3">
                                 <div class="flex items-center gap-2">
@@ -233,7 +240,7 @@
                                     @endif
                                 </div>
                             </td>
-                            
+
                             <!-- Colonne Statut -->
                             <td class="px-4 py-3">
                                 <div class="flex flex-col gap-1">
@@ -248,29 +255,29 @@
                                     @endif
                                 </div>
                             </td>
-                            
+
                             <!-- Colonne Actions -->
                             <td class="px-4 py-3">
                                 <div class="flex items-center gap-2">
-                                    <a href="{{ route('admin.products.show', $product) }}" 
+                                    <a href="{{ route('admin.products.show', $product) }}"
                                        class="text-gray-400 hover:text-gray-600 p-1 hover:bg-gray-100 rounded"
                                        title="Voir">
                                         <i class="fas fa-eye w-4 h-4"></i>
                                     </a>
-                                    
-                                    <a href="{{ route('admin.products.edit', $product) }}" 
+
+                                    <a href="{{ route('admin.products.edit', $product) }}"
                                        class="text-blue-500 hover:text-blue-700 p-1 hover:bg-blue-50 rounded"
                                        title="Modifier">
                                         <i class="fas fa-edit w-4 h-4"></i>
                                     </a>
-                                    
-                                    <form action="{{ route('admin.products.destroy', $product) }}" 
-                                          method="POST" 
+
+                                    <form action="{{ route('admin.products.destroy', $product) }}"
+                                          method="POST"
                                           class="inline"
                                           onsubmit="return confirmDelete('{{ addslashes($product->name) }}')">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" 
+                                        <button type="submit"
                                                 class="text-red-500 hover:text-red-700 p-1 hover:bg-red-50 rounded"
                                                 title="Supprimer">
                                             <i class="fas fa-trash w-4 h-4"></i>
@@ -286,7 +293,7 @@
                                     <i class="fas fa-box-open text-gray-400"></i>
                                 </div>
                                 <h3 class="text-sm font-medium text-gray-900 mb-2">Aucun produit trouvé</h3>
-                                <a href="{{ route('admin.products.create') }}" 
+                                <a href="{{ route('admin.products.create') }}"
                                    class="inline-flex items-center px-3 py-1.5 bg-green-600 text-white text-sm rounded hover:bg-green-700">
                                     <i class="fas fa-plus mr-1"></i>
                                     Ajouter un produit
@@ -305,8 +312,8 @@
                     <div class="flex items-start justify-between mb-3">
                         <div class="flex items-start gap-3">
                             @if($product->primaryImage)
-                                <img src="{{ asset('storage/' . $product->primaryImage->image_path) }}" 
-                                     alt="{{ $product->name }}" 
+                                <img src="{{ asset('storage/' . $product->primaryImage->image_path) }}"
+                                     alt="{{ $product->name }}"
                                      class="h-12 w-12 rounded-lg object-cover border border-gray-200">
                             @else
                                 <div class="h-12 w-12 rounded-lg bg-gray-100 flex items-center justify-center">
@@ -335,7 +342,7 @@
                                 <span class="text-sm font-bold text-gray-900">{{ number_format($product->price, 2) }} DH</span>
                             @endif
                         </div>
-                        
+
                         <div>
                             <p class="text-xs text-gray-500 mb-1">Stock</p>
                             <div class="flex items-center gap-1">
@@ -353,18 +360,18 @@
 
                     <div class="flex items-center justify-between pt-3 border-t border-gray-200">
                         <div class="flex items-center gap-3">
-                            <a href="{{ route('admin.products.show', $product) }}" 
+                            <a href="{{ route('admin.products.show', $product) }}"
                                class="text-xs text-gray-600 hover:text-gray-900">
                                 <i class="fas fa-eye mr-1"></i>Voir
                             </a>
-                            
-                            <a href="{{ route('admin.products.edit', $product) }}" 
+
+                            <a href="{{ route('admin.products.edit', $product) }}"
                                class="text-xs text-blue-600 hover:text-blue-800">
                                 <i class="fas fa-edit mr-1"></i>Modifier
                             </a>
                         </div>
-                        
-                        <form action="{{ route('admin.products.destroy', $product) }}" 
+
+                        <form action="{{ route('admin.products.destroy', $product) }}"
                               method="POST"
                               onsubmit="return confirmDelete('{{ addslashes($product->name) }}')">
                             @csrf
@@ -381,7 +388,7 @@
                         <i class="fas fa-box-open text-gray-400"></i>
                     </div>
                     <h3 class="text-sm font-medium text-gray-900 mb-2">Aucun produit trouvé</h3>
-                    <a href="{{ route('admin.products.create') }}" 
+                    <a href="{{ route('admin.products.create') }}"
                        class="inline-flex items-center px-3 py-1.5 bg-green-600 text-white text-sm rounded hover:bg-green-700">
                         <i class="fas fa-plus mr-1"></i>
                         Ajouter un produit
@@ -396,7 +403,7 @@
         <div class="bg-white rounded-lg p-3 border border-gray-200">
             <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
                 <div class="text-xs text-gray-700">
-                    Page <span class="font-semibold">{{ $products->currentPage() }}</span> sur 
+                    Page <span class="font-semibold">{{ $products->currentPage() }}</span> sur
                     <span class="font-semibold">{{ $products->lastPage() }}</span>
                 </div>
                 <div class="flex items-center gap-1">
@@ -427,10 +434,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const mobileCards = document.querySelectorAll('.mobile-product-card');
     const productCount = document.getElementById('productCount');
     const activeFiltersCount = document.getElementById('activeFiltersCount');
-    
+
     // Variables
     let activeFilters = 0;
-    
+
     // 1. Gestion du scroll pour l'en-tête sticky
     window.addEventListener('scroll', function() {
         if (window.scrollY > 20) {
@@ -439,20 +446,20 @@ document.addEventListener('DOMContentLoaded', function() {
             stickyHeader.classList.remove('shadow-sm', 'bg-white/95');
         }
     });
-    
+
     // 2. Gestion du dropdown des filtres
     filterToggle.addEventListener('click', function(e) {
         e.stopPropagation();
         filterDropdown.classList.toggle('hidden');
     });
-    
+
     // Fermer le dropdown si on clique ailleurs
     document.addEventListener('click', function(e) {
         if (!filterDropdown.contains(e.target) && !filterToggle.contains(e.target)) {
             filterDropdown.classList.add('hidden');
         }
     });
-    
+
     // 3. Calculer les filtres actifs
     function updateActiveFilters() {
         activeFilters = 0;
@@ -461,41 +468,41 @@ document.addEventListener('DOMContentLoaded', function() {
         if (stockFilter.value !== '') activeFilters++;
         activeFiltersCount.textContent = activeFilters;
     }
-    
+
     // 4. Filtrer les produits
     function filterProducts() {
         const searchTerm = searchInput.value.toLowerCase();
         const statusValue = statusFilter.value;
         const stockValue = stockFilter.value;
-        
+
         let visibleCount = 0;
-        
+
         // Filtrer les lignes desktop
         productRows.forEach(row => {
             const productName = row.querySelector('.product-name')?.textContent.toLowerCase() || '';
             const skuElement = row.querySelector('.product-sku');
             const sku = skuElement ? skuElement.textContent.toLowerCase() : '';
-            
+
             // Récupérer les données du produit
             const productStatus = row.getAttribute('data-status');
             const stock = parseInt(row.getAttribute('data-stock')) || 0;
-            
+
             // Vérifier la recherche
-            const matchesSearch = searchTerm === '' || 
-                productName.includes(searchTerm) || 
+            const matchesSearch = searchTerm === '' ||
+                productName.includes(searchTerm) ||
                 sku.includes(searchTerm);
-            
+
             // Vérifier le statut
-            const matchesStatus = statusValue === '' || 
-                (statusValue === 'active' && productStatus === 'active') || 
+            const matchesStatus = statusValue === '' ||
+                (statusValue === 'active' && productStatus === 'active') ||
                 (statusValue === 'inactive' && productStatus === 'inactive');
-            
+
             // Vérifier le stock
             let matchesStock = true;
             if (stockValue === 'low' && !(stock > 0 && stock <= 10)) matchesStock = false;
             if (stockValue === 'out' && stock !== 0) matchesStock = false;
             if (stockValue === 'sufficient' && !(stock > 10)) matchesStock = false;
-            
+
             // Afficher/masquer
             if (matchesSearch && matchesStatus && matchesStock) {
                 row.style.display = '';
@@ -504,33 +511,33 @@ document.addEventListener('DOMContentLoaded', function() {
                 row.style.display = 'none';
             }
         });
-        
+
         // Filtrer les cartes mobile
         mobileCards.forEach(card => {
             const productName = card.querySelector('.product-name')?.textContent.toLowerCase() || '';
             const skuElement = card.querySelector('.product-sku');
             const sku = skuElement ? skuElement.textContent.toLowerCase() : '';
-            
+
             // Récupérer les données du produit
             const productStatus = card.getAttribute('data-status');
             const stock = parseInt(card.getAttribute('data-stock')) || 0;
-            
+
             // Vérifier la recherche
-            const matchesSearch = searchTerm === '' || 
-                productName.includes(searchTerm) || 
+            const matchesSearch = searchTerm === '' ||
+                productName.includes(searchTerm) ||
                 sku.includes(searchTerm);
-            
+
             // Vérifier le statut
-            const matchesStatus = statusValue === '' || 
-                (statusValue === 'active' && productStatus === 'active') || 
+            const matchesStatus = statusValue === '' ||
+                (statusValue === 'active' && productStatus === 'active') ||
                 (statusValue === 'inactive' && productStatus === 'inactive');
-            
+
             // Vérifier le stock
             let matchesStock = true;
             if (stockValue === 'low' && !(stock > 0 && stock <= 10)) matchesStock = false;
             if (stockValue === 'out' && stock !== 0) matchesStock = false;
             if (stockValue === 'sufficient' && !(stock > 10)) matchesStock = false;
-            
+
             // Afficher/masquer
             if (matchesSearch && matchesStatus && matchesStock) {
                 card.style.display = '';
@@ -539,18 +546,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 card.style.display = 'none';
             }
         });
-        
+
         // Mettre à jour les compteurs
         productCount.textContent = visibleCount;
         updateActiveFilters();
     }
-    
+
     // 5. Appliquer les filtres
     applyFilters.addEventListener('click', function() {
         filterProducts();
         filterDropdown.classList.add('hidden');
     });
-    
+
     // 6. Réinitialiser les filtres
     resetFilters.addEventListener('click', function() {
         searchInput.value = '';
@@ -559,14 +566,14 @@ document.addEventListener('DOMContentLoaded', function() {
         filterProducts();
         filterDropdown.classList.add('hidden');
     });
-    
+
     // 7. Événements pour la recherche et filtres
     searchInput.addEventListener('input', filterProducts);
-    
+
     // Les filtres s'appliquent automatiquement quand on change
     statusFilter.addEventListener('change', filterProducts);
     stockFilter.addEventListener('change', filterProducts);
-    
+
     // 8. Raccourci clavier Ctrl+F
     document.addEventListener('keydown', function(e) {
         if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
@@ -574,13 +581,13 @@ document.addEventListener('DOMContentLoaded', function() {
             searchInput.focus();
             searchInput.select();
         }
-        
+
         // Fermer le dropdown avec Escape
         if (e.key === 'Escape' && !filterDropdown.classList.contains('hidden')) {
             filterDropdown.classList.add('hidden');
         }
     });
-    
+
     // 9. Initialiser
     updateActiveFilters();
 });
@@ -617,12 +624,12 @@ document.addEventListener('DOMContentLoaded', function() {
         margin-left: -1rem;
         margin-right: -1rem;
     }
-    
+
     /* Assurer que la barre de recherche prend toute la largeur */
     .w-full {
         width: 100%;
     }
-    
+
     /* Ajustement du dropdown sur mobile */
     #filterDropdown {
         position: fixed;
@@ -640,7 +647,7 @@ document.addEventListener('DOMContentLoaded', function() {
     .sm\\:w-auto {
         width: auto;
     }
-    
+
     .sm\\:flex-1 {
         flex: 1;
     }
