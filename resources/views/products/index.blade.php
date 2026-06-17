@@ -261,7 +261,7 @@
                 const unit = card.querySelector('[data-card-quantity-unit]');
                 const selectedOption = card.querySelector('[data-card-variant-option].border-emerald-500');
                 const min = Number(selectedOption?.dataset.minimum || 1);
-                const max = Number(selectedOption?.dataset.stock || 999);
+                const max = Math.max(min, Number(selectedOption?.dataset.stock || 999));
                 const step = Number(quantityButton.dataset.cardQuantityChange);
                 const next = Math.min(max, Math.max(min, Number(value.textContent || min) + step));
 

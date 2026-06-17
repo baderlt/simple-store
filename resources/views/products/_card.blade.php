@@ -1,6 +1,6 @@
 @php
     $activeVariants = $product->usesVariants()
-        ? $product->variants->where('is_active', true)->filter(fn ($variant) => $variant->stock_quantity >= $variant->minimumOrderQuantity())->values()
+        ? $product->variants->where('is_active', true)->filter(fn ($variant) => $variant->stock_quantity > 0)->values()
         : collect();
     $defaultVariant = $activeVariants->firstWhere('is_default', true) ?: $activeVariants->first();
     $displayStock = $product->usesVariants() ? $activeVariants->sum('stock_quantity') : $product->stock_quantity;
@@ -115,7 +115,7 @@
     </div>
 
     @if($product->usesVariants() && $activeVariants->isNotEmpty())
-        <div class="fixed inset-x-5 bottom-4 z-[80] hidden max-h-[72vh] overflow-y-auto rounded-2xl bg-white/95 p-2.5 shadow-2xl ring-1 ring-gray-100 backdrop-blur-md sm:absolute sm:inset-x-3 sm:top-12 sm:bottom-auto sm:z-30 sm:max-h-[22rem]" data-variant-modal>
+        <div class="absolute inset-x-2 top-2 z-40 hidden max-h-[calc(100%-1rem)] overflow-y-auto rounded-2xl bg-white/95 p-2.5 shadow-2xl ring-1 ring-gray-100 backdrop-blur-md" data-variant-modal>
             <div class="mb-2 flex items-center justify-between gap-3">
                 <p class="text-xs font-black uppercase tracking-wide text-emerald-600">{{ __('products.choose_variant') }}</p>
                 <button type="button" data-variant-modal-close class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:text-gray-900">
@@ -123,7 +123,7 @@
                 </button>
             </div>
 
-            <div class="max-h-36 space-y-1 overflow-y-auto pr-1 sm:max-h-44">
+            <div class="max-h-32 space-y-1 overflow-y-auto pr-1 sm:max-h-40">
                 @foreach($variantPayload as $variant)
                     <button type="button"
                             class="flex w-full items-center justify-between gap-3 rounded-lg border border-gray-200 px-2.5 py-1.5 text-left transition hover:border-emerald-400 hover:bg-emerald-50"
