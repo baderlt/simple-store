@@ -25,7 +25,7 @@
     })->values();
 @endphp
 
-<div class="card-product group relative h-full w-full bg-gradient-to-br from-white to-gray-50 rounded-2xl border border-gray-100 hover:border-emerald-200 transition-all duration-300 hover:shadow-xl overflow-hidden flex flex-col"
+<div class="card-product group relative h-full w-full bg-gradient-to-br from-white to-gray-50 rounded-2xl border border-gray-100 hover:border-emerald-200 transition-all duration-300 hover:shadow-xl overflow-visible flex flex-col"
      data-product-card="{{ $product->id }}">
     @if($product->hasDiscount())
         <div class="absolute top-3 left-0 z-10">
