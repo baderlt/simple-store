@@ -21,8 +21,8 @@ class OrderController extends Controller
                     $query->where('order_number', 'like', "%{$search}%")
                         ->orWhere('customer_name', 'like', "%{$search}%")
                         ->orWhere('customer_phone', 'like', "%{$search}%")
-                        ->orWhere('customer_email', 'like', "%{$search}%")
                         ->orWhere('customer_address', 'like', "%{$search}%")
+                        ->orWhere('customer_city', 'like', "%{$search}%")
                         ->orWhereHas('items.product', function ($query) use ($search) {
                             $query->where('name', 'like', "%{$search}%")
                                 ->orWhere('sku', 'like', "%{$search}%");
