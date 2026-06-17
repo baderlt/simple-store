@@ -300,19 +300,22 @@
                 addButton.dataset.variantId = optionButton.dataset.variantId;
                 addButton.dataset.productStock = optionButton.dataset.stock;
                 addButton.dataset.quantity = minimumQuantity;
-                if (quantityPanel) quantityPanel.classList.remove('hidden');
+                const showQuantityCounter = minimumQuantity > 1;
+                if (quantityPanel) quantityPanel.classList.toggle('hidden', !showQuantityCounter);
                 if (quantityValue) quantityValue.textContent = minimumQuantity;
                 if (quantityUnit) quantityUnit.textContent = quantityUnitText;
                 if (minimumMessage) {
-                    const showMinimum = minimumQuantity > 1;
-                    minimumMessage.textContent = showMinimum ? `{{ __('products.minimum_quantity_notice') }}`.replace(':quantity', `${minimumQuantity}${quantityUnitText}`) : '';
-                    minimumMessage.classList.toggle('hidden', !showMinimum);
+                    minimumMessage.textContent = showQuantityCounter ? `{{ __('products.minimum_quantity_notice') }}`.replace(':quantity', `${minimumQuantity}${quantityUnitText}`) : '';
+                    minimumMessage.classList.toggle('hidden', !showQuantityCounter);
                 }
                 addButton.disabled = false;
                 addButton.removeAttribute('data-variant-modal-open');
                 addButton.classList.add('add-to-cart-btn', 'bg-green-600');
                 addButton.querySelector('i').className = 'fas fa-box-open';
                 label.textContent = '{{ __('products.add_to_pack') }}';
+                if (!showQuantityCounter) {
+                    card.querySelector('[data-variant-modal]')?.classList.add('hidden');
+                }
             }
         });
 

@@ -115,18 +115,18 @@
     </div>
 
     @if($product->usesVariants() && $activeVariants->isNotEmpty())
-        <div class="fixed inset-x-3 bottom-3 z-[80] hidden max-h-[82vh] overflow-y-auto rounded-3xl bg-white/95 p-3 shadow-2xl ring-1 ring-gray-100 backdrop-blur-md sm:absolute sm:inset-x-3 sm:top-12 sm:bottom-auto sm:z-30 sm:max-h-[28rem]" data-variant-modal>
-            <div class="mb-3 flex items-center justify-between gap-3">
-                <p class="text-sm font-black uppercase tracking-wide text-emerald-600">{{ __('products.choose_variant') }}</p>
+        <div class="fixed inset-x-5 bottom-4 z-[80] hidden max-h-[72vh] overflow-y-auto rounded-2xl bg-white/95 p-2.5 shadow-2xl ring-1 ring-gray-100 backdrop-blur-md sm:absolute sm:inset-x-3 sm:top-12 sm:bottom-auto sm:z-30 sm:max-h-[22rem]" data-variant-modal>
+            <div class="mb-2 flex items-center justify-between gap-3">
+                <p class="text-xs font-black uppercase tracking-wide text-emerald-600">{{ __('products.choose_variant') }}</p>
                 <button type="button" data-variant-modal-close class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:text-gray-900">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
 
-            <div class="max-h-40 space-y-1.5 overflow-y-auto pr-1 sm:max-h-48">
+            <div class="max-h-36 space-y-1 overflow-y-auto pr-1 sm:max-h-44">
                 @foreach($variantPayload as $variant)
                     <button type="button"
-                            class="flex w-full items-center justify-between gap-3 rounded-xl border border-gray-200 px-3 py-2 text-left transition hover:border-emerald-400 hover:bg-emerald-50"
+                            class="flex w-full items-center justify-between gap-3 rounded-lg border border-gray-200 px-2.5 py-1.5 text-left transition hover:border-emerald-400 hover:bg-emerald-50"
                             data-card-variant-option
                             data-variant-id="{{ $variant['id'] }}"
                             data-price="{{ format_price($variant['price']) }}"
@@ -143,20 +143,20 @@
                 @endforeach
             </div>
 
-            <div class="mt-3 hidden rounded-2xl bg-emerald-50 p-3" data-card-quantity-panel>
+            <div class="mt-2 hidden rounded-xl bg-emerald-50 p-2" data-card-quantity-panel>
                 <div class="flex items-center justify-between gap-3">
-                    <button type="button" class="flex h-9 w-9 items-center justify-center rounded-full bg-white text-emerald-700 shadow-sm" data-card-quantity-change="-1">
+                    <button type="button" class="flex h-8 w-8 items-center justify-center rounded-full bg-white text-emerald-700 shadow-sm" data-card-quantity-change="-1">
                         <i class="fas fa-minus text-xs"></i>
                     </button>
                     <div class="text-center">
                         <div class="text-[11px] font-bold uppercase tracking-wide text-emerald-700">{{ __('products.choose_quantity') }}</div>
-                        <div class="text-xl font-black text-gray-900"><span data-card-quantity-value>1</span><span data-card-quantity-unit></span></div>
+                        <div class="text-lg font-black text-gray-900"><span data-card-quantity-value>1</span><span data-card-quantity-unit></span></div>
                     </div>
-                    <button type="button" class="flex h-9 w-9 items-center justify-center rounded-full bg-white text-emerald-700 shadow-sm" data-card-quantity-change="1">
+                    <button type="button" class="flex h-8 w-8 items-center justify-center rounded-full bg-white text-emerald-700 shadow-sm" data-card-quantity-change="1">
                         <i class="fas fa-plus text-xs"></i>
                     </button>
                 </div>
-                <p class="mt-2 hidden text-center text-xs font-bold text-emerald-700" data-card-minimum-message></p>
+                <p class="mt-1.5 hidden text-center text-[11px] font-bold text-emerald-700" data-card-minimum-message></p>
             </div>
         </div>
     @endif
