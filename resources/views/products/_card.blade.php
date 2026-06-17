@@ -115,7 +115,7 @@
     </div>
 
     @if($product->usesVariants() && $activeVariants->isNotEmpty())
-        <div class="absolute inset-x-3 top-12 z-30 hidden rounded-3xl bg-white/95 p-3 shadow-2xl ring-1 ring-gray-100 backdrop-blur-md" data-variant-modal>
+        <div class="fixed inset-x-3 bottom-3 z-[80] hidden max-h-[82vh] overflow-y-auto rounded-3xl bg-white/95 p-3 shadow-2xl ring-1 ring-gray-100 backdrop-blur-md sm:absolute sm:inset-x-3 sm:top-12 sm:bottom-auto sm:z-30 sm:max-h-[28rem]" data-variant-modal>
             <div class="mb-3 flex items-center justify-between gap-3">
                 <p class="text-sm font-black uppercase tracking-wide text-emerald-600">{{ __('products.choose_variant') }}</p>
                 <button type="button" data-variant-modal-close class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:text-gray-900">
@@ -123,7 +123,7 @@
                 </button>
             </div>
 
-            <div class="max-h-48 space-y-1.5 overflow-y-auto pr-1">
+            <div class="max-h-40 space-y-1.5 overflow-y-auto pr-1 sm:max-h-48">
                 @foreach($variantPayload as $variant)
                     <button type="button"
                             class="flex w-full items-center justify-between gap-3 rounded-xl border border-gray-200 px-3 py-2 text-left transition hover:border-emerald-400 hover:bg-emerald-50"
