@@ -1,2 +1,2 @@
 <?php
-return ['none_found' => 'Aucun produit trouvé', 'sku' => 'SKU', 'add_to_pack' => 'Ajouter', 'choose_quantity' => 'Quantité', 'category' => 'Catégorie'];
+return ['none_found' => 'Aucun produit trouvé', 'sku' => 'SKU', 'add_to_pack' => 'Ajouter', 'choose_quantity' => 'Quantité', 'category' => 'Catégorie', 'edit_quantity' => 'Modifier quantité', 'choose_variant' => 'Choisir variante', 'choose_variant_help' => 'Choisissez une option pour mettre à jour le prix, puis ajoutez-la au pack.', 'stock_available' => ':stock en stock', 'variant' => 'Variante', 'minimum_quantity_notice' => 'La quantité minimale pour ce produit est :quantity.'];
