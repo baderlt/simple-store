@@ -26,11 +26,29 @@ class ProductController extends Controller
     {
     }
 
-    public function index()
+    public function index(Request $request)
     {
+        $search = trim((string) $request->query('search', ''));
+
         $products = Product::with(['category', 'primaryImage', 'variants'])
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('name', 'like', "%{$search}%")
+                        ->orWhere('sku', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%")
+                        ->orWhereHas('category', function ($query) use ($search) {
+                            $query->where('name', 'like', "%{$search}%");
+                        });
+                });
+            })
+            ->when($request->filled('category_id'), fn ($query) => $query->where('category_id', $request->integer('category_id')))
+            ->when($request->filled('status'), fn ($query) => $query->where('is_active', $request->query('status') === 'active'))
+            ->when($request->query('stock') === 'out', fn ($query) => $query->where('stock_quantity', 0))
+            ->when($request->query('stock') === 'low', fn ($query) => $query->whereColumn('stock_quantity', '<=', 'low_stock_alert')->where('stock_quantity', '>', 0))
+            ->when($request->query('stock') === 'sufficient', fn ($query) => $query->whereColumn('stock_quantity', '>', 'low_stock_alert'))
             ->latest()
-            ->paginate(15);
+            ->paginate(15)
+            ->withQueryString();
 
         return view('admin.products.index', compact('products'));
     }
