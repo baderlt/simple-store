@@ -1451,13 +1451,13 @@
                 const productName = button.getAttribute('data-product-name');
                 const variantInput = document.getElementById('selectedVariantId');
                 const isCurrentProduct = variantInput?.dataset.productId === String(productId);
-                const variantId = isCurrentProduct ? variantInput.value : '';
+                const variantId = button.getAttribute('data-variant-id') || (isCurrentProduct ? variantInput.value : '');
                 const quantityInput = isCurrentProduct ? document.getElementById('quantity') : null;
                 if (quantityInput && typeof validateProductMinimumQuantity === 'function' && !validateProductMinimumQuantity()) {
                     return;
                 }
 
-                const quantity = quantityInput ? Number(quantityInput.value || 1) : 1;
+                const quantity = button.getAttribute('data-quantity') || (quantityInput ? Number(quantityInput.value || 1) : 1);
                 
                 addToCart(productId, productName, button, variantId, quantity);
             }
