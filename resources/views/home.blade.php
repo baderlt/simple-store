@@ -266,113 +266,7 @@
         <div class="products-grid grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6 items-stretch">
             @foreach($featuredProducts as $product)
                 <div class="product-grid-item flex h-full min-w-0">
-                    <div class="card-product group relative h-full w-full bg-gradient-to-br from-white to-gray-50 rounded-2xl border border-gray-100 hover:border-emerald-200 transition-all duration-300 hover:shadow-xl overflow-hidden flex flex-col">
-                    <!-- Premium Ribbon -->
-                    @if($product->hasDiscount())
-                        <div class="absolute top-3  z-10">
-                            <div class="relative bg-gradient-to-r from-rose-500 to-pink-600 text-white py-1 px-1 lg:px-4 lg:py-2 rounded-r-lg shadow-lg">
-                                <span class="font-bold text-xs lg:text-sm ">-{{ $product->activeDiscount->discount_percentage }}%</span>
-                                <div class="absolute left-0 top-0 bottom-0 w-1 lg:w-2  bg-gradient-to-b from-rose-600 to-pink-700"></div>
-                            </div>
-                        </div>
-                    @endif
-                    
-                    <!-- Product Image -->
-                    <div class="product-card-media relative overflow-hidden h-36 sm:h-48 md:h-56 lg:h-52 xl:h-48 2xl:h-56">
-                        <a href="{{ route('products.show', $product->slug) }}" class="block h-full">
-                            @if($product->primaryImage)
-                                <img src="{{ asset('storage/' . $product->primaryImage->image_path) }}" 
-                                     alt="{{ $product->name }}" 
-                                     loading="lazy"  
-                                     class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700">
-                            @else
-                                <div class="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                                    <div class="text-center">
-                                        <i class="fas fa-gem text-gray-300 text-5xl mb-2"></i>
-                                        <p class="text-gray-400 text-sm">Image non disponible</p>
-                                    </div>
-                                </div>
-                            @endif
-                        </a>
-                        
-                        <!-- Stock Status Overlay -->
-                        @if($product->stock_quantity <= 5 && $product->stock_quantity > 0)
-                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-amber-500/90 to-transparent text-white p-3 text-center">
-                                <div class="flex items-center justify-center space-x-2 text-sm font-semibold">
-                                    <i class="fas fa-bolt"></i>
-                                    <span>Seulement {{ $product->stock_quantity }} restant(s)</span>
-                                </div>
-                            </div>
-                        @endif
-                    </div>
-
-
-                    <div class="product-content p-3 md:p-5 flex flex-1 flex-col">
-    <!-- Category -->
-    <div class="mb-2 sm:mb-3 min-h-5">
-        <a href="{{ route('products.index', ['category' => $product->category_id]) }}" 
-           class="inline-flex max-w-full items-center text-[10px] text-emerald-600 font-semibold uppercase tracking-wider hover:text-emerald-700">
-            <i class="fas fa-tag mr-1.5"></i>
-            <span class="truncate">{{ $product->category->name ?? 'Catégorie' }}</span>
-        </a>
-    </div>
-    
-    <!-- Product Name -->
-    <h3 class="font-bold text-gray-900 text-sm sm:text-base mb-3 min-h-10 sm:min-h-12 line-clamp-2 group-hover:text-emerald-700 transition-colors leading-tight">
-        <a href="{{ route('products.show', $product->slug) }}" class="hover:text-emerald-700">
-            {{ $product->name }}
-        </a>
-    </h3>
-    
-    <!-- Price -->
-    <div class="product-card-price flex items-end justify-between mb-4 min-h-12">
-        @if($product->hasDiscount())
-            <div>
-                <div class="text-base sm:text-xl font-bold text-gray-900 whitespace-nowrap">{{ format_price($product->final_price) }} DH</div>
-                <div class="flex items-center text-sm">
-                    <span class="text-red-400 text-xs line-through mr-2 whitespace-nowrap">{{ format_price($product->price) }} DH</span>
-                    <span class="bg-rose-50 text-rose-600 px-1 lg:px-2 py-0.5 rounded text-xs font-bold whitespace-nowrap">
-                        - {{ format_price($product->price - $product->final_price) }} DH
-                    </span>
-                </div>
-            </div>
-        @else
-            <div class="text-base sm:text-xl font-bold text-gray-900 whitespace-nowrap">{{ format_price($product->price) }} DH</div>
-        @endif
-    </div>
-    
-    <!-- Action Button -->
-    <div class="add-to-pack-button-wrapper mt-auto">
-        <!-- Add to Pack -->
-        @if($product->usesVariants())
-            <a href="{{ route('products.show', $product->slug) }}"
-               class="add-to-pack-btn w-full bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 py-2.5 sm:py-3 px-2 sm:px-4 font-semibold text-xs sm:text-sm"
-               title="{{ __('products.choose_quantity') }}">
-                <i class="fas fa-sliders-h"></i>
-                <span>{{ __('products.choose_quantity') }}</span>
-            </a>
-        @elseif($product->stock_quantity > 0)
-            <button type="button" 
-                    data-product-id="{{ $product->id }}"
-                    data-product-name="{{ $product->name }}"
-                    data-product-stock="{{ $product->stock_quantity }}"
-                    class="add-to-pack-btn add-to-cart-btn w-full bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 py-2.5 sm:py-3 px-2 sm:px-4 font-semibold text-xs sm:text-sm group/btn">
-                <i class="fas fa-box-open group-hover/btn:scale-110 transition-transform"></i>
-                <span>{{ __('products.add_to_pack') }}</span>
-            </button>
-        @else
-            <button disabled 
-                    class="add-to-pack-btn w-full bg-gray-200 text-gray-400 rounded-xl cursor-not-allowed flex items-center justify-center gap-2 py-2.5 sm:py-3 px-2 sm:px-4 font-semibold text-xs sm:text-sm">
-                <i class="fas fa-box-open"></i>
-                <span>{{ __('products.add_to_pack') }}</span>
-            </button>
-        @endif
-    </div>
-</div>
-
-                    <!-- Hover Effect Border -->
-                    <div class="absolute inset-0 border-2 border-transparent group-hover:border-emerald-300 rounded-2xl transition-all duration-300 pointer-events-none"></div>
-                    </div>
+                    @include('products._card', ['product' => $product])
                 </div>
             @endforeach
         </div>
@@ -420,6 +314,108 @@
             @endif
         </div>
     </section>
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('click', function(event) {
+        const openButton = event.target.closest('[data-variant-modal-open]');
+        const closeButton = event.target.closest('[data-variant-modal-close]');
+        const optionButton = event.target.closest('[data-card-variant-option]');
+        const quantityButton = event.target.closest('[data-card-quantity-change]');
+
+        if (openButton) {
+            event.preventDefault();
+            const card = openButton.closest('[data-product-card]');
+            const modal = card?.querySelector('[data-variant-modal]');
+            document.querySelectorAll('[data-variant-modal]').forEach((item) => {
+                if (item !== modal) item.classList.add('hidden');
+            });
+            modal?.classList.toggle('hidden');
+            return;
+        }
+
+        if (closeButton) {
+            event.preventDefault();
+            closeButton.closest('[data-variant-modal]')?.classList.add('hidden');
+            return;
+        }
+
+        if (quantityButton) {
+            event.preventDefault();
+            const card = quantityButton.closest('[data-product-card]');
+            const addButton = card.querySelector('.product-card-add-btn');
+            const value = card.querySelector('[data-card-quantity-value]');
+            const unit = card.querySelector('[data-card-quantity-unit]');
+            const selectedOption = card.querySelector('[data-card-variant-option].border-emerald-500');
+            const min = Number(selectedOption?.dataset.minimum || 1);
+            const max = Number(selectedOption?.dataset.stock || 999);
+            const step = Number(quantityButton.dataset.cardQuantityChange);
+            const next = Math.min(max, Math.max(min, Number(value.textContent || min) + step));
+
+            value.textContent = next;
+            addButton.dataset.quantity = next;
+            if (unit) unit.textContent = selectedOption?.dataset.unit || '';
+            return;
+        }
+
+        if (optionButton) {
+            event.preventDefault();
+            const card = optionButton.closest('[data-product-card]');
+            const finalPrice = card.querySelector('[data-card-final-price]');
+            const basePrice = card.querySelector('[data-card-base-price]');
+            const image = card.querySelector('[data-product-card-image]');
+            const addButton = card.querySelector('.product-card-add-btn');
+            const label = card.querySelector('[data-card-button-label]');
+            const quantityPanel = card.querySelector('[data-card-quantity-panel]');
+            const quantityValue = card.querySelector('[data-card-quantity-value]');
+            const quantityUnit = card.querySelector('[data-card-quantity-unit]');
+            const minimumMessage = card.querySelector('[data-card-minimum-message]');
+            const minimumQuantity = Number(optionButton.dataset.minimum || 1);
+            const quantityUnitText = optionButton.dataset.unit || '';
+            const hasDiscount = Number(optionButton.dataset.rawFinalPrice) < Number(optionButton.dataset.rawPrice);
+
+            finalPrice.textContent = `${optionButton.dataset.finalPrice} DH`;
+            basePrice.textContent = `${optionButton.dataset.price} DH`;
+            basePrice.classList.toggle('hidden', !hasDiscount);
+            if (image && optionButton.dataset.image) image.src = optionButton.dataset.image;
+
+            card.querySelectorAll('[data-card-variant-option]').forEach((button) => {
+                button.classList.remove('border-emerald-500', 'bg-emerald-50', 'ring-2', 'ring-emerald-100');
+            });
+            optionButton.classList.add('border-emerald-500', 'bg-emerald-50', 'ring-2', 'ring-emerald-100');
+
+            addButton.dataset.variantId = optionButton.dataset.variantId;
+            addButton.dataset.productStock = optionButton.dataset.stock;
+            addButton.dataset.quantity = minimumQuantity;
+            const showQuantityCounter = minimumQuantity > 1;
+            if (quantityPanel) quantityPanel.classList.toggle('hidden', !showQuantityCounter);
+            if (quantityValue) quantityValue.textContent = minimumQuantity;
+            if (quantityUnit) quantityUnit.textContent = quantityUnitText;
+            if (minimumMessage) {
+                minimumMessage.textContent = showQuantityCounter ? `{{ __('products.minimum_quantity_notice') }}`.replace(':quantity', `${minimumQuantity}${quantityUnitText}`) : '';
+                minimumMessage.classList.toggle('hidden', !showQuantityCounter);
+            }
+            addButton.disabled = false;
+            addButton.removeAttribute('data-variant-modal-open');
+            addButton.classList.add('add-to-cart-btn', 'bg-green-600');
+            addButton.querySelector('i').className = 'fas fa-box-open';
+            label.textContent = '{{ __('products.add_to_pack') }}';
+            if (!showQuantityCounter) {
+                card.querySelector('[data-variant-modal]')?.classList.add('hidden');
+            }
+        }
+    });
+
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('[data-product-card]')) {
+            document.querySelectorAll('[data-variant-modal]').forEach((modal) => modal.classList.add('hidden'));
+        }
+    });
+
+});
+</script>
 
     {{-- Call to Action Banner --}}
     @if(isset($activeBanners['bottom']) && count($activeBanners['bottom']) > 0)
