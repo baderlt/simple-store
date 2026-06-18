@@ -491,21 +491,21 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div>
                                 <h3 class="font-bold text-xl mb-2">{{ __('home.location.hours') }}</h3>
 @php
-    $workingHoursRaw = settings('working_hours');
+    $workingHoursParts = collect(preg_split('/[|\\\\,\/]+/', (string) settings('working_hours')))
+        ->map(function ($part) {
+            [$days, $hours] = array_pad(array_map('trim', explode(':', $part, 2)), 2, '');
 
-    // Split using |  \  ,  /
-    $parts = preg_split('/[|\\\\,\/]+/', $workingHoursRaw);
+            return compact('days', 'hours');
+        })
+        ->filter(fn ($part) => $part['days'] !== '' || $part['hours'] !== '')
+        ->values();
 @endphp
 
 <div class="space-y-1 text-gray-300">
-    @foreach($parts as $part)
-        @php
-            [$days, $hours] = array_map('trim', explode(':', $part));
-        @endphp
-
+    @foreach($workingHoursParts as $part)
         <div class="flex justify-between">
-            <span>{{ $days }}:&nbsp;</span>
-            <span class="font-semibold">{{ $hours }}</span>
+            <span>{{ $part['days'] }}:&nbsp;</span>
+            <span class="font-semibold">{{ $part['hours'] }}</span>
         </div>
     @endforeach
 </div>
@@ -827,7 +827,8 @@ document.addEventListener('DOMContentLoaded', function() {
         phone_raw: @json(settings('phone')),
         phone_link: "{{ preg_replace('/[^0-9+]/', '', settings('phone')) }}",
         email: @json(settings('email')),
-        working_hours: @json(settings('working_hours')),
+        hours_label: @json(__('home.location.hours')),
+        working_hours: @json($workingHoursParts),
         lat: {{ settings('latitude', 33.5731) }},
         lng: {{ settings('longitude', -7.5898) }},
     };
@@ -861,10 +862,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     </a>
                 </div>` : ''}
 
-                ${store.working_hours ? `
-                <div class="flex items-center gap-2">
-                    <i class="fas fa-clock text-green-600"></i>
-                    <span>${store.working_hours}</span>
+                ${store.working_hours.length ? `
+                <div class="flex items-start gap-2">
+                    <i class="fas fa-clock text-green-600 mt-1"></i>
+                    <div class="min-w-0 flex-1">
+                        <div class="font-semibold text-gray-800">${store.hours_label}</div>
+                        <div class="mt-1 space-y-0.5 text-gray-600">
+                            ${store.working_hours.map(({ days, hours }) => `
+                                <div class="flex justify-between gap-3" dir="auto">
+                                    <span>${days}:</span>
+                                    <span class="font-semibold whitespace-nowrap">${hours}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
                 </div>` : ''}
 
             </div>
