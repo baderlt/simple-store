@@ -22,6 +22,6 @@ return [
     'attribute_values' => 'Attribute values',
     'delivery_title' => 'Delivery',
     'delivery_time' => 'Delivery within 24 to 72 hours',
-    'delivery_free_city' => ':city: free delivery',
+    'delivery_free_city' => 'LAAYOUNE: free delivery',
     'delivery_other_cities' => 'Other cities: :price DH',
 ];
