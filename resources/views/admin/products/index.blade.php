@@ -21,15 +21,23 @@
             @endif
             <!-- Barre de recherche - Pleine largeur sur mobile -->
             <div class="w-full sm:w-auto sm:flex-1">
-                <div class="relative">
-                    <input type="text"
-                           placeholder="{{ __('admin.search_database_placeholder') }}"
-                           id="searchInput"
-                           name="search"
-                           value="{{ request('search') }}"
-                           autocomplete="off"
-                           class="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:bg-white text-sm">
-                    <i class="fas fa-search absolute left-3 top-2.5 text-gray-400 text-sm"></i>
+                <div class="flex gap-2">
+                    <div class="relative min-w-0 flex-1">
+                        <input type="text"
+                               placeholder="{{ __('admin.search_database_placeholder') }}"
+                               id="searchInput"
+                               name="search"
+                               value="{{ request('search') }}"
+                               autocomplete="off"
+                               class="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:bg-white text-sm">
+                        <i class="fas fa-search absolute left-3 top-2.5 text-gray-400 text-sm"></i>
+                    </div>
+                    <button type="submit"
+                            id="searchSubmitButton"
+                            class="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-green-600 px-3 sm:px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-green-700">
+                        <i class="fas fa-search"></i>
+                        <span class="hidden sm:inline">{{ __('admin.search') }}</span>
+                    </button>
                 </div>
             </div>
 
@@ -431,7 +439,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const statusFilter = document.getElementById('statusFilter');
     const stockFilter = document.getElementById('stockFilter');
     const activeFiltersCount = document.getElementById('activeFiltersCount');
-    let searchTimer;
 
     // 1. Gestion du scroll pour l'en-tête sticky
     window.addEventListener('scroll', function() {
@@ -464,31 +471,14 @@ document.addEventListener('DOMContentLoaded', function() {
         activeFiltersCount.textContent = activeFilters;
     }
 
-    // 4. Interroger toute la base avant la pagination.
-    function submitDatabaseSearch() {
-        clearTimeout(searchTimer);
-        filterDropdown.classList.add('hidden');
-        searchForm.requestSubmit();
-    }
-
+    // 4. Ne jamais soumettre pendant la saisie.
     searchInput.addEventListener('input', function() {
         updateActiveFilters();
-        clearTimeout(searchTimer);
-        searchTimer = setTimeout(submitDatabaseSearch, 500);
     });
 
-    searchInput.addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
-            clearTimeout(searchTimer);
-        }
-    });
-
-    statusFilter.addEventListener('change', submitDatabaseSearch);
-    stockFilter.addEventListener('change', submitDatabaseSearch);
-
-    searchForm.addEventListener('submit', function() {
-        clearTimeout(searchTimer);
-    });
+    statusFilter.addEventListener('change', updateActiveFilters);
+    stockFilter.addEventListener('change', updateActiveFilters);
+    searchForm.addEventListener('submit', () => filterDropdown.classList.add('hidden'));
 
     // 5. Raccourci clavier Ctrl+F
     document.addEventListener('keydown', function(e) {

@@ -100,7 +100,7 @@ return [
     'apply' => 'Appliquer',
     'add' => 'Ajouter',
     'new' => 'Nouveau',
-    'enter_to_search_database' => 'Entrée pour rechercher dans toute la base',
+    'enter_to_search_database' => 'Cliquez sur Rechercher pour interroger toute la base',
     'search' => 'Rechercher',
     'active_feminine_plural' => 'Actives',
     'inactive_feminine_plural' => 'Inactives',
