@@ -22,6 +22,6 @@ return [
     'attribute_values' => 'قيم الخصائص',
     'delivery_title' => 'التوصيل',
     'delivery_time' => 'التوصيل خلال 24 إلى 72 ساعة',
-    'delivery_free_city' => ':city: توصيل مجاني',
+    'delivery_free_city' => 'العيون: توصيل مجاني',
     'delivery_other_cities' => 'المدن الأخرى: :price درهم',
 ];
