@@ -35,14 +35,16 @@
         </div>
     @endif
 
-    <div class="product-card-media relative overflow-hidden h-36 sm:h-48 md:h-56 lg:h-52 xl:h-48 2xl:h-56">
-        <a href="{{ route('products.show', $product->slug) }}" class="block h-full">
+    <div class="product-card-media relative aspect-square w-full overflow-hidden bg-white">
+        <a href="{{ route('products.show', $product->slug) }}" class="flex h-full w-full items-center justify-center">
             @if($productImageUrl)
                 <img src="{{ $productImageUrl }}"
                      alt="{{ $product->name }}"
                      loading="lazy"
+                     width="600"
+                     height="600"
                      data-product-card-image
-                     class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700">
+                     class="h-full w-full object-contain p-2 sm:p-3 group-hover:scale-105 transition-transform duration-700">
             @else
                 <div class="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
                     <div class="text-center">
