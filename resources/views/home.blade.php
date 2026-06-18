@@ -530,7 +530,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                     @endphp
 
                                     <a href="tel:{{ $phoneLink }}"
-                                    class="hover:text-white transition-colors">
+                                    dir="ltr"
+                                    class="inline-block hover:text-white transition-colors"
+                                    style="unicode-bidi: isolate;">
                                         {{ $phoneRaw }}
                                     </a>
 
@@ -552,8 +554,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
                                         <a href="https://wa.me/{{ $whatsapp }}"
                                         target="_blank"
-                                        class="hover:text-white transition-colors">
-                                            WhatsApp: {{ settings('whatsapp') }}
+                                        class="inline-flex items-center gap-1 hover:text-white transition-colors">
+                                            <span>WhatsApp:</span>
+                                            <span dir="ltr" class="inline-block" style="unicode-bidi: isolate;">
+                                                {{ settings('whatsapp') }}
+                                            </span>
                                         </a>
                                     </div>
                                 </div>
@@ -849,7 +854,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 ${store.phone_raw ? `
                 <div class="flex items-center gap-2">
                     <i class="fas fa-phone text-green-600"></i>
-                    <a href="tel:${store.phone_link}" class="hover:underline">
+                    <a href="tel:${store.phone_link}"
+                       dir="ltr"
+                       class="inline-block hover:underline"
+                       style="unicode-bidi: isolate;">
                         ${store.phone_raw}
                     </a>
                 </div>` : ''}
