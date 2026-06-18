@@ -41,11 +41,11 @@
     $initialVariantState = is_array($initialVariantState) ? $initialVariantState : ['attributes' => [], 'variants' => []];
 @endphp
 
-<div class="mb-8 sm:mb-10" id="variantsManager">
+<div class="product-form-section" id="variantsManager">
     <input type="hidden" name="variants_payload" id="variantsPayload" value="{{ old('variants_payload') }}">
     <script type="application/json" id="variantsInitialState">{!! json_encode($initialVariantState, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) !!}</script>
 
-    <div class="flex items-center mb-4 sm:mb-6">
+    <div class="product-form-section-heading flex items-center mb-4 sm:mb-6">
         <div class="w-1 h-6 sm:h-8 bg-amber-500 rounded-full mr-3"></div>
         <div>
             <h3 class="text-base sm:text-lg font-bold text-gray-800">{{ __('admin.variants') }}</h3>
