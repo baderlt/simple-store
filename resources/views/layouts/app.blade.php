@@ -293,7 +293,7 @@
 
             .mobile-menu-panel {
                 left: 0;
-                width: min(86vw, 22rem);
+                width: 60vw;
                 border-radius: 0 1.5rem 1.5rem 0;
                 transform: translateX(-105%);
                 transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
