@@ -293,7 +293,10 @@
 
             .mobile-menu-panel {
                 left: 0;
-                width: min(86vw, 22rem);
+                width: 60vw !important;
+                min-width: 0 !important;
+                max-width: 60vw !important;
+                flex-basis: 60vw;
                 border-radius: 0 1.5rem 1.5rem 0;
                 transform: translateX(-105%);
                 transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
@@ -669,6 +672,7 @@
 
             <aside id="mobileMenu"
                    class="mobile-menu-panel fixed inset-y-0 z-50 flex flex-col overflow-hidden bg-white shadow-2xl lg:hidden"
+                   style="width: 60vw; min-width: 0; max-width: 60vw;"
                    aria-hidden="true"
                    aria-label="{{ __('messages.menu') }}">
                 <div class="flex items-center justify-between border-b border-gray-100 px-5 py-4">
