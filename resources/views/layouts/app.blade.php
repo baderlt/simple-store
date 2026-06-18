@@ -290,6 +290,29 @@
             .mobile-search-visible {
                 display: block !important;
             }
+
+            .mobile-menu-panel {
+                left: 0;
+                width: min(86vw, 22rem);
+                border-radius: 0 1.5rem 1.5rem 0;
+                transform: translateX(-105%);
+                transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+            }
+
+            .mobile-menu-panel.is-open {
+                transform: translateX(0);
+            }
+
+            .mobile-menu-backdrop {
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 250ms ease, visibility 250ms ease;
+            }
+
+            .mobile-menu-backdrop.is-open {
+                opacity: 1;
+                visibility: visible;
+            }
         }
 
         @media (max-width: 374px) {
@@ -575,7 +598,12 @@
                     @endauth
                     
                     {{-- Mobile Menu Button --}}
-                    <button id="mobileMenuButton" class="lg:hidden text-gray-700">
+                    <button id="mobileMenuButton"
+                            type="button"
+                            aria-controls="mobileMenu"
+                            aria-expanded="false"
+                            aria-label="{{ __('messages.menu') }}"
+                            class="lg:hidden text-gray-700">
                         <i class="fas fa-bars text-2xl"></i>
                     </button>
                 </div>
@@ -635,8 +663,40 @@
             </nav>
 
             {{-- Mobile Menu --}}
-            <div id="mobileMenu" class="lg:hidden hidden bg-white border-t mt-2 py-4">
-                <div class="flex flex-col space-y-4">
+            <div id="mobileMenuBackdrop"
+                 class="mobile-menu-backdrop fixed inset-0 z-40 bg-gray-950/45 backdrop-blur-[2px] lg:hidden"
+                 aria-hidden="true"></div>
+
+            <aside id="mobileMenu"
+                   class="mobile-menu-panel fixed inset-y-0 z-50 flex flex-col overflow-hidden bg-white shadow-2xl lg:hidden"
+                   aria-hidden="true"
+                   aria-label="{{ __('messages.menu') }}">
+                <div class="flex items-center justify-between border-b border-gray-100 px-5 py-4">
+                    <div class="flex min-w-0 items-center gap-3">
+                        @if($logoPath && file_exists(public_path('storage/'.$logoPath)))
+                            <img src="{{ asset('storage/'.$logoPath) }}"
+                                 alt="{{ $storeName }}"
+                                 class="h-10 w-10 rounded-xl object-contain">
+                        @else
+                            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-green-50 text-green-600">
+                                <i class="fas fa-store"></i>
+                            </div>
+                        @endif
+                        <div class="min-w-0">
+                            <p class="truncate font-bold text-gray-900">{{ $storeName }}</p>
+                            <p class="text-xs text-gray-500">{{ __('messages.menu') }}</p>
+                        </div>
+                    </div>
+                    <button id="mobileMenuClose"
+                            type="button"
+                            aria-label="{{ __('messages.close') }}"
+                            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-600 transition hover:bg-gray-200 hover:text-gray-900">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <div class="flex-1 overflow-y-auto px-4 py-5">
+                    <div class="flex flex-col space-y-3">
                     <a href="{{ route('home') }}" class="flex items-center text-gray-700 hover:text-green-600 p-2 rounded-lg hover:bg-gray-50">
                         <i class="fas fa-home mr-3"></i>{{ __('messages.home') }}
                     </a>
@@ -702,8 +762,9 @@
                             </a>
                         </div>
                     @endauth
+                    </div>
                 </div>
-            </div>
+            </aside>
         </div>
     </header>
 
@@ -1519,15 +1580,52 @@
             }
         }
         
-        // Mobile Menu Toggle
-        document.getElementById('mobileMenuButton').addEventListener('click', function() {
-            const mobileMenu = document.getElementById('mobileMenu');
-            mobileMenu.classList.toggle('hidden');
-            this.querySelector('i').classList.toggle('fa-bars');
-            this.querySelector('i').classList.toggle('fa-times');
-            
-            // Hide search suggestions when menu opens
-            mobileSearchSuggestions.classList.add('hidden');
+        // Mobile Menu Drawer
+        const mobileMenuButton = document.getElementById('mobileMenuButton');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const mobileMenuClose = document.getElementById('mobileMenuClose');
+        const mobileMenuBackdrop = document.getElementById('mobileMenuBackdrop');
+        const mobileMenuIcon = mobileMenuButton?.querySelector('i');
+
+        function setMobileMenu(open) {
+            mobileMenu.classList.toggle('is-open', open);
+            mobileMenuBackdrop.classList.toggle('is-open', open);
+            mobileMenu.setAttribute('aria-hidden', String(!open));
+            mobileMenuBackdrop.setAttribute('aria-hidden', String(!open));
+            mobileMenuButton.setAttribute('aria-expanded', String(open));
+            mobileMenuIcon.classList.toggle('fa-bars', !open);
+            mobileMenuIcon.classList.toggle('fa-times', open);
+            document.body.classList.toggle('overflow-hidden', open);
+
+            if (open) {
+                mobileSearchSuggestions?.classList.add('hidden');
+                window.setTimeout(() => mobileMenuClose.focus(), 200);
+            } else {
+                mobileMenuButton.focus();
+            }
+        }
+
+        mobileMenuButton?.addEventListener('click', () => {
+            setMobileMenu(!mobileMenu.classList.contains('is-open'));
+        });
+
+        mobileMenuClose?.addEventListener('click', () => setMobileMenu(false));
+        mobileMenuBackdrop?.addEventListener('click', () => setMobileMenu(false));
+
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => setMobileMenu(false));
+        });
+
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && mobileMenu.classList.contains('is-open')) {
+                setMobileMenu(false);
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 1024 && mobileMenu.classList.contains('is-open')) {
+                setMobileMenu(false);
+            }
         });
 
         // Back to Top Button

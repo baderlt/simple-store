@@ -2,6 +2,8 @@
 
 return [
     'home' => 'Home',
+    'menu' => 'Menu',
+    'close' => 'Close',
     'products' => 'Products',
     'categories' => 'Categories',
     'categories_edit_title' => 'Edit Category - Admin',
