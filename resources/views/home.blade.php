@@ -504,7 +504,7 @@ document.addEventListener('DOMContentLoaded', function() {
         @endphp
 
         <div class="flex justify-between">
-            <span>{{ $days }}:</span>
+            <span>{{ $days }}:&nbsp;</span>
             <span class="font-semibold">{{ $hours }}</span>
         </div>
     @endforeach
