@@ -62,25 +62,52 @@
                         </select>
                     </div>
 
-                    <!-- Stats Card -->
-                    <div class="hidden lg:flex bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl shadow-lg p-6 text-white">
-                        <h3 class="font-bold text-lg mb-4">Info Boutique</h3>
-                        <div class="space-y-3">
-                            <div class="flex items-center justify-between">
-                                <span>Produits disponibles</span>
-                                <span class="font-bold">{{ $products->total() }}</span>
+                    <!-- Store Info Card - desktop only -->
+                    <div class="hidden overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm lg:block">
+                        <div class="relative overflow-hidden bg-gradient-to-br from-gray-950 via-gray-900 to-amber-950 px-5 py-5 text-white">
+                            <div class="absolute -right-8 -top-10 h-28 w-28 rounded-full bg-amber-400/15 blur-2xl"></div>
+                            <div class="relative flex items-center gap-3">
+                                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-400 text-gray-950 shadow-lg shadow-amber-950/20">
+                                    <i class="fas fa-store"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-bold">{{ __('Info Boutique') }}</h3>
+                                    <p class="mt-0.5 text-xs text-gray-300">{{ __('Gérez votre catalogue') }}</p>
+                                </div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <span>Catégories</span>
-                                <span class="font-bold">{{ $categories->count() }}</span>
+                        </div>
+
+                        <div class="space-y-4 p-4">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="rounded-xl border border-gray-100 bg-gray-50 p-3">
+                                    <div class="mb-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white text-gray-700 shadow-sm">
+                                        <i class="fas fa-box-open text-sm"></i>
+                                    </div>
+                                    <p class="text-2xl font-black text-gray-900">{{ $products->total() }}</p>
+                                    <p class="mt-0.5 text-xs font-medium text-gray-500">{{ __('Produits disponibles') }}</p>
+                                </div>
+
+                                <div class="rounded-xl border border-amber-100 bg-amber-50/70 p-3">
+                                    <div class="mb-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white text-amber-600 shadow-sm">
+                                        <i class="fas fa-tags text-sm"></i>
+                                    </div>
+                                    <p class="text-2xl font-black text-gray-900">{{ $categories->count() }}</p>
+                                    <p class="mt-0.5 text-xs font-medium text-gray-500">{{ __('Catégories') }}</p>
+                                </div>
                             </div>
-              
-                            @if (settings('free_delivery_threshold'))
-                            <div class="pt-3 border-t border-emerald-400">
-                                
-                                <p class="text-sm opacity-90">Livraison gratuite à partir de {{settings('free_delivery_threshold')}} DH</p>
-                            </div>
-                                
+
+                            @if(settings('free_delivery_threshold'))
+                                <div class="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-amber-950">
+                                    <div class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-400 text-gray-950">
+                                        <i class="fas fa-truck-fast text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs font-bold uppercase tracking-wide text-amber-700">{{ __('Livraison offerte') }}</p>
+                                        <p class="mt-0.5 text-sm font-semibold">
+                                            {{ __('À partir de') }} {{ format_price((float) settings('free_delivery_threshold')) }} DH
+                                        </p>
+                                    </div>
+                                </div>
                             @endif
                         </div>
                     </div>
