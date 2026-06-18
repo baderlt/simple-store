@@ -100,7 +100,7 @@ return [
     'apply' => 'تطبيق',
     'add' => 'إضافة',
     'new' => 'جديد',
-    'enter_to_search_database' => 'اضغط Enter للبحث في قاعدة البيانات كاملة',
+    'enter_to_search_database' => 'اضغط على بحث للبحث في قاعدة البيانات كاملة',
     'search' => 'بحث',
     'active_feminine_plural' => 'نشطة',
     'inactive_feminine_plural' => 'غير نشطة',
