@@ -22,6 +22,6 @@ return [
     'attribute_values' => 'Valeurs d’attribut',
     'delivery_title' => 'Livraison',
     'delivery_time' => 'Livraison sous 24 à 72 heures',
-    'delivery_free_city' => ':city : livraison gratuite',
+    'delivery_free_city' => 'LAAYOUNE : livraison gratuite',
     'delivery_other_cities' => 'Autres villes : :price DH',
 ];
