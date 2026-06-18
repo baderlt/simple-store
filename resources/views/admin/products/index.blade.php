@@ -15,7 +15,7 @@
                 <p class="text-sm text-gray-600 truncate hidden sm:block">Gérez votre catalogue</p>
             </div>
 
-            <form method="GET" action="{{ route('admin.products.index') }}" class="w-full sm:w-auto sm:flex-1 flex flex-col sm:flex-row gap-2">
+            <form id="adminProductSearchForm" method="GET" action="{{ route('admin.products.index') }}" class="w-full sm:w-auto sm:flex-1 flex flex-col sm:flex-row gap-2">
             @if(request('category_id'))
                 <input type="hidden" name="category_id" value="{{ request('category_id') }}">
             @endif
@@ -27,6 +27,7 @@
                            id="searchInput"
                            name="search"
                            value="{{ request('search') }}"
+                           autocomplete="off"
                            class="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:bg-white text-sm">
                     <i class="fas fa-search absolute left-3 top-2.5 text-gray-400 text-sm"></i>
                 </div>
@@ -423,20 +424,14 @@ function confirmDelete(productName) {
 document.addEventListener('DOMContentLoaded', function() {
     // Éléments DOM
     const stickyHeader = document.getElementById('stickyHeader');
+    const searchForm = document.getElementById('adminProductSearchForm');
     const searchInput = document.getElementById('searchInput');
     const filterToggle = document.getElementById('filterToggle');
     const filterDropdown = document.getElementById('filterDropdown');
     const statusFilter = document.getElementById('statusFilter');
     const stockFilter = document.getElementById('stockFilter');
-    const resetFilters = document.getElementById('resetFilters');
-    const applyFilters = document.getElementById('applyFilters');
-    const productRows = document.querySelectorAll('tbody tr.product-row');
-    const mobileCards = document.querySelectorAll('.mobile-product-card');
-    const productCount = document.getElementById('productCount');
     const activeFiltersCount = document.getElementById('activeFiltersCount');
-
-    // Variables
-    let activeFilters = 0;
+    let searchTimer;
 
     // 1. Gestion du scroll pour l'en-tête sticky
     window.addEventListener('scroll', function() {
@@ -462,119 +457,40 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 3. Calculer les filtres actifs
     function updateActiveFilters() {
-        activeFilters = 0;
+        let activeFilters = 0;
         if (searchInput.value.trim() !== '') activeFilters++;
         if (statusFilter.value !== '') activeFilters++;
         if (stockFilter.value !== '') activeFilters++;
         activeFiltersCount.textContent = activeFilters;
     }
 
-    // 4. Filtrer les produits
-    function filterProducts() {
-        const searchTerm = searchInput.value.toLowerCase();
-        const statusValue = statusFilter.value;
-        const stockValue = stockFilter.value;
-
-        let visibleCount = 0;
-
-        // Filtrer les lignes desktop
-        productRows.forEach(row => {
-            const productName = row.querySelector('.product-name')?.textContent.toLowerCase() || '';
-            const skuElement = row.querySelector('.product-sku');
-            const sku = skuElement ? skuElement.textContent.toLowerCase() : '';
-
-            // Récupérer les données du produit
-            const productStatus = row.getAttribute('data-status');
-            const stock = parseInt(row.getAttribute('data-stock')) || 0;
-
-            // Vérifier la recherche
-            const matchesSearch = searchTerm === '' ||
-                productName.includes(searchTerm) ||
-                sku.includes(searchTerm);
-
-            // Vérifier le statut
-            const matchesStatus = statusValue === '' ||
-                (statusValue === 'active' && productStatus === 'active') ||
-                (statusValue === 'inactive' && productStatus === 'inactive');
-
-            // Vérifier le stock
-            let matchesStock = true;
-            if (stockValue === 'low' && !(stock > 0 && stock <= 10)) matchesStock = false;
-            if (stockValue === 'out' && stock !== 0) matchesStock = false;
-            if (stockValue === 'sufficient' && !(stock > 10)) matchesStock = false;
-
-            // Afficher/masquer
-            if (matchesSearch && matchesStatus && matchesStock) {
-                row.style.display = '';
-                visibleCount++;
-            } else {
-                row.style.display = 'none';
-            }
-        });
-
-        // Filtrer les cartes mobile
-        mobileCards.forEach(card => {
-            const productName = card.querySelector('.product-name')?.textContent.toLowerCase() || '';
-            const skuElement = card.querySelector('.product-sku');
-            const sku = skuElement ? skuElement.textContent.toLowerCase() : '';
-
-            // Récupérer les données du produit
-            const productStatus = card.getAttribute('data-status');
-            const stock = parseInt(card.getAttribute('data-stock')) || 0;
-
-            // Vérifier la recherche
-            const matchesSearch = searchTerm === '' ||
-                productName.includes(searchTerm) ||
-                sku.includes(searchTerm);
-
-            // Vérifier le statut
-            const matchesStatus = statusValue === '' ||
-                (statusValue === 'active' && productStatus === 'active') ||
-                (statusValue === 'inactive' && productStatus === 'inactive');
-
-            // Vérifier le stock
-            let matchesStock = true;
-            if (stockValue === 'low' && !(stock > 0 && stock <= 10)) matchesStock = false;
-            if (stockValue === 'out' && stock !== 0) matchesStock = false;
-            if (stockValue === 'sufficient' && !(stock > 10)) matchesStock = false;
-
-            // Afficher/masquer
-            if (matchesSearch && matchesStatus && matchesStock) {
-                card.style.display = '';
-                visibleCount++;
-            } else {
-                card.style.display = 'none';
-            }
-        });
-
-        // Mettre à jour les compteurs
-        productCount.textContent = visibleCount;
-        updateActiveFilters();
+    // 4. Interroger toute la base avant la pagination.
+    function submitDatabaseSearch() {
+        clearTimeout(searchTimer);
+        filterDropdown.classList.add('hidden');
+        searchForm.requestSubmit();
     }
 
-    // 5. Appliquer les filtres
-    applyFilters.addEventListener('click', function() {
-        filterProducts();
-        filterDropdown.classList.add('hidden');
+    searchInput.addEventListener('input', function() {
+        updateActiveFilters();
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(submitDatabaseSearch, 500);
     });
 
-    // 6. Réinitialiser les filtres
-    resetFilters.addEventListener('click', function() {
-        searchInput.value = '';
-        statusFilter.value = '';
-        stockFilter.value = '';
-        filterProducts();
-        filterDropdown.classList.add('hidden');
+    searchInput.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            clearTimeout(searchTimer);
+        }
     });
 
-    // 7. Événements pour la recherche et filtres
-    searchInput.addEventListener('input', filterProducts);
+    statusFilter.addEventListener('change', submitDatabaseSearch);
+    stockFilter.addEventListener('change', submitDatabaseSearch);
 
-    // Les filtres s'appliquent automatiquement quand on change
-    statusFilter.addEventListener('change', filterProducts);
-    stockFilter.addEventListener('change', filterProducts);
+    searchForm.addEventListener('submit', function() {
+        clearTimeout(searchTimer);
+    });
 
-    // 8. Raccourci clavier Ctrl+F
+    // 5. Raccourci clavier Ctrl+F
     document.addEventListener('keydown', function(e) {
         if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
             e.preventDefault();
@@ -588,8 +504,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // 9. Initialiser
+    // 6. Initialiser
     updateActiveFilters();
+
+    if (searchInput.value !== '') {
+        searchInput.focus();
+        searchInput.setSelectionRange(searchInput.value.length, searchInput.value.length);
+    }
 });
 </script>
 
