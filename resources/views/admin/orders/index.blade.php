@@ -4,48 +4,86 @@
 @section('header', __('orders_management'))
 
 @section('content')
-    <div class="mb-5 bg-white rounded-2xl border border-gray-200 shadow-sm p-3">
-        <form method="GET" action="{{ route('admin.orders.index') }}" class="space-y-3">
-            <div class="flex flex-col lg:flex-row gap-2">
-                <div class="relative flex-1">
-                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('admin.order_search_placeholder') }}" aria-label="{{ __('admin.global_search') }}" class="w-full pl-9 pr-3 py-2.5 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
-                </div>
+ <div class="mb-5 bg-white rounded-2xl border border-gray-200 shadow-sm p-3">
+    <form method="GET" action="{{ route('admin.orders.index') }}" class="space-y-3">
 
-                <select name="status" aria-label="{{ __('admin.status') }}" class="w-full lg:w-48 px-3 py-2.5 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
-                    <option value="">{{ __('admin.all_statuses') }}</option>
-                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>{{ __('status_pending') }}</option>
-                    <option value="preparing" {{ request('status') == 'preparing' ? 'selected' : '' }}>{{ __('status_preparing') }}</option>
-                    <option value="out_for_delivery" {{ request('status') == 'out_for_delivery' ? 'selected' : '' }}>{{ __('status_out_for_delivery') }}</option>
-                    <option value="delivered" {{ request('status') == 'delivered' ? 'selected' : '' }}>{{ __('status_delivered') }}</option>
-                    <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>{{ __('status_cancelled') }}</option>
-                </select>
-
-                <input type="date" name="date_from" value="{{ request('date_from') }}" aria-label="{{ __('admin.date_from') }}" class="w-full lg:w-40 px-3 py-2.5 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
-                <input type="date" name="date_to" value="{{ request('date_to') }}" aria-label="{{ __('admin.date_to') }}" class="w-full lg:w-40 px-3 py-2.5 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
-
-                <button type="submit" class="inline-flex items-center justify-center px-4 py-2.5 bg-green-600 text-white rounded-xl hover:bg-green-700 text-sm font-medium">
-                    <i class="fas fa-filter mr-2"></i>{{ __('admin.filter') }}
-                </button>
-                <a href="{{ route('admin.orders.index') }}" class="inline-flex items-center justify-center px-3 py-2.5 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 text-sm" title="{{ __('admin.reset') }}" aria-label="{{ __('admin.reset') }}">
-                    <i class="fas fa-redo"></i>
-                </a>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-2 items-center">
+            <div class="relative lg:col-span-4">
+                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                <input type="text"
+                       name="search"
+                       value="{{ request('search') }}"
+                       placeholder="{{ __('admin.order_search_placeholder') }}"
+                       aria-label="{{ __('admin.global_search') }}"
+                       class="w-full pl-9 pr-3 py-2.5 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
             </div>
 
-            <details class="group">
-                <summary class="cursor-pointer select-none text-xs font-medium text-gray-500 hover:text-gray-700 inline-flex items-center gap-1">
-                    <i class="fas fa-sliders-h"></i>
-                    {{ __('admin.advanced_filters') }}
-                </summary>
-                <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-md">
-                    <input type="number" step="0.01" name="min_total" value="{{ request('min_total') }}" placeholder="{{ __('admin.min_total') }}" aria-label="{{ __('admin.min_total') }}" class="w-full px-3 py-2 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
-                    <input type="number" step="0.01" name="max_total" value="{{ request('max_total') }}" placeholder="{{ __('admin.max_total') }}" aria-label="{{ __('admin.max_total') }}" class="w-full px-3 py-2 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
-                </div>
-            </details>
+            <select name="status"
+                    aria-label="{{ __('admin.status') }}"
+                    class="w-full lg:col-span-2 px-3 py-2.5 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
+                <option value="">{{ __('admin.all_statuses') }}</option>
+                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>{{ __('status_pending') }}</option>
+                <option value="preparing" {{ request('status') == 'preparing' ? 'selected' : '' }}>{{ __('status_preparing') }}</option>
+                <option value="out_for_delivery" {{ request('status') == 'out_for_delivery' ? 'selected' : '' }}>{{ __('status_out_for_delivery') }}</option>
+                <option value="delivered" {{ request('status') == 'delivered' ? 'selected' : '' }}>{{ __('status_delivered') }}</option>
+                <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>{{ __('status_cancelled') }}</option>
+            </select>
 
-            <p class="text-xs text-gray-500">{{ trans_choice('admin.orders_found_database', $orders->total(), ['count' => $orders->total()]) }}</p>
-        </form>
-    </div>
+            <input type="date"
+                   name="date_from"
+                   value="{{ request('date_from') }}"
+                   aria-label="{{ __('admin.date_from') }}"
+                   class="w-full lg:col-span-2 px-3 py-2.5 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
+
+            <input type="date"
+                   name="date_to"
+                   value="{{ request('date_to') }}"
+                   aria-label="{{ __('admin.date_to') }}"
+                   class="w-full lg:col-span-2 px-3 py-2.5 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
+
+            <button type="submit"
+                    class="w-full lg:col-span-1 inline-flex items-center justify-center px-4 py-2.5 bg-green-600 text-white rounded-xl hover:bg-green-700 text-sm font-medium">
+                <i class="fas fa-filter mr-2"></i>{{ __('admin.filter') }}
+            </button>
+
+            <a href="{{ route('admin.orders.index') }}"
+               class="w-full lg:col-span-1 inline-flex items-center justify-center px-3 py-2.5 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 text-sm"
+               title="{{ __('admin.reset') }}"
+               aria-label="{{ __('admin.reset') }}">
+                <i class="fas fa-redo"></i>
+            </a>
+        </div>
+
+        <details class="group">
+            <summary class="cursor-pointer select-none text-xs font-medium text-gray-500 hover:text-gray-700 inline-flex items-center gap-1">
+                <i class="fas fa-sliders-h"></i>
+                {{ __('admin.advanced_filters') }}
+            </summary>
+
+            <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-md">
+                <input type="number"
+                       step="0.01"
+                       name="min_total"
+                       value="{{ request('min_total') }}"
+                       placeholder="{{ __('admin.min_total') }}"
+                       aria-label="{{ __('admin.min_total') }}"
+                       class="w-full px-3 py-2 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
+
+                <input type="number"
+                       step="0.01"
+                       name="max_total"
+                       value="{{ request('max_total') }}"
+                       placeholder="{{ __('admin.max_total') }}"
+                       aria-label="{{ __('admin.max_total') }}"
+                       class="w-full px-3 py-2 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
+            </div>
+        </details>
+
+        <p class="text-xs text-gray-500">
+            {{ trans_choice('admin.orders_found_database', $orders->total(), ['count' => $orders->total()]) }}
+        </p>
+    </form>
+</div>
 
     <!-- Desktop Table (hidden on mobile) -->
     <div class="bg-white rounded-lg shadow overflow-hidden hidden md:block">
