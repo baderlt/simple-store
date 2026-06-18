@@ -293,10 +293,10 @@
 
             .mobile-menu-panel {
                 left: 0;
-                width: 60vw !important;
+                width: 70vw !important;
                 min-width: 0 !important;
-                max-width: 60vw !important;
-                flex-basis: 60vw;
+                max-width: 70vw !important;
+                flex-basis: 70vw;
                 border-radius: 0 1.5rem 1.5rem 0;
                 transform: translateX(-105%);
                 transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
@@ -525,10 +525,6 @@
 
                     {{-- Language Switcher (desktop/tablet) --}}
                     <div class="hidden sm:flex items-center rounded-full border border-gray-200 bg-gray-50 p-1 text-xs font-semibold">
-                        <a href="{{ route('lang.switch', 'en') }}"
-                           class="px-2.5 py-1 rounded-full transition-colors {{ app()->getLocale() === 'en' ? 'bg-green-600 text-white shadow-sm' : 'text-gray-600 hover:text-green-600' }}">
-                            EN
-                        </a>
                         <a href="{{ route('lang.switch', 'fr') }}"
                            class="px-2.5 py-1 rounded-full transition-colors {{ app()->getLocale() === 'fr' ? 'bg-green-600 text-white shadow-sm' : 'text-gray-600 hover:text-green-600' }}">
                             FR
@@ -672,7 +668,7 @@
 
             <aside id="mobileMenu"
                    class="mobile-menu-panel fixed inset-y-0 z-50 flex flex-col overflow-hidden bg-white shadow-2xl lg:hidden"
-                   style="width: 60vw; min-width: 0; max-width: 60vw;"
+                   style="width: 70vw; min-width: 0; max-width: 70vw;"
                    aria-hidden="true"
                    aria-label="{{ __('messages.menu') }}">
                 <div class="flex items-center justify-between border-b border-gray-100 px-5 py-4">
@@ -724,10 +720,6 @@
                                 <i class="fas fa-globe mr-2 text-green-600"></i>{{ __('messages.language') }}
                             </span>
                             <div class="flex rounded-full border border-gray-200 bg-white p-1 text-xs font-semibold">
-                                <a href="{{ route('lang.switch', 'en') }}"
-                                   class="px-3 py-1 rounded-full transition-colors {{ app()->getLocale() === 'en' ? 'bg-green-600 text-white shadow-sm' : 'text-gray-600 hover:text-green-600' }}">
-                                    EN
-                                </a>
                                 <a href="{{ route('lang.switch', 'fr') }}"
                                    class="px-3 py-1 rounded-full transition-colors {{ app()->getLocale() === 'fr' ? 'bg-green-600 text-white shadow-sm' : 'text-gray-600 hover:text-green-600' }}">
                                     FR
@@ -757,11 +749,11 @@
                             </button>
                         </form>
                     @else
-                        <div class="flex space-x-4 pt-2 border-t">
-                            <a href="{{ route('login') }}" class="flex-1 text-center px-4 py-2 text-green-600 hover:text-green-700 font-medium border border-green-600 rounded-lg">
+                        <div class="flex flex-col gap-3 border-t pt-3">
+                            <a href="{{ route('login') }}" class="w-full text-center px-4 py-2.5 text-green-600 hover:text-green-700 font-medium border border-green-600 rounded-lg">
                                 {{ __('messages.login') }}
                             </a>
-                            <a href="{{ route('register') }}" class="flex-1 text-center gradient-bg text-white px-4 py-2 rounded-lg hover:shadow-lg transition-shadow font-medium">
+                            <a href="{{ route('register') }}" class="w-full text-center gradient-bg text-white px-4 py-2.5 rounded-lg hover:shadow-lg transition-shadow font-medium">
                                 {{ __('messages.register') }}
                             </a>
                         </div>
