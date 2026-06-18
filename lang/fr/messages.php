@@ -2,6 +2,8 @@
 
 return [
     'home' => 'Accueil',
+    'menu' => 'Menu',
+    'close' => 'Fermer',
     'featured_title' => 'Sélection de la boutique',
     'featured_products' => 'Produits Recommandés',
     'featured_description' => 'Découvrez notre sélection exclusive de produits de qualité',
