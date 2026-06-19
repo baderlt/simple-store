@@ -71,7 +71,7 @@
                                 @foreach($orderItems as $item)
                                     <tr>
                                         <td valign="top" style="padding:14px 8px 14px 0; border-bottom:1px solid #e7e5e4;">
-                                            <div style="font-size:15px; line-height:22px; font-weight:bold; color:#292524;">{{ $item->display_name }}</div>
+                                            <div dir="auto" style="unicode-bidi:plaintext; text-align:start; font-size:15px; line-height:22px; font-weight:bold; color:#292524;">{{ $item->display_name }}</div>
                                             <div style="font-size:13px; line-height:20px; color:#78716c;">Quantité : {{ $item->quantity }} × {{ $formatMoney($item->final_unit_price) }}</div>
                                         </td>
                                         <td width="115" align="right" valign="top" style="padding:14px 0 14px 8px; border-bottom:1px solid #e7e5e4; font-size:15px; line-height:22px; font-weight:bold; color:#292524; white-space:nowrap;">

@@ -40,9 +40,11 @@
                         </div>
 
                         <div class="flex-1 min-w-0">
-                            <h3 class="font-semibold text-gray-900">{{ $item['display_name'] ?? $item['name'] }}</h3>
+                            <h3 class="bidi-auto font-semibold text-gray-900"
+                                dir="auto">{{ $item['display_name'] ?? $item['name'] }}</h3>
                             @if(!empty($item['selected_attributes']))
-                                <p class="text-xs text-gray-500 mt-1">{{ implode(' / ', $item['selected_attributes']) }}</p>
+                                <p class="bidi-auto text-xs text-gray-500 mt-1"
+                                   dir="auto">{{ implode(' / ', $item['selected_attributes']) }}</p>
                             @endif
 
                             @if(isset($item['has_discount']) && $item['has_discount'])
@@ -88,7 +90,8 @@
                                         @endif
                                         <div>
                                             <p class="text-xs font-bold uppercase tracking-wide text-emerald-600">{{ __('cart.choose_variant') }}</p>
-                                            <h2 class="mt-1 text-xl font-black text-gray-900">{{ $item['name'] }}</h2>
+                                            <h2 class="bidi-auto mt-1 text-xl font-black text-gray-900"
+                                                dir="auto">{{ $item['name'] }}</h2>
                                             <p class="mt-2 text-sm text-gray-500">{{ __('cart.choose_variant_help') }}</p>
                                         </div>
                                     </div>
@@ -108,7 +111,8 @@
                                                     <img src="{{ $variant['image'] }}" alt="{{ $variant['label'] }}" loading="lazy" class="h-14 w-14 rounded-xl object-cover">
                                                 @endif
                                                 <span class="min-w-0 flex-1">
-                                                    <span class="block truncate font-bold text-gray-900">{{ $variant['label'] }}</span>
+                                                    <span class="bidi-auto block truncate font-bold text-gray-900"
+                                                          dir="auto">{{ $variant['label'] }}</span>
                                                     <span class="text-xs text-gray-500">{{ __('cart.stock_available', ['stock' => $variant['stock_quantity']]) }}</span>
                                                 </span>
                                                 <span class="text-right font-black text-emerald-600">{{ number_format($variant['final_price'], 2) }} DH</span>

@@ -138,7 +138,8 @@
                                 {{-- Product Name --}}
                                 <h3 class="font-semibold text-lg mb-2 min-h-[56px]">
                                     <a href="{{ route('products.show', $product->slug) }}" 
-                                       class="text-gray-800 hover:text-red-600 transition-colors duration-300 line-clamp-2">
+                                       class="bidi-auto bidi-auto-block text-gray-800 hover:text-red-600 transition-colors duration-300 line-clamp-2"
+                                       dir="auto">
                                         {{ $product->name }}
                                     </a>
                                 </h3>
@@ -291,7 +292,8 @@
                                 {{-- Product Name --}}
                                 <h3 class="font-semibold text-lg mb-2">
                                     <a href="{{ route('products.show', $product->slug) }}" 
-                                       class="text-gray-800 hover:text-red-600 transition-colors duration-300 line-clamp-2">
+                                       class="bidi-auto bidi-auto-block text-gray-800 hover:text-red-600 transition-colors duration-300 line-clamp-2"
+                                       dir="auto">
                                         {{ $product->name }}
                                     </a>
                                 </h3>
