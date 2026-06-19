@@ -112,11 +112,11 @@
 
     @media (max-width: 639px) {
         .product-form-nav {
-            top: 4rem;
+            top: 0;
         }
 
         .product-form-section {
-            scroll-margin-top: 9rem;
+            scroll-margin-top: 5rem;
         }
 
         .product-form-card {
