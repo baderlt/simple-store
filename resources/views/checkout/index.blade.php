@@ -3,6 +3,9 @@
 @section('title', __('checkout.page_title'))
 
 @section('content')
+@php
+    $checkoutCurrency = __('checkout.currency');
+@endphp
 <div class="min-h-screen bg-gradient-to-br from-gray-50 to-white py-8 sm:py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Page Header -->
@@ -263,11 +266,11 @@
                                     <div class="flex items-center justify-between mt-2">
                                         <div class="flex items-baseline space-x-2">
                                             <span class="font-bold text-gray-900 text-sm">
-                                                {{ format_price($item['final_price'] * $item['quantity']) }} DH
+                                                {{ format_price($item['final_price'] * $item['quantity']) }} {{ $checkoutCurrency }}
                                             </span>
                                             @if($item['has_discount'] && $item['final_price'] < $item['price'])
                                                 <span class="text-xs text-gray-400 line-through">
-                                                    {{ format_price($item['price'] * $item['quantity']) }} DH
+                                                    {{ format_price($item['price'] * $item['quantity']) }} {{ $checkoutCurrency }}
                                                 </span>
                                             @endif
                                         </div>
@@ -296,20 +299,27 @@
                         <div class="space-y-3">
                             <div class="flex justify-between text-sm">
                                 <span class="text-gray-600">{{ __('checkout.subtotal') }}</span>
-                                <span class="font-medium text-gray-900">{{ format_price($subtotal) }} DH</span>
+                                <span class="font-medium text-gray-900">{{ format_price($subtotal) }} {{ $checkoutCurrency }}</span>
                             </div>
                             <div class="flex justify-between text-sm">
                                 <span class="text-gray-600">{{ __('checkout.delivery_fee') }}</span>
                                 <span id="deliveryFeeValue"
                                       class="font-medium {{ $threshold && $subtotal > $threshold ? 'text-emerald-600' : 'text-gray-900' }}">
-                                    {{ $threshold && $subtotal > $threshold ? __('checkout.free') : format_price($deliveryFee).' DH' }}
+                                    {{ $threshold && $subtotal > $threshold ? __('checkout.free') : format_price($deliveryFee).' '.$checkoutCurrency }}
                                 </span>
                             </div>
 
                             @if($threshold && $subtotal > 0 && $subtotal <= $threshold)
-                                <div id="freeDeliveryThresholdNotice" class="bg-amber-50 rounded-lg p-3 text-xs text-amber-700">
-                                    <i class="fas fa-truck mr-1"></i> 
-                                    {{ __('checkout.free_delivery_remaining', ['amount' => format_price($threshold - $subtotal)]) }}
+                                <div id="freeDeliveryThresholdNotice"
+                                     class="rounded-xl border border-amber-300 bg-gradient-to-r from-amber-50 to-orange-50 p-4 text-amber-950 shadow-sm">
+                                    <div class="flex items-center gap-3">
+                                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-400 text-amber-950 shadow-sm">
+                                            <i class="fas fa-truck-fast"></i>
+                                        </span>
+                                        <p class="text-sm font-extrabold leading-6 sm:text-base">
+                                            {{ __('checkout.free_delivery_remaining', ['amount' => format_price($threshold - $subtotal)]) }}
+                                        </p>
+                                    </div>
                                 </div>
                             @endif
 
@@ -317,7 +327,7 @@
                                 <div class="flex justify-between items-center">
                                     <span class="text-lg font-bold text-gray-900">{{ __('checkout.total') }}</span>
                                     <span id="checkoutTotal" class="text-2xl font-bold text-emerald-600">
-                                        {{ format_price($total) }} DH
+                                        {{ format_price($total) }} {{ $checkoutCurrency }}
                                     </span>
                                 </div>
                                 <p class="text-xs text-gray-500 mt-1 text-right">{{ __('checkout.tax_included') }}</p>
@@ -342,7 +352,7 @@
     <div class="flex items-center justify-between gap-3">
         <div class="flex flex-col">
             <span class="text-xs text-gray-500">{{ __('checkout.total') }}</span>
-            <span id="mobileCheckoutTotal" class="text-xl font-bold text-emerald-600">{{ format_price($total) }} DH</span>
+            <span id="mobileCheckoutTotal" class="text-xl font-bold text-emerald-600">{{ format_price($total) }} {{ $checkoutCurrency }}</span>
         </div>
         <button type="submit" 
                 form="checkoutForm"
@@ -366,7 +376,7 @@
         configuredDeliveryFee: @json((float) $deliveryFee),
         thresholdDeliveryIsFree: @json((bool) ($threshold && $subtotal > $threshold)),
         freeLabel: @json(__('checkout.free')),
-        currency: 'DH',
+        currency: @json($checkoutCurrency),
     };
 
     function formatPrice(value) {

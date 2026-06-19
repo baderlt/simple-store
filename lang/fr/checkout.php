@@ -48,6 +48,7 @@ return [
     'delivery_fee' => 'Frais de livraison',
     'free' => 'Gratuit',
     'free_delivery_remaining' => 'Ajoutez :amount DH pour bénéficier de la livraison gratuite.',
+    'currency' => 'DH',
     'total' => 'Total',
     'tax_included' => 'TVA incluse',
     'secure_payment' => 'Paiement sécurisé',
