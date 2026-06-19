@@ -186,6 +186,42 @@
         .nav-link:hover::after {
             width: 100%;
         }
+
+        /*
+         * Stable desktop navigation structure.
+         * These rules are intentionally defined here instead of relying on
+         * generated Tailwind gap utilities, so they work immediately after
+         * deployment in both LTR and RTL layouts.
+         */
+        @media (min-width: 1024px) {
+            .desktop-nav {
+                column-gap: 1rem;
+            }
+
+            .desktop-nav-item {
+                display: inline-flex !important;
+                flex: 0 0 9.75rem;
+                width: 9.75rem;
+                min-height: 2.75rem;
+                align-items: center;
+                justify-content: center;
+                column-gap: 0.625rem;
+                padding-inline: 0.75rem;
+                white-space: nowrap;
+                text-align: center;
+            }
+
+            .desktop-nav-item > i,
+            .desktop-nav-item-icon {
+                flex: 0 0 auto;
+                margin: 0 !important;
+            }
+
+            .desktop-nav-item-label {
+                display: inline-block;
+                min-width: 0;
+            }
+        }
         
         /* Add these styles for cart drawer */
         .transform {
@@ -633,30 +669,34 @@
             </div>
 
             {{-- Desktop Navigation --}}
-            <nav class="desktop-nav -mt-1 hidden lg:flex items-center justify-center gap-x-6 xl:gap-x-8">
-                <a href="{{ route('home') }}" class="nav-link inline-flex items-center gap-2 text-gray-700 hover:text-green-600 font-medium">
-                    <i class="fas fa-home"></i>{{ __('messages.home') }}
+            <nav class="desktop-nav -mt-1 hidden lg:flex items-center justify-center">
+                <a href="{{ route('home') }}" class="desktop-nav-item nav-link text-gray-700 hover:text-green-600 font-medium">
+                    <i class="fas fa-home"></i>
+                    <span class="desktop-nav-item-label">{{ __('messages.home') }}</span>
                 </a>
-                <a href="{{ route('products.index') }}" class="nav-link inline-flex items-center gap-2 text-gray-700 hover:text-green-600 font-medium">
-                    <i class="fas fa-basket-shopping"></i>{{ __('messages.products') }}
+                <a href="{{ route('products.index') }}" class="desktop-nav-item nav-link text-gray-700 hover:text-green-600 font-medium">
+                    <i class="fas fa-basket-shopping"></i>
+                    <span class="desktop-nav-item-label">{{ __('messages.products') }}</span>
                 </a>
-                <a href="{{ route('categories.index') }}" class="nav-link inline-flex items-center gap-2 text-gray-700 hover:text-green-600 font-medium">
-                    <i class="fas fa-th-large"></i>{{ __('messages.categories') }}
+                <a href="{{ route('categories.index') }}" class="desktop-nav-item nav-link text-gray-700 hover:text-green-600 font-medium">
+                    <i class="fas fa-th-large"></i>
+                    <span class="desktop-nav-item-label">{{ __('messages.categories') }}</span>
                 </a>
                 <a href="{{ route('promotions.index') }}" 
-                   class="nav-link inline-flex items-center gap-2 text-red-600 font-bold hover:text-red-700
-                          px-3 py-2 rounded-lg bg-red-50 hover:bg-red-100 transition-all duration-200">
-                    <div class="relative">
+                   class="desktop-nav-item nav-link text-red-600 font-bold hover:text-red-700
+                          rounded-lg bg-red-50 hover:bg-red-100 transition-all duration-200">
+                    <div class="desktop-nav-item-icon relative">
                         <i class="fas fa-tags"></i>
                         <div class="absolute -inset-2 bg-red-200 rounded-full opacity-0 
                                     group-hover:opacity-30 transition-opacity duration-300"></div>
                     </div>
-                    <span>{{ __('messages.promotions') }}</span>
+                    <span class="desktop-nav-item-label">{{ __('messages.promotions') }}</span>
                     <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
                 </a>
                 @auth
-                    <a href="{{ route('orders.index') }}" class="nav-link inline-flex items-center gap-2 text-gray-700 hover:text-green-600 font-medium">
-                        <i class="fas fa-clipboard-list"></i>{{ __('messages.my_orders') }}
+                    <a href="{{ route('orders.index') }}" class="desktop-nav-item nav-link text-gray-700 hover:text-green-600 font-medium">
+                        <i class="fas fa-clipboard-list"></i>
+                        <span class="desktop-nav-item-label">{{ __('messages.my_orders') }}</span>
                     </a>
                 @endauth
             </nav>
