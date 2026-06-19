@@ -5,11 +5,12 @@
 @section('subheader', 'Créer un nouveau produit dans le catalogue')
 
 @section('content')
-<div class="max-w-6xl mx-auto px-4 sm:px-6">
+@include('admin.products.partials.form-enhancements')
+<div class="max-w-7xl mx-auto px-3 sm:px-6">
     <!-- Card Container -->
-    <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+    <div class="product-form-card">
         <!-- Card Header -->
-        <div class="bg-gradient-to-r from-green-50 to-emerald-50 border-b border-gray-200 px-4 sm:px-8 py-6">
+        <div class="product-form-header px-4 sm:px-8 py-6">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-4 sm:space-y-0">
                 <div class="flex items-center space-x-4">
                     <div class="bg-gradient-to-r from-green-500 to-emerald-600 p-3 rounded-xl shadow">
@@ -20,7 +21,7 @@
                         <p class="text-gray-600 text-sm sm:text-base">Remplissez les informations ci-dessous pour ajouter un produit</p>
                     </div>
                 </div>
-                <div class="flex items-center space-x-2 text-sm">
+                <div class="product-form-header-meta flex items-center space-x-2 text-sm">
                     <span class="text-gray-500">Tous les champs marqués d'un</span>
                     <span class="text-red-500 font-bold">*</span>
                     <span class="text-gray-500">sont obligatoires</span>
@@ -31,11 +32,12 @@
         <!-- Form Container -->
         <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data" id="productForm">
             @csrf
-            
+            @include('admin.products.partials.form-navigation')
+
             <div class="p-4 sm:p-8">
                 <!-- Informations de base -->
-                <div class="mb-8 sm:mb-10">
-                    <div class="flex items-center mb-4 sm:mb-6">
+                <div class="product-form-section" id="product-basics">
+                    <div class="product-form-section-heading flex items-center mb-4 sm:mb-6">
                         <div class="w-1 h-6 sm:h-8 bg-green-500 rounded-full mr-3"></div>
                         <h3 class="text-base sm:text-lg font-bold text-gray-800">Informations de base</h3>
                     </div>
@@ -131,8 +133,8 @@
                 </div>
 
                 <!-- Informations d'inventaire -->
-                <div class="mb-8 sm:mb-10">
-                    <div class="flex items-center mb-4 sm:mb-6">
+                <div class="product-form-section" id="product-inventory">
+                    <div class="product-form-section-heading flex items-center mb-4 sm:mb-6">
                         <div class="w-1 h-6 sm:h-8 bg-blue-500 rounded-full mr-3"></div>
                         <h3 class="text-base sm:text-lg font-bold text-gray-800">Inventaire</h3>
                     </div>
@@ -222,8 +224,8 @@
                 </div>
 
                 <!-- Description -->
-                <div class="mb-8 sm:mb-10">
-                    <div class="flex items-center mb-4 sm:mb-6">
+                <div class="product-form-section" id="product-description">
+                    <div class="product-form-section-heading flex items-center mb-4 sm:mb-6">
                         <div class="w-1 h-6 sm:h-8 bg-purple-500 rounded-full mr-3"></div>
                         <h3 class="text-base sm:text-lg font-bold text-gray-800">Description</h3>
                     </div>
@@ -259,8 +261,8 @@
                 </div>
 
                 <!-- Images -->
-                <div class="mb-8 sm:mb-10">
-                    <div class="flex items-center mb-4 sm:mb-6">
+                <div class="product-form-section" id="product-images">
+                    <div class="product-form-section-heading flex items-center mb-4 sm:mb-6">
                         <div class="w-1 h-6 sm:h-8 bg-amber-500 rounded-full mr-3"></div>
                         <h3 class="text-base sm:text-lg font-bold text-gray-800">Images</h3>
                     </div>
@@ -312,7 +314,7 @@
                                 <div class="flex-1">
                                     <p class="text-xs sm:text-sm text-gray-500 flex items-start sm:items-center">
                                         <i class="fas fa-info-circle mr-2 mt-0.5 sm:mt-0"></i>
-                                        Sélectionnez jusqu'à 4 images. Cliquez sur ★ pour définir l'image principale.
+                                        Sélectionnez jusqu'à 10 images. Cliquez sur ★ pour définir l'image principale.
                                     </p>
                                 </div>
                                 <div class="text-sm font-medium text-gray-700 whitespace-nowrap">
@@ -370,8 +372,8 @@
                 </div>
 
                 <!-- Options -->
-                <div class="mb-8 sm:mb-10">
-                    <div class="flex items-center mb-4 sm:mb-6">
+                <div class="product-form-section" id="product-options">
+                    <div class="product-form-section-heading flex items-center mb-4 sm:mb-6">
                         <div class="w-1 h-6 sm:h-8 bg-indigo-500 rounded-full mr-3"></div>
                         <h3 class="text-base sm:text-lg font-bold text-gray-800">Options</h3>
                     </div>
@@ -457,14 +459,14 @@
                 @include('admin.products.partials.variants', ['showVariantToggle' => false])
 
                 <!-- Actions -->
-                <div class="pt-6 sm:pt-8 border-t border-gray-200">
-                    <div class="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
-                        <div class="flex items-center text-gray-600 text-sm">
+                <div class="product-form-actions">
+                    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                        <div class="hidden lg:flex items-center text-gray-600 text-sm">
                             <i class="fas fa-history mr-2"></i>
                             <span>Tous les changements seront enregistrés</span>
                         </div>
                         
-                        <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
+                        <div class="flex w-full flex-col-reverse gap-3 sm:w-auto sm:flex-row">
                             <a href="{{ route('admin.products.index') }}" 
                                class="px-6 sm:px-8 py-2.5 sm:py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 flex items-center justify-center text-sm sm:text-base">
                                 <i class="fas fa-times mr-2"></i>

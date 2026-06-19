@@ -5,15 +5,16 @@
 @section('subheader', 'Mettre à jour les informations du produit')
 
 @section('content')
-<div class="max-w-6xl mx-auto">
+@include('admin.products.partials.form-enhancements')
+<div class="max-w-7xl mx-auto px-3 sm:px-6">
     <!-- Card Container -->
-    <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+    <div class="product-form-card">
         <!-- Card Header -->
-        <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border-b border-gray-200 px-8 py-6">
-            <div class="flex items-center justify-between">
+        <div class="product-form-header px-4 sm:px-8 py-6">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div class="flex items-center space-x-4">
                     <div class="relative">
-                        <div class="bg-gradient-to-r from-blue-500 to-cyan-600 p-3 rounded-xl shadow">
+                        <div class="bg-green-600 p-3 rounded-xl shadow">
                             <i class="fas fa-edit text-white text-lg"></i>
                         </div>
                         @if($product->is_featured)
@@ -27,7 +28,7 @@
                         <p class="text-gray-600">SKU: {{ $product->sku ?: 'Non défini' }}</p>
                     </div>
                 </div>
-                <div class="flex items-center space-x-3">
+                <div class="product-form-header-meta flex flex-wrap items-center gap-2 sm:space-x-3">
                     <span class="px-3 py-1 rounded-full text-sm font-medium {{ $product->is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                         <i class="fas fa-circle text-xs mr-1"></i>
                         {{ $product->is_active ? 'Actif' : 'Inactif' }}
@@ -43,11 +44,12 @@
         <form action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data" id="editProductForm">
             @csrf
             @method('PUT')
-            
-            <div class="p-8">
+            @include('admin.products.partials.form-navigation')
+
+            <div class="p-4 sm:p-8">
                 <!-- Informations de base -->
-                <div class="mb-10">
-                    <div class="flex items-center mb-6">
+                <div class="product-form-section" id="product-basics">
+                    <div class="product-form-section-heading flex items-center mb-6">
                         <div class="w-1 h-8 bg-green-500 rounded-full mr-3"></div>
                         <h3 class="text-lg font-bold text-gray-800">Informations de base</h3>
                     </div>
@@ -143,8 +145,8 @@
                 </div>
 
                 <!-- Informations d'inventaire -->
-                <div class="mb-10">
-                    <div class="flex items-center mb-6">
+                <div class="product-form-section" id="product-inventory">
+                    <div class="product-form-section-heading flex items-center mb-6">
                         <div class="w-1 h-8 bg-blue-500 rounded-full mr-3"></div>
                         <h3 class="text-lg font-bold text-gray-800">Inventaire</h3>
                     </div>
@@ -260,8 +262,8 @@
                 </div>
 
                 <!-- Description -->
-                <div class="mb-10">
-                    <div class="flex items-center mb-6">
+                <div class="product-form-section" id="product-description">
+                    <div class="product-form-section-heading flex items-center mb-6">
                         <div class="w-1 h-8 bg-purple-500 rounded-full mr-3"></div>
                         <h3 class="text-lg font-bold text-gray-800">Description</h3>
                     </div>
@@ -298,9 +300,10 @@
 
     
 
+<div class="product-form-section" id="product-images">
 @if($product->images->count() > 0)
-    <div class="mb-10">
-        <div class="flex items-center justify-between mb-6">
+    <div class="mb-6">
+        <div class="product-form-section-heading flex items-center justify-between mb-6">
             <div class="flex items-center">
                 <div class="w-1 h-8 bg-amber-500 rounded-full mr-3"></div>
                 <h3 class="text-lg font-bold text-gray-800">Images existantes</h3>
@@ -310,8 +313,8 @@
             </span>
         </div>
         
-        <div class="bg-gray-50 rounded-2xl p-6 border border-gray-200">
-            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+        <div class="bg-gray-50 rounded-2xl p-3 sm:p-6 border border-gray-200">
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-6">
                 @foreach($product->images as $image)
                     <div class="relative group">
                         <div class="aspect-square rounded-xl overflow-hidden border-2 {{ $image->is_primary ? 'border-green-500' : 'border-gray-200' }} bg-gray-100">
@@ -327,7 +330,7 @@
                             @endif
                             
                             <!-- Overlay avec actions -->
-                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 flex items-center justify-center space-x-2 opacity-0 group-hover:opacity-100">
+                            <div class="absolute inset-0 bg-black/35 md:bg-black md:bg-opacity-0 md:group-hover:bg-opacity-50 transition-all duration-200 flex items-center justify-center space-x-2 opacity-100 md:opacity-0 md:group-hover:opacity-100">
                                 <a href="{{ asset('storage/' . $image->image_path) }}" 
                                    target="_blank"
                                    class="bg-white p-2 rounded-full hover:bg-gray-100"
@@ -381,14 +384,14 @@
 @endif
 
                 <!-- Ajouter de nouvelles images -->
-                <div class="mb-10">
-                    <div class="flex items-center mb-6">
+                <div>
+                    <div class="product-form-section-heading flex items-center mb-6">
                         <div class="w-1 h-8 bg-indigo-500 rounded-full mr-3"></div>
                         <h3 class="text-lg font-bold text-gray-800">Ajouter de nouvelles images</h3>
                     </div>
                     
                     <div class="space-y-4">
-                        <div class="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center hover:border-blue-400 hover:bg-blue-50 transition-all duration-200 cursor-pointer"
+                        <div class="border-2 border-dashed border-gray-300 rounded-2xl p-5 sm:p-8 text-center hover:border-green-400 hover:bg-green-50 transition-all duration-200 cursor-pointer"
                              onclick="document.getElementById('imageUpload').click()"
                              id="dropZone">
                             <div class="max-w-sm mx-auto">
@@ -439,12 +442,13 @@
                         @enderror
                     </div>
                 </div>
+</div>
 
   
 
 <!-- Options -->
-<div class="mb-10">
-    <div class="flex items-center mb-6">
+<div class="product-form-section" id="product-options">
+    <div class="product-form-section-heading flex items-center mb-6">
         <div class="w-1 h-8 bg-pink-500 rounded-full mr-3"></div>
         <h3 class="text-lg font-bold text-gray-800">Options</h3>
     </div>
@@ -529,9 +533,9 @@
                 @include('admin.products.partials.variants', ['showVariantToggle' => false])
 
                 <!-- Actions -->
-                <div class="pt-8 border-t border-gray-200">
-                    <div class="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
-                        <div class="flex items-center space-x-4">
+                <div class="product-form-actions">
+                    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                        <div class="hidden lg:flex items-center space-x-4">
                             <div class="flex items-center text-gray-600">
                                 <i class="fas fa-history mr-2"></i>
                                 <span class="text-sm">Dernière modification: {{ $product->updated_at->diffForHumans() }}</span>
@@ -543,15 +547,15 @@
                             </a>
                         </div>
                         
-                        <div class="flex space-x-4">
+                        <div class="flex w-full flex-col-reverse gap-3 sm:w-auto sm:flex-row">
                             <a href="{{ route('admin.products.index') }}" 
-                               class="px-8 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 flex items-center">
+                               class="px-6 sm:px-8 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 flex items-center justify-center">
                                 <i class="fas fa-times mr-2"></i>
                                 Annuler
                             </a>
                             
                             <button type="submit" 
-                                    class="px-8 py-3 bg-gradient-to-r from-blue-500 to-cyan-600 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-blue-200 transition-all duration-200 transform hover:-translate-y-0.5 flex items-center">
+                                    class="px-6 sm:px-8 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 flex items-center justify-center">
                                 <i class="fas fa-save mr-2"></i>
                                 Mettre à jour le produit
                             </button>
