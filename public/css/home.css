@@ -5,8 +5,8 @@
 /* Hero Swiper Buttons */
 .hero-banner-frame {
     height: 430px;
-    max-height: 80vh;
-    max-height: 80svh;
+    max-height: 90vh;
+    max-height: 90svh;
 }
 
 @media (min-width: 640px) and (max-width: 767px) {
