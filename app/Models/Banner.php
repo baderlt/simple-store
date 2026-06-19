@@ -22,6 +22,7 @@ class Banner extends Model
         'title',
         'description',
         'image_path',
+        'mobile_image_path',
         'position',
         'cta_text',
         'cta_link',
@@ -57,6 +58,16 @@ class Banner extends Model
     public function getFullImageUrlAttribute()
     {
         return $this->image_path ? asset('storage/' . $this->image_path) : null;
+    }
+
+    /**
+     * Get the mobile image URL, falling back to the desktop image.
+     */
+    public function getMobileImageUrlAttribute()
+    {
+        return $this->mobile_image_path
+            ? asset('storage/' . $this->mobile_image_path)
+            : $this->full_image_url;
     }
 
     /**
@@ -328,9 +339,10 @@ class Banner extends Model
      */
     public function delete()
     {
-        // Delete the image file if it exists
-        if ($this->image_path && Storage::exists('public/' . $this->image_path)) {
-            Storage::delete('public/' . $this->image_path);
+        foreach (['image_path', 'mobile_image_path'] as $attribute) {
+            if ($this->{$attribute}) {
+                Storage::disk('public')->delete($this->{$attribute});
+            }
         }
 
         return parent::delete();
@@ -343,19 +355,18 @@ class Banner extends Model
     {
         static::deleting(function ($banner) {
             if ($banner->isForceDeleting()) {
-                // Delete the image file on force delete
-                if ($banner->image_path && Storage::exists('public/' . $banner->image_path)) {
-                    Storage::delete('public/' . $banner->image_path);
+                foreach (['image_path', 'mobile_image_path'] as $attribute) {
+                    if ($banner->{$attribute}) {
+                        Storage::disk('public')->delete($banner->{$attribute});
+                    }
                 }
             }
         });
 
         static::updating(function ($banner) {
-            // Delete old image if new one is uploaded
-            if ($banner->isDirty('image_path') && $banner->getOriginal('image_path')) {
-                $oldImagePath = $banner->getOriginal('image_path');
-                if (Storage::exists('public/' . $oldImagePath)) {
-                    Storage::delete('public/' . $oldImagePath);
+            foreach (['image_path', 'mobile_image_path'] as $attribute) {
+                if ($banner->isDirty($attribute) && $banner->getOriginal($attribute)) {
+                    Storage::disk('public')->delete($banner->getOriginal($attribute));
                 }
             }
         });

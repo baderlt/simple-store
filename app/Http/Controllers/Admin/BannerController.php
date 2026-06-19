@@ -6,7 +6,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Banner;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use App\Support\OptimizesImages;
 
 class BannerController extends Controller
@@ -42,6 +41,7 @@ class BannerController extends Controller
             'title' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'mobile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'position' => 'required|in:hero,middle,bottom,sidebar',
             'order' => 'nullable|integer|min:0|max:100',
             'cta_text' => 'nullable|string|max:50',
@@ -52,8 +52,17 @@ class BannerController extends Controller
         ]);
         
         if ($request->hasFile('image')) {
-            $path = OptimizesImages::store($request->file('image'), 'banners', 1600, 800);
+            $path = OptimizesImages::store($request->file('image'), 'banners', 1920, 1000);
             $validated['image_path'] = $path;
+        }
+
+        if ($request->hasFile('mobile_image')) {
+            $validated['mobile_image_path'] = OptimizesImages::store(
+                $request->file('mobile_image'),
+                'banners/mobile',
+                900,
+                1000
+            );
         }
         
         Banner::create($validated);
@@ -78,6 +87,8 @@ class BannerController extends Controller
             'title' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'mobile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'delete_mobile_image' => 'nullable|boolean',
             'position' => 'required|in:hero,middle,bottom,sidebar',
             'order' => 'nullable|integer|min:0|max:100',
             'cta_text' => 'nullable|string|max:50',
@@ -94,9 +105,24 @@ class BannerController extends Controller
 
         if ($request->hasFile('image')) {
             // The Banner model removes the old file when image_path changes.
-            $path = OptimizesImages::store($request->file('image'), 'banners', 1600, 800);
+            $path = OptimizesImages::store($request->file('image'), 'banners', 1920, 1000);
             $validated['image_path'] = $path;
         }
+
+        if ($request->boolean('delete_mobile_image') && ! $request->hasFile('mobile_image')) {
+            $validated['mobile_image_path'] = null;
+        }
+
+        if ($request->hasFile('mobile_image')) {
+            $validated['mobile_image_path'] = OptimizesImages::store(
+                $request->file('mobile_image'),
+                'banners/mobile',
+                900,
+                1000
+            );
+        }
+
+        unset($validated['delete_mobile_image']);
         
         $banner->update($validated);
         
@@ -106,10 +132,6 @@ class BannerController extends Controller
     
     public function destroy(Banner $banner)
     {
-        if ($banner->image_path) {
-            Storage::disk('public')->delete($banner->image_path);
-        }
-        
         $banner->delete();
         
         return redirect()->route('admin.banners.index')

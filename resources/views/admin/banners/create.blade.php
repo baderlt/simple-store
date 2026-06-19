@@ -19,11 +19,13 @@
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- Left Column: Image Upload -->
                     <div class="lg:col-span-1">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Image de la Bannière</h3>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Images responsives</h3>
                         
                         <!-- Image Preview -->
                         <div class="mb-6">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Image actuelle</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Image ordinateur / tablette <span class="text-red-500">*</span>
+                            </label>
                             <div id="imagePreview" class="relative border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-green-500 transition-colors duration-200">
                                 @if(isset($banner) && $banner->image_path)
                                     <img src="{{ asset('storage/' . $banner->image_path) }}" 
@@ -62,6 +64,7 @@
                             <div class="mt-3 text-xs text-gray-500">
                                 <p><i class="fas fa-info-circle mr-1"></i> Formats acceptés: JPG, PNG, GIF, WEBP</p>
                                 <p><i class="fas fa-info-circle mr-1"></i> Taille max: 5MB</p>
+                                <p><i class="fas fa-ruler mr-1"></i> Recommandé: 1920×900 px</p>
                                 @if(isset($banner))
                                     <p class="mt-2 text-green-600">
                                         <i class="fas fa-exclamation-triangle"></i>
@@ -69,6 +72,40 @@
                                     </p>
                                 @endif
                             </div>
+                        </div>
+
+                        <div class="mb-6 border-t border-gray-200 pt-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Image mobile portrait <span class="text-xs font-normal text-gray-500">(optionnelle)</span>
+                            </label>
+                            <div id="mobileImagePreview" class="relative border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-green-500 transition-colors duration-200">
+                                <div class="py-10">
+                                    <i class="fas fa-mobile-alt text-4xl text-gray-400 mb-4"></i>
+                                    <p class="text-sm text-gray-600">Aucune image mobile sélectionnée</p>
+                                    <p class="text-xs text-gray-500 mt-1">L’image ordinateur sera utilisée automatiquement</p>
+                                </div>
+                            </div>
+
+                            <input type="file"
+                                   name="mobile_image"
+                                   id="mobileImageInput"
+                                   accept="image/*"
+                                   class="hidden">
+
+                            <button type="button"
+                                    onclick="document.getElementById('mobileImageInput').click()"
+                                    class="mt-4 w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 px-4 py-3 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2">
+                                <i class="fas fa-mobile-alt"></i>
+                                Télécharger l’image mobile
+                            </button>
+
+                            <div class="mt-3 text-xs text-gray-500">
+                                <p><i class="fas fa-ruler mr-1"></i> Recommandé: 900×1000 px</p>
+                                <p><i class="fas fa-lightbulb mr-1"></i> Gardez le sujet principal près du centre.</p>
+                            </div>
+                            @error('mobile_image')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
                     
@@ -384,6 +421,8 @@
         // Image preview functionality
         const imageInput = document.getElementById('imageInput');
         const imagePreview = document.getElementById('imagePreview');
+        const mobileImageInput = document.getElementById('mobileImageInput');
+        const mobileImagePreview = document.getElementById('mobileImagePreview');
         
         if (imageInput) {
             imageInput.addEventListener('change', function(e) {
@@ -403,6 +442,29 @@
                         `;
                     }
                     
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        if (mobileImageInput) {
+            mobileImageInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+
+                    reader.onload = function(e) {
+                        mobileImagePreview.innerHTML = `
+                            <img src="${e.target.result}"
+                                 alt="Prévisualisation mobile"
+                                 class="mx-auto h-64 w-full rounded-lg object-cover">
+                            <div class="mt-3 text-sm text-green-600">
+                                <i class="fas fa-check-circle mr-1"></i>
+                                Image mobile sélectionnée
+                            </div>
+                        `;
+                    }
+
                     reader.readAsDataURL(file);
                 }
             });

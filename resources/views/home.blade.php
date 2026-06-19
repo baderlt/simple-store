@@ -11,28 +11,36 @@
                 <div class="swiper-wrapper">
                     @foreach($activeBanners['hero'] as $banner)
                         <div class="swiper-slide">
-                            <div class="relative h-[500px] md:h-[600px]">
-                                <img src="{{ asset('storage/' . $banner->image_path) }}" 
-                                     alt="{{ $banner->title }}" 
-                                     loading="lazy"
-                                     class="w-full h-full object-cover">
-                                <div class="absolute inset-0 bg-gradient-to-r from-black/50 to-black/30"></div>
+                            <div class="relative h-[430px] sm:h-[500px] md:h-[600px]">
+                                <picture class="absolute inset-0 block h-full w-full">
+                                    @if($banner->mobile_image_path)
+                                        <source media="(max-width: 767px) and (orientation: portrait)"
+                                                srcset="{{ asset('storage/' . $banner->mobile_image_path) }}">
+                                    @endif
+                                    <img src="{{ asset('storage/' . $banner->image_path) }}"
+                                         alt="{{ $banner->title }}"
+                                         loading="{{ $loop->first ? 'eager' : 'lazy' }}"
+                                         decoding="async"
+                                         @if($loop->first) fetchpriority="high" @endif
+                                         class="h-full w-full object-cover object-center">
+                                </picture>
+                                <div class="absolute inset-0 bg-gradient-to-r from-black/60 via-black/35 to-black/15"></div>
                                 <div class="absolute inset-0 flex items-center">
                                     <div class="container mx-auto px-4 md:px-8">
-                                        <div class="max-w-2xl">
+                                        <div class="max-w-xl md:max-w-2xl">
                                             @if($banner->title)
-                                                <h1 class="text-4xl md:text-6xl font-bold text-white mb-4 animate-fade-in-up">
+                                                <h1 class="mb-3 text-3xl font-bold leading-tight text-white animate-fade-in-up sm:text-4xl md:mb-4 md:text-6xl">
                                                     {{ $banner->title }}
                                                 </h1>
                                             @endif
                                             @if($banner->description)
-                                                <p class="text-xl md:text-2xl text-white/90 mb-8 animate-fade-in-up animation-delay-200">
+                                                <p class="mb-6 max-w-lg text-base leading-relaxed text-white/90 animate-fade-in-up animation-delay-200 sm:text-xl md:mb-8 md:text-2xl">
                                                     {{ $banner->description }}
                                                 </p>
                                             @endif
                                             @if($banner->cta_text && $banner->cta_link)
                                                 <a href="{{ $banner->cta_link }}" 
-                                                   class="inline-block bg-white text-amber-800 hover:bg-amber-50 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 animate-fade-in-up animation-delay-400 shadow-lg">
+                                                   class="inline-block rounded-full bg-white px-6 py-3 text-base font-semibold text-amber-800 shadow-lg transition-all duration-300 animate-fade-in-up animation-delay-400 hover:bg-amber-50 md:px-8 md:py-4 md:text-lg md:hover:scale-105">
                                                     {{ $banner->cta_text }}
                                                 </a>
                                             @endif
