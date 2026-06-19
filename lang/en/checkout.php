@@ -48,6 +48,7 @@ return [
     'delivery_fee' => 'Delivery fee',
     'free' => 'Free',
     'free_delivery_remaining' => 'Add :amount DH to get free delivery.',
+    'currency' => 'DH',
     'total' => 'Total',
     'tax_included' => 'Tax included',
     'secure_payment' => 'Secure payment',

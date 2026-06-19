@@ -48,6 +48,7 @@ return [
     'delivery_fee' => 'رسوم التوصيل',
     'free' => 'مجاني',
     'free_delivery_remaining' => 'أضف :amount درهم للاستفادة من التوصيل المجاني.',
+    'currency' => 'درهم',
     'total' => 'المجموع',
     'tax_included' => 'الضريبة مشمولة',
     'secure_payment' => 'دفع آمن',

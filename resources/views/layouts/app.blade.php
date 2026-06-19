@@ -633,18 +633,18 @@
             </div>
 
             {{-- Desktop Navigation --}}
-            <nav class="desktop-nav -mt-1 hidden lg:flex items-center justify-center space-x-8 ">
-                <a href="{{ route('home') }}" class="nav-link pt-0 text-gray-700 hover:text-green-600 font-medium">
-                    <i class="fas fa-home mr-2"></i>{{ __('messages.home') }}
+            <nav class="desktop-nav -mt-1 hidden lg:flex items-center justify-center gap-x-6 xl:gap-x-8">
+                <a href="{{ route('home') }}" class="nav-link inline-flex items-center gap-2 text-gray-700 hover:text-green-600 font-medium">
+                    <i class="fas fa-home"></i>{{ __('messages.home') }}
                 </a>
-                <a href="{{ route('products.index') }}" class="nav-link text-gray-700 hover:text-green-600 font-medium">
-                    <i class="fas fa-basket-shopping mr-2"></i>{{ __('messages.products') }}
+                <a href="{{ route('products.index') }}" class="nav-link inline-flex items-center gap-2 text-gray-700 hover:text-green-600 font-medium">
+                    <i class="fas fa-basket-shopping"></i>{{ __('messages.products') }}
                 </a>
-                <a href="{{ route('categories.index') }}" class="nav-link text-gray-700 hover:text-green-600 font-medium">
-                    <i class="fas fa-th-large mr-2"></i>{{ __('messages.categories') }}
+                <a href="{{ route('categories.index') }}" class="nav-link inline-flex items-center gap-2 text-gray-700 hover:text-green-600 font-medium">
+                    <i class="fas fa-th-large"></i>{{ __('messages.categories') }}
                 </a>
                 <a href="{{ route('promotions.index') }}" 
-                   class="nav-link flex items-center gap-2 text-red-600 font-bold hover:text-red-700 
+                   class="nav-link inline-flex items-center gap-2 text-red-600 font-bold hover:text-red-700
                           px-3 py-2 rounded-lg bg-red-50 hover:bg-red-100 transition-all duration-200">
                     <div class="relative">
                         <i class="fas fa-tags"></i>
@@ -652,11 +652,11 @@
                                     group-hover:opacity-30 transition-opacity duration-300"></div>
                     </div>
                     <span>{{ __('messages.promotions') }}</span>
-                    <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse ml-1"></div>
+                    <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
                 </a>
                 @auth
-                    <a href="{{ route('orders.index') }}" class="nav-link text-gray-700 hover:text-green-600 font-medium">
-                        <i class="fas fa-clipboard-list mr-2"></i>{{ __('messages.my_orders') }}
+                    <a href="{{ route('orders.index') }}" class="nav-link inline-flex items-center gap-2 text-gray-700 hover:text-green-600 font-medium">
+                        <i class="fas fa-clipboard-list"></i>{{ __('messages.my_orders') }}
                     </a>
                 @endauth
             </nav>
@@ -844,7 +844,28 @@
                 {{-- Hours & Payment --}}
                 <div>
                     <h3 class="text-xl font-bold mb-6 text-green-400">{{ __('messages.hours') }}</h3>
-                    <p class="text-gray-300 mb-6">{{ settings('working_hours', 'Lun-Sam: 9h-20h') }}</p>
+                    @php
+                        $footerWorkingHours = working_hours_parts(
+                            (string) settings('working_hours', 'Lun-Sam: 9h-20h')
+                        );
+                    @endphp
+                    <div class="space-y-2">
+                        @forelse($footerWorkingHours as $period)
+                            <div class="flex items-center justify-between gap-4 rounded-lg border border-gray-700 bg-gray-800 px-3 py-2.5"
+                                 dir="auto">
+                                <span class="min-w-0 font-medium text-gray-300">
+                                    {{ $period['days'] }}{{ $period['hours'] !== '' ? ':' : '' }}
+                                </span>
+                                @if($period['hours'] !== '')
+                                    <span class="whitespace-nowrap font-bold text-white" dir="ltr">
+                                        {{ $period['hours'] }}
+                                    </span>
+                                @endif
+                            </div>
+                        @empty
+                            <p class="text-gray-300">{{ settings('working_hours', 'Lun-Sam: 9h-20h') }}</p>
+                        @endforelse
+                    </div>
                 </div>
             </div>
 

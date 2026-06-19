@@ -501,14 +501,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div>
                                 <h3 class="font-bold text-xl mb-2">{{ __('home.location.hours') }}</h3>
 @php
-    $workingHoursParts = collect(preg_split('/[|\\\\,\/]+/', (string) settings('working_hours')))
-        ->map(function ($part) {
-            [$days, $hours] = array_pad(array_map('trim', explode(':', $part, 2)), 2, '');
-
-            return compact('days', 'hours');
-        })
-        ->filter(fn ($part) => $part['days'] !== '' || $part['hours'] !== '')
-        ->values();
+    $workingHoursParts = working_hours_parts();
 @endphp
 
 <div class="space-y-1 text-gray-300">
