@@ -11,7 +11,7 @@
                 <div class="swiper-wrapper">
                     @foreach($activeBanners['hero'] as $banner)
                         <div class="swiper-slide">
-                            <div class="relative h-[430px] sm:h-[500px] md:h-[600px]">
+                            <div class="hero-banner-frame relative">
                                 <picture class="block h-full w-full">
                                     @if($banner->mobile_image_path)
                                         <source media="(max-width: 767px)"

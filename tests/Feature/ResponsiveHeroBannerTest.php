@@ -37,6 +37,7 @@ class ResponsiveHeroBannerTest extends TestCase
 
         $this->get(route('home'))
             ->assertOk()
+            ->assertSee('hero-banner-frame', false)
             ->assertSee('media="(max-width: 767px)"', false)
             ->assertDontSee('orientation: portrait', false)
             ->assertSee(asset('storage/' . $banner->mobile_image_path), false)
