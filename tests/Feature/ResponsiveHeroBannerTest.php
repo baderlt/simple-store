@@ -37,7 +37,8 @@ class ResponsiveHeroBannerTest extends TestCase
 
         $this->get(route('home'))
             ->assertOk()
-            ->assertSee('media="(max-width: 767px) and (orientation: portrait)"', false)
+            ->assertSee('media="(max-width: 767px)"', false)
+            ->assertDontSee('orientation: portrait', false)
             ->assertSee(asset('storage/' . $banner->mobile_image_path), false)
             ->assertSee(asset('storage/' . $banner->image_path), false);
     }
@@ -55,7 +56,7 @@ class ResponsiveHeroBannerTest extends TestCase
 
         $this->get(route('home'))
             ->assertOk()
-            ->assertDontSee('media="(max-width: 767px) and (orientation: portrait)"', false)
+            ->assertDontSee('media="(max-width: 767px)"', false)
             ->assertSee(asset('storage/banners/desktop-only.jpg'), false);
     }
 
