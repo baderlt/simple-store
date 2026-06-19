@@ -66,7 +66,7 @@
                     <div class="lg:col-span-1">
                         <div class="mb-6">
                             <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Image
+                                Image ordinateur / tablette
                             </label>
                             <div id="imagePreview" class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-green-500 transition-colors cursor-pointer"
                                  onclick="document.getElementById('imageInput').click()">
@@ -117,7 +117,59 @@
                             </p>
                             <p class="mt-1 text-xs text-gray-500">
                                 <i class="fas fa-ruler"></i>
-                                Taille recommandée: Hero (1200×600), Autres (800×400)
+                                Taille recommandée: 1920×900 px
+                            </p>
+                        </div>
+
+                        <div class="mb-6 border-t border-gray-200 pt-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Image mobile portrait <span class="text-xs font-normal text-gray-500">(optionnelle)</span>
+                            </label>
+                            <div id="mobileImagePreview"
+                                 class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-green-500 transition-colors cursor-pointer"
+                                 onclick="document.getElementById('mobileImageInput').click()">
+                                @if($banner->mobile_image_path)
+                                    <img src="{{ asset('storage/' . $banner->mobile_image_path) }}"
+                                         alt="Prévisualisation mobile"
+                                         class="mx-auto h-64 w-full rounded-lg object-cover">
+                                    <p class="mt-2 text-sm text-green-600">
+                                        <i class="fas fa-check-circle mr-1"></i>
+                                        Image mobile actuelle
+                                    </p>
+                                    <p class="text-xs text-gray-500 mt-1">Cliquer pour changer</p>
+                                @else
+                                    <div class="py-10">
+                                        <i class="fas fa-mobile-alt text-4xl text-gray-400 mb-4"></i>
+                                        <p class="text-sm text-gray-600">Aucune image mobile</p>
+                                        <p class="text-xs text-gray-500 mt-1">L’image ordinateur est utilisée sur mobile</p>
+                                    </div>
+                                @endif
+                            </div>
+
+                            <input type="file"
+                                   name="mobile_image"
+                                   id="mobileImageInput"
+                                   accept="image/*"
+                                   class="hidden"
+                                   onchange="previewMobileImage(this)">
+
+                            @error('mobile_image')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+
+                            @if($banner->mobile_image_path)
+                                <label class="mt-4 flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                                    <input type="checkbox" name="delete_mobile_image" value="1" class="mt-1 rounded border-red-300 text-red-600 focus:ring-red-500">
+                                    <span>
+                                        <span class="font-semibold">Supprimer l’image mobile</span><br>
+                                        L’image ordinateur sera utilisée à la place.
+                                    </span>
+                                </label>
+                            @endif
+
+                            <p class="mt-2 text-xs text-gray-500">
+                                <i class="fas fa-ruler"></i>
+                                Taille recommandée: 900×1000 px
                             </p>
                         </div>
 
@@ -571,6 +623,30 @@
                     <p class="text-sm text-green-600">
                         <i class="fas fa-check-circle mr-1"></i>
                         Nouvelle image sélectionnée
+                    </p>
+                    <p class="text-xs text-gray-500 mt-1">
+                        Cliquer pour changer à nouveau
+                    </p>
+                `;
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function previewMobileImage(input) {
+        const preview = document.getElementById('mobileImagePreview');
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                preview.innerHTML = `
+                    <img src="${e.target.result}"
+                         alt="Nouvelle image mobile"
+                         class="mx-auto h-64 w-full rounded-lg object-cover">
+                    <p class="mt-2 text-sm text-green-600">
+                        <i class="fas fa-check-circle mr-1"></i>
+                        Nouvelle image mobile sélectionnée
                     </p>
                     <p class="text-xs text-gray-500 mt-1">
                         Cliquer pour changer à nouveau
