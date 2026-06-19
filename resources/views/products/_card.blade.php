@@ -35,16 +35,17 @@
         </div>
     @endif
 
-    <div class="product-card-media relative aspect-square w-full overflow-hidden bg-white">
-        <a href="{{ route('products.show', $product->slug) }}" class="flex h-full w-full items-center justify-center">
+    <div class="product-card-media relative aspect-square w-full shrink-0 overflow-hidden bg-white">
+        <a href="{{ route('products.show', $product->slug) }}" class="product-card-media-link">
             @if($productImageUrl)
                 <img src="{{ $productImageUrl }}"
                      alt="{{ $product->name }}"
                      loading="lazy"
+                     decoding="async"
                      width="600"
                      height="600"
                      data-product-card-image
-                     class="h-full w-full object-contain p-2 sm:p-3 group-hover:scale-105 transition-transform duration-700">
+                     class="block h-full w-full object-contain object-center p-2 transition-transform duration-700 sm:p-3 md:group-hover:scale-105">
             @else
                 <div class="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
                     <div class="text-center">
