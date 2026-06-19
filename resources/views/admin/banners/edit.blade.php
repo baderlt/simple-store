@@ -123,7 +123,7 @@
 
                         <div class="mb-6 border-t border-gray-200 pt-6">
                             <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Image mobile portrait <span class="text-xs font-normal text-gray-500">(optionnelle)</span>
+                                Image mobile <span class="text-xs font-normal text-gray-500">(optionnelle)</span>
                             </label>
                             <div id="mobileImagePreview"
                                  class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-green-500 transition-colors cursor-pointer"

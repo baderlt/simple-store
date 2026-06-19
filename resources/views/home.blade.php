@@ -12,9 +12,9 @@
                     @foreach($activeBanners['hero'] as $banner)
                         <div class="swiper-slide">
                             <div class="relative h-[430px] sm:h-[500px] md:h-[600px]">
-                                <picture class="absolute inset-0 block h-full w-full">
+                                <picture class="block h-full w-full">
                                     @if($banner->mobile_image_path)
-                                        <source media="(max-width: 767px) and (orientation: portrait)"
+                                        <source media="(max-width: 767px)"
                                                 srcset="{{ asset('storage/' . $banner->mobile_image_path) }}">
                                     @endif
                                     <img src="{{ asset('storage/' . $banner->image_path) }}"
@@ -22,7 +22,9 @@
                                          loading="{{ $loop->first ? 'eager' : 'lazy' }}"
                                          decoding="async"
                                          @if($loop->first) fetchpriority="high" @endif
-                                         class="h-full w-full object-cover object-center">
+                                         data-fallback-src="{{ asset('storage/' . $banner->image_path) }}"
+                                         onerror="this.onerror=null; this.parentElement.querySelectorAll('source').forEach(function(source) { source.remove(); }); this.src=this.dataset.fallbackSrc;"
+                                         class="block h-full w-full object-cover object-center">
                                 </picture>
                                 <div class="absolute inset-0 bg-gradient-to-r from-black/60 via-black/35 to-black/15"></div>
                                 <div class="absolute inset-0 flex items-center">
