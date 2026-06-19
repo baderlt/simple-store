@@ -19,3 +19,25 @@ test('working hours are split into structured day and time rows', function () {
             ['days' => 'Dim', 'hours' => '10h-18h'],
         ]);
 });
+
+test('mixed Arabic and Latin text is emitted in isolated source-order segments', function () {
+    $latinFirst = bidi_text('Miel de thym - عسل الزعتر - 500');
+    $arabicFirst = bidi_text('املو بذور اليقطين (زريعة الكرعة) - 750g / بالعسل');
+
+    expect($latinFirst)
+        ->toContain('class="bidi-text" dir="ltr"')
+        ->toContain('class="bidi-text-segment" dir="rtl"')
+        ->toContain('class="bidi-text-separator" dir="ltr"')
+        ->and(strpos($latinFirst, 'Miel de thym'))->toBeLessThan(strpos($latinFirst, 'عسل الزعتر'))
+        ->and(strpos($latinFirst, 'عسل الزعتر'))->toBeLessThan(strpos($latinFirst, '500'));
+
+    expect($arabicFirst)
+        ->toContain('class="bidi-text" dir="rtl"')
+        ->toContain('dir="ltr" style="unicode-bidi:isolate;">750g')
+        ->and(strpos($arabicFirst, 'املو بذور اليقطين'))->toBeLessThan(strpos($arabicFirst, '750g'))
+        ->and(strpos($arabicFirst, '750g'))->toBeLessThan(strpos($arabicFirst, 'بالعسل'));
+
+    expect(bidi_text('<script>alert("x")</script>'))
+        ->not->toContain('<script>')
+        ->toContain('&lt;script&gt;');
+});

@@ -91,7 +91,7 @@
                                 <a href="{{ route('products.show', $product->slug) }}"
                                    class="bidi-auto bidi-auto-block hover:text-green-600"
                                    dir="auto">
-                                    {{ $product->name }}
+                                    {!! bidi_text($product->name) !!}
                                 </a>
                             </h3>
                             <div class="flex items-center justify-between">

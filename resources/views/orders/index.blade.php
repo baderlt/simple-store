@@ -55,7 +55,7 @@
 
                                     <div class="flex-1">
                                         <h4 class="bidi-auto font-semibold"
-                                            dir="auto">{{ $item->display_name }}</h4>
+                                            dir="auto">{!! bidi_text($item->display_name) !!}</h4>
                                         <p class="text-sm text-gray-600">Quantité: {{ $item->quantity }}</p>
                                         <p class="text-sm text-green-600 font-semibold">
                                             {{ $item->discount_price ?? $item->price }} DH x {{ $item->quantity }}

@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Category;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -28,16 +29,25 @@ class MixedDirectionProductNameTest extends TestCase
 
         $listing = $this->withSession(['locale' => 'ar'])->get(route('products.index'));
         $listing->assertOk()
-            ->assertSee($latinFirstName)
-            ->assertSee($arabicFirstName)
+            ->assertSee('GINSENG')
+            ->assertSee('الجنسينغ')
+            ->assertSee('املو بذور اليقطين (زريعة الكرعة)')
+            ->assertSee('750g')
+            ->assertSee('بالعسل')
             ->assertSee('bidi-auto bidi-auto-block', false)
+            ->assertSee('class="bidi-text" dir="ltr"', false)
+            ->assertSee('class="bidi-text" dir="rtl"', false)
+            ->assertSee('class="bidi-text-segment" dir="rtl"', false)
+            ->assertSee('class="bidi-text-separator" dir="ltr"', false)
             ->assertSee('unicode-bidi: plaintext;', false)
             ->assertSee('class="search-suggestion-name bidi-auto" dir="auto"', false);
 
         $this->withSession(['locale' => 'ar'])
             ->get(route('products.show', $arabicFirstProduct->slug))
             ->assertOk()
-            ->assertSee($arabicFirstName)
+            ->assertSee('املو بذور اليقطين (زريعة الكرعة)')
+            ->assertSee('750g')
+            ->assertSee('بالعسل')
             ->assertSee('class="bidi-auto text-3xl', false)
             ->assertSee('dir="auto"', false);
 
@@ -46,13 +56,15 @@ class MixedDirectionProductNameTest extends TestCase
         $this->withSession(['locale' => 'ar'])
             ->get(route('cart.index'))
             ->assertOk()
-            ->assertSee($latinFirstName)
+            ->assertSee('GINSENG')
+            ->assertSee('الجنسينغ')
             ->assertSee('class="bidi-auto font-semibold text-gray-900"', false);
 
         $this->withSession(['locale' => 'ar'])
             ->get(route('checkout.index'))
             ->assertOk()
-            ->assertSee($latinFirstName)
+            ->assertSee('GINSENG')
+            ->assertSee('الجنسينغ')
             ->assertSee('class="bidi-auto font-semibold text-gray-900 text-sm truncate"', false);
 
         $order = Order::create([
@@ -80,8 +92,23 @@ class MixedDirectionProductNameTest extends TestCase
         $this->withSession(['locale' => 'ar'])
             ->get(route('order.success', $order))
             ->assertOk()
-            ->assertSee($arabicFirstName)
-            ->assertSee('class="bidi-auto" dir="auto"', false);
+            ->assertSee('املو بذور اليقطين (زريعة الكرعة)')
+            ->assertSee('750g')
+            ->assertSee('بالعسل')
+            ->assertSee('class="bidi-auto" dir="auto"', false)
+            ->assertSee('class="bidi-text" dir="rtl"', false);
+
+        $admin = User::factory()->create(['is_admin' => true]);
+
+        $this->actingAs($admin)
+            ->withSession(['locale' => 'fr'])
+            ->get(route('admin.orders.show', $order))
+            ->assertOk()
+            ->assertSee('املو بذور اليقطين (زريعة الكرعة)')
+            ->assertSee('750g')
+            ->assertSee('بالعسل')
+            ->assertSee('class="bidi-text" dir="rtl"', false)
+            ->assertSee('class="bidi-text-separator" dir="ltr"', false);
     }
 
     private function createProduct(Category $category, string $name, string $slug): Product

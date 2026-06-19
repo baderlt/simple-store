@@ -85,7 +85,9 @@
                                 @endif
 
                                 <div class="flex-1">
-                                    <h4 class="font-bold text-gray-800 text-sm sm:text-base">{{ $item->display_name }}</h4>
+                                    <h4 class="font-bold text-gray-800 text-sm sm:text-base">
+                                        {!! bidi_text($item->display_name) !!}
+                                    </h4>
                                     <div class="flex flex-wrap items-center gap-2 mt-2">
                                         <span class="px-2 py-1 bg-gray-200 text-gray-700 rounded-full text-xs sm:text-sm">
                                             Qté: {{ $item->quantity }}
