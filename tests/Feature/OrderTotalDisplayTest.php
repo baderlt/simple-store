@@ -23,6 +23,21 @@ class OrderTotalDisplayTest extends TestCase
             ->assertDontSee('160.00 DH');
     }
 
+    public function test_arabic_success_page_has_green_icon_and_contact_message(): void
+    {
+        $order = $this->createOrder();
+
+        $this->withSession(['locale' => 'ar'])
+            ->get(route('order.success', $order))
+            ->assertOk()
+            ->assertSee('شكراً على طلبيتكم، سنتواصل معكم في أقرب وقت.')
+            ->assertSee('order-confirmation-success-icon', false)
+            ->assertSee('background-color: #dcfce7 !important;', false)
+            ->assertSee('color: #16a34a !important;', false)
+            ->assertSee('130.00 درهم')
+            ->assertDontSee('130.00 DH');
+    }
+
     public function test_customer_and_admin_order_details_use_the_stored_total(): void
     {
         $customer = User::factory()->create();

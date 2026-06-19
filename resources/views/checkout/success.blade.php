@@ -4,17 +4,33 @@
 ?>
 @extends('layouts.app')
 
-@section('title', 'Commande confirmée')
+@section('title', __('checkout.success_page_title'))
 
 @section('content')
+@php
+    $currency = __('checkout.currency');
+@endphp
+<style>
+    .order-confirmation-success-icon {
+        background-color: #dcfce7 !important;
+        border: 2px solid #86efac;
+        box-shadow: 0 12px 30px rgba(22, 163, 74, 0.16);
+    }
+
+    .order-confirmation-success-icon i {
+        color: #16a34a !important;
+    }
+</style>
 <div class="container mx-auto px-4 py-16">
     <div class="max-w-2xl mx-auto text-center">
-        <div class="bg-green-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
-            <i class="fas fa-check text-green-500 text-5xl"></i>
+        <div class="order-confirmation-success-icon w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-check text-5xl"></i>
         </div>
         
-        <h1 class="text-3xl font-bold mb-4">Commande confirmée !</h1>
-        <p class="text-gray-600 mb-2">Merci pour votre commande</p>
+        <h1 class="text-3xl font-bold mb-4">{{ __('checkout.success_heading') }}</h1>
+        <p class="mx-auto mb-3 max-w-xl text-lg font-semibold leading-relaxed text-gray-700">
+            {{ __('checkout.success_thank_you') }}
+        </p>
         <p class="text-2xl font-bold text-green-600 mb-8">N° {{ $order->order_number }}</p>
 
  <div class="bg-white p-8 rounded-lg shadow-lg mb-8">
@@ -29,19 +45,19 @@
             <div class="space-y-2">
                 <div class="flex justify-between">
                     <span>Sous-total:</span>
-                    <span>{{ number_format($order->subtotal, 2) }} DH</span>
+                    <span>{{ number_format($order->subtotal, 2) }} {{ $currency }}</span>
                 </div>
                 <div class="flex justify-between">
                     <span>Livraison:</span>
                     @if((float) $order->delivery_fee === 0.0)
                     <span class="text-green-600 font-bold">Gratuite</span>
                     @else
-                    <span>{{ number_format($order->delivery_fee, 2) }} DH</span>
+                    <span>{{ number_format($order->delivery_fee, 2) }} {{ $currency }}</span>
                     @endif
                 </div>
                 <div class="flex justify-between font-bold text-lg pt-2 border-t">
                     <span>Total:</span>
-                    <span class="text-green-600">{{ number_format($order->total, 2) }} DH</span>
+                    <span class="text-green-600">{{ number_format($order->total, 2) }} {{ $currency }}</span>
                 </div>
             </div>
         </div>
@@ -59,7 +75,7 @@
                     @foreach($order->items as $item)
                         <div class="flex justify-between">
                             <span>{{ $item->display_name }} x{{ $item->quantity }}</span>
-                            <span>{{ $item->subtotal }} DH</span>
+                            <span>{{ $item->subtotal }} {{ $currency }}</span>
                         </div>
                     @endforeach
                 </div>
