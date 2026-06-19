@@ -4,20 +4,14 @@
 
 /* Hero Swiper Buttons */
 .hero-banner-frame {
-    height: 430px;
-    max-height: 90vh;
-    max-height: 90svh;
+    height: 600px;
+    max-height: none;
 }
 
-@media (min-width: 640px) and (max-width: 767px) {
+@media (max-width: 767px) {
     .hero-banner-frame {
-        height: 500px;
-    }
-}
-
-@media (min-width: 768px) {
-    .hero-banner-frame {
-        height: 600px;
+        height: 80vh;
+        height: 80svh;
         max-height: none;
     }
 }
