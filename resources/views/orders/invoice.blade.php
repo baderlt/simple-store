@@ -61,7 +61,7 @@
         <tbody>
             @foreach($order->items as $item)
                 <tr>
-                    <td>{{ $item->display_name }}</td>
+                    <td><bdi dir="auto">{{ $item->display_name }}</bdi></td>
                     <td>{{ number_format($item->discount_price ?? $item->price, 2) }} DH</td>
                     <td class="text-right">{{ $item->quantity }}</td>
                     <td class="text-right">{{ number_format($item->subtotal, 2) }} DH</td>

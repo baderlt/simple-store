@@ -188,6 +188,21 @@
         }
 
         /*
+         * Product names may contain Arabic, Latin text, numbers and
+         * punctuation in the same sentence. Let each value determine its own
+         * direction instead of inheriting RTL/LTR from the whole page.
+         */
+        .bidi-auto {
+            unicode-bidi: plaintext;
+            text-align: start;
+        }
+
+        .bidi-auto-block {
+            display: block;
+            width: 100%;
+        }
+
+        /*
          * Stable desktop navigation structure.
          * These rules are intentionally defined here instead of relying on
          * generated Tailwind gap utilities, so they work immediately after
@@ -1116,7 +1131,7 @@
                 html += `
               <a href="${baseProductRoute.replace(':slug', product.slug)}" 
                     class="search-suggestion-item block">
-                        <div class="search-suggestion-name">${highlightedName}</div>
+                        <div class="search-suggestion-name bidi-auto" dir="auto">${highlightedName}</div>
                         ${product.category_name ? `
                             <span class="search-suggestion-category">
                                 <i class="fas fa-tag text-xs mr-1"></i>${product.category_name}
@@ -1357,13 +1372,13 @@
                         <!-- Product Info -->
                         <div class="flex-1">
                             <h4 class="font-medium text-gray-900 text-sm line-clamp-1">
-                                <a href="${productUrl}" class="hover:text-emerald-600">
+                                <a href="${productUrl}" class="bidi-auto bidi-auto-block hover:text-emerald-600" dir="auto">
                                     ${item.display_name || item.name}
                                 </a>
                             </h4>
                             
                             <!-- Price -->
-                            <div class="text-xs text-gray-500 mt-1">${item.variant_label || ''}</div>
+                            <div class="bidi-auto text-xs text-gray-500 mt-1" dir="auto">${item.variant_label || ''}</div>
                             <div class="flex items-center justify-between mt-2">
                                 <div>
                                     ${item.has_discount ? 

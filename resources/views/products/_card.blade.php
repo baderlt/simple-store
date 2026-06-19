@@ -76,7 +76,9 @@
         </div>
 
         <h3 class="font-bold text-gray-900 text-sm sm:text-base mb-3 min-h-10 sm:min-h-12 line-clamp-2 group-hover:text-emerald-700 transition-colors leading-tight">
-            <a href="{{ route('products.show', $product->slug) }}" class="hover:text-emerald-700">{{ $product->name }}</a>
+            <a href="{{ route('products.show', $product->slug) }}"
+               class="bidi-auto bidi-auto-block hover:text-emerald-700"
+               dir="auto">{{ $product->name }}</a>
         </h3>
 
         <div class="product-card-price flex items-end justify-between mb-4 min-h-12">
@@ -140,7 +142,8 @@
                             data-minimum="{{ $variant['minimum_quantity'] }}"
                             data-unit="{{ $variant['quantity_unit'] }}"
                             data-stock="{{ $variant['stock_quantity'] }}">
-                        <span class="min-w-0 truncate text-xs font-black text-gray-900">{{ $variant['label'] }}</span>
+                        <span class="bidi-auto min-w-0 truncate text-xs font-black text-gray-900"
+                              dir="auto">{{ $variant['label'] }}</span>
                         <span class="shrink-0 whitespace-nowrap text-xs font-black text-emerald-600">{{ format_price($variant['final_price']) }} DH</span>
                     </button>
                 @endforeach

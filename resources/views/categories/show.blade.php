@@ -88,7 +88,9 @@
                                 </span>
                             </div>
                             <h3 class="font-semibold text-gray-800 mb-2 truncate">
-                                <a href="{{ route('products.show', $product->slug) }}" class="hover:text-green-600">
+                                <a href="{{ route('products.show', $product->slug) }}"
+                                   class="bidi-auto bidi-auto-block hover:text-green-600"
+                                   dir="auto">
                                     {{ $product->name }}
                                 </a>
                             </h3>

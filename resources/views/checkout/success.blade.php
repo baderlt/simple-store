@@ -74,7 +74,7 @@
                 <div class="space-y-2">
                     @foreach($order->items as $item)
                         <div class="flex justify-between">
-                            <span>{{ $item->display_name }} x{{ $item->quantity }}</span>
+                            <span class="bidi-auto" dir="auto">{{ $item->display_name }} × {{ $item->quantity }}</span>
                             <span>{{ $item->subtotal }} {{ $currency }}</span>
                         </div>
                     @endforeach

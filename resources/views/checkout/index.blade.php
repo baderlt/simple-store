@@ -259,9 +259,11 @@
                                 @endif
 
                                 <div class="flex-1 min-w-0">
-                                    <h4 class="font-semibold text-gray-900 text-sm truncate">{{ $item['display_name'] ?? $item['name'] }}</h4>
+                                    <h4 class="bidi-auto font-semibold text-gray-900 text-sm truncate"
+                                        dir="auto">{{ $item['display_name'] ?? $item['name'] }}</h4>
                                     @if(!empty($item['selected_attributes']))
-                                        <p class="text-xs text-gray-500 mt-1 truncate">{{ implode(' / ', $item['selected_attributes']) }}</p>
+                                        <p class="bidi-auto text-xs text-gray-500 mt-1 truncate"
+                                           dir="auto">{{ implode(' / ', $item['selected_attributes']) }}</p>
                                     @endif
                                     <div class="flex items-center justify-between mt-2">
                                         <div class="flex items-baseline space-x-2">
