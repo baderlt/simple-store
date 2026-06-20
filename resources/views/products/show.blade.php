@@ -164,7 +164,7 @@
 
                 <!-- Product Name -->
                 <h1 class="bidi-auto text-3xl lg:text-4xl font-bold text-gray-900 leading-tight"
-                    dir="auto">{{ $product->name }}</h1>
+                    dir="auto">{!! bidi_text($product->name) !!}</h1>
 
                 <!-- Price Section with Improved Spacing -->
                 <div class="py-6 border-y border-gray-200">
@@ -411,7 +411,7 @@
                             </a>
                             <div class="p-4">
                                 <h3 class="bidi-auto font-semibold text-gray-900 text-sm mb-2 line-clamp-2"
-                                    dir="auto">{{ $related->name }}</h3>
+                                    dir="auto">{!! bidi_text($related->name) !!}</h3>
                                 <div class="flex items-center justify-between">
                                     <span class="text-lg font-bold text-gray-900">{{ number_format($related->final_price, 2) }} DH</span>
                                     @if($related->stock_quantity > 0)

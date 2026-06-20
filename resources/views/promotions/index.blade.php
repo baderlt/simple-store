@@ -140,7 +140,7 @@
                                     <a href="{{ route('products.show', $product->slug) }}" 
                                        class="bidi-auto bidi-auto-block text-gray-800 hover:text-red-600 transition-colors duration-300 line-clamp-2"
                                        dir="auto">
-                                        {{ $product->name }}
+                                        {!! bidi_text($product->name) !!}
                                     </a>
                                 </h3>
                                 
@@ -294,7 +294,7 @@
                                     <a href="{{ route('products.show', $product->slug) }}" 
                                        class="bidi-auto bidi-auto-block text-gray-800 hover:text-red-600 transition-colors duration-300 line-clamp-2"
                                        dir="auto">
-                                        {{ $product->name }}
+                                        {!! bidi_text($product->name) !!}
                                     </a>
                                 </h3>
                                 

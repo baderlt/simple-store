@@ -474,7 +474,7 @@
                         <tbody>
                             @forelse($order->items as $item)
                                 <tr>
-                                    <td class="product-name">{{ $item->display_name }}</td>
+                                    <td class="product-name">{!! bidi_text($item->display_name) !!}</td>
                                     <td class="number">{{ number_format($item->discount_price ?? $item->price, 2) }} DH</td>
                                     <td class="number">{{ $item->quantity }}</td>
                                     <td class="number"><strong>{{ number_format($item->subtotal, 2) }} DH</strong></td>
