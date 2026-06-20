@@ -49,11 +49,28 @@ class StorefrontArabicPresentationTest extends TestCase
             ->assertSee('flex: 0 0 9.75rem;', false)
             ->assertSee('column-gap: 0.625rem;', false)
             ->assertDontSee('desktop-nav -mt-1 hidden lg:flex items-center justify-center space-x-8', false)
+            ->assertSee('class="flex items-start gap-3"', false)
+            ->assertSee('class="flex items-center gap-3"', false)
+            ->assertSee('fa-map-marker-alt shrink-0', false)
+            ->assertSee('fa-phone shrink-0', false)
+            ->assertSee('fa-envelope shrink-0', false)
             ->assertSee('Matin Lun-Dim')
             ->assertSee('12h00-15h00')
             ->assertSee('Soir Lun-Dim')
             ->assertSee('18h00-00h00')
             ->assertSee('whitespace-nowrap font-bold text-white', false);
+    }
+
+    public function test_arabic_product_card_category_uses_a_real_icon_gap(): void
+    {
+        $this->createProduct();
+
+        $this->withSession(['locale' => 'ar'])
+            ->get(route('products.index'))
+            ->assertOk()
+            ->assertSee('inline-flex max-w-full items-center gap-1.5', false)
+            ->assertSee('class="fas fa-tag shrink-0"', false)
+            ->assertDontSee('class="fas fa-tag mr-1.5"', false);
     }
 
     public function test_arabic_product_delivery_information_is_bold(): void

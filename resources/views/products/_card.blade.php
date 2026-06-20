@@ -69,8 +69,8 @@
     <div class="product-content p-3 md:p-5 flex flex-1 flex-col">
         <div class="mb-2 sm:mb-3 min-h-5">
             <a href="{{ route('products.index', ['category' => $product->category_id]) }}"
-               class="inline-flex max-w-full items-center text-[10px] text-emerald-600 font-semibold uppercase tracking-wider hover:text-emerald-700">
-                <i class="fas fa-tag mr-1.5"></i>
+               class="inline-flex max-w-full items-center gap-1.5 text-[10px] text-emerald-600 font-semibold uppercase tracking-wider hover:text-emerald-700">
+                <i class="fas fa-tag shrink-0"></i>
                 <span class="truncate">{{ $product->category->name ?? 'Catégorie' }}</span>
             </a>
         </div>

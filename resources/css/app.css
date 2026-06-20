@@ -10,8 +10,8 @@
 
 /*
  * Applied by rtl-icon-spacing.js only when a leading Font Awesome icon is
- * followed by visible label text and no existing margin or flex gap separates
- * them. Logical margin keeps the space on the label side in Arabic.
+ * followed by visible label text and the rendered elements have no real gap.
+ * Logical margin keeps the space on the label side in Arabic.
  */
 [dir="rtl"] .rtl-leading-text-icon {
     margin-inline-start: 0 !important;
