@@ -51,7 +51,7 @@
 
     {{-- Styles --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
     
     {{-- Favicon --}}
     @php
@@ -70,8 +70,10 @@
     @endif
         
     <style>
-        * {
-            font-family: 'Poppins', sans-serif;
+        body {
+            font-family: {{ app()->getLocale() === 'ar'
+                ? "'Tajawal', 'Noto Sans Arabic', sans-serif"
+                : "'Poppins', sans-serif" }};
         }
 
         :root {

@@ -12,6 +12,24 @@ class StorefrontArabicPresentationTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_arabic_storefront_uses_tajawal_without_a_universal_poppins_override(): void
+    {
+        $storefront = $this->withSession(['locale' => 'ar'])
+            ->get(route('home'))
+            ->assertOk();
+
+        $storefront
+            ->assertSee("font-family: 'Tajawal', 'Noto Sans Arabic', sans-serif", false)
+            ->assertSee('family=Tajawal:wght@300;400;500;700;800;900', false)
+            ->assertDontSee("* {\n            font-family: 'Poppins'", false);
+
+        $this->withSession(['locale' => 'ar'])
+            ->get(route('login'))
+            ->assertOk()
+            ->assertSee("font-family: 'Tajawal', 'Noto Sans Arabic', sans-serif", false)
+            ->assertSee('family=Tajawal:wght@300;400;500;700;800;900', false);
+    }
+
     public function test_arabic_checkout_uses_dirham_and_highlights_free_delivery_progress(): void
     {
         $settings = app(StoreSettingsService::class);
