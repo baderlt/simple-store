@@ -881,16 +881,16 @@
                 <div>
                     <h3 class="text-xl font-bold mb-6 text-green-400">{{ __('messages.contact') }}</h3>
                     <ul class="space-y-4">
-                        <li class="flex items-start">
-                            <i class="fas fa-map-marker-alt text-green-400 mt-1 mr-3"></i>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-map-marker-alt shrink-0 text-green-400 mt-1"></i>
                             <span class="text-gray-300">{{ settings('address', 'Adresse par défaut') }}</span>
                         </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-phone text-green-400 mr-3"></i>
+                        <li class="flex items-center gap-3">
+                            <i class="fas fa-phone shrink-0 text-green-400"></i>
                             <span class="text-gray-300">{{ settings('phone', '+212 XXX-XXXXXX') }}</span>
                         </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-envelope text-green-400 mr-3"></i>
+                        <li class="flex items-center gap-3">
+                            <i class="fas fa-envelope shrink-0 text-green-400"></i>
                             <span class="text-gray-300">{{ settings('email', 'contact@maisondoree.ma') }}</span>
                         </li>
                     </ul>

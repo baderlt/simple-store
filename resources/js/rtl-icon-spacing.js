@@ -8,8 +8,6 @@ const FONT_AWESOME_ICON_SELECTOR = [
     'i.fa-brands',
 ].join(',');
 
-const hasLength = (value) => Number.parseFloat(value || '0') > 1;
-
 function visibleLabelAfter(icon) {
     let sibling = icon.nextSibling;
 
@@ -44,25 +42,32 @@ function visibleLabelAfter(icon) {
     return null;
 }
 
-function alreadyHasVisualSpacing(icon, label) {
-    const iconStyle = window.getComputedStyle(icon);
-    const parentStyle = window.getComputedStyle(icon.parentElement);
-    const parentUsesLayoutGap = ['flex', 'inline-flex', 'grid', 'inline-grid'].includes(parentStyle.display)
-        && hasLength(parentStyle.columnGap);
-    const parentDistributesChildren = ['space-between', 'space-around', 'space-evenly']
-        .includes(parentStyle.justifyContent);
+function nodeRect(node) {
+    if (node.nodeType === Node.ELEMENT_NODE) {
+        return node.getBoundingClientRect();
+    }
 
-    if (hasLength(iconStyle.marginInlineEnd) || parentUsesLayoutGap || parentDistributesChildren) {
+    const range = document.createRange();
+    range.selectNodeContents(node);
+
+    return range.getBoundingClientRect();
+}
+
+function hasVisibleHorizontalGap(icon, label) {
+    const iconRect = icon.getBoundingClientRect();
+    const labelRect = nodeRect(label);
+
+    if (iconRect.width === 0 || labelRect.width === 0) {
         return true;
     }
 
-    if (label.nodeType === Node.ELEMENT_NODE) {
-        const labelStyle = window.getComputedStyle(label);
+    const gap = Math.max(
+        labelRect.left - iconRect.right,
+        iconRect.left - labelRect.right,
+        0
+    );
 
-        return hasLength(labelStyle.marginInlineStart);
-    }
-
-    return false;
+    return gap >= 6;
 }
 
 function syncIcon(icon) {
@@ -70,7 +75,7 @@ function syncIcon(icon) {
 
     const label = visibleLabelAfter(icon);
 
-    if (label && ! alreadyHasVisualSpacing(icon, label)) {
+    if (label && !hasVisibleHorizontalGap(icon, label)) {
         icon.classList.add(RTL_ICON_CLASS);
     }
 }
@@ -93,6 +98,7 @@ export function initializeRtlIconSpacing() {
     }
 
     syncIconsWithin(document);
+    document.fonts?.ready.then(() => syncIconsWithin(document));
 
     const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
