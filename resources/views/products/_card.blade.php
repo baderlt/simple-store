@@ -78,7 +78,7 @@
         <h3 class="font-bold text-gray-900 text-sm sm:text-base mb-3 min-h-10 sm:min-h-12 line-clamp-2 group-hover:text-emerald-700 transition-colors leading-tight">
             <a href="{{ route('products.show', $product->slug) }}"
                class="bidi-auto bidi-auto-block hover:text-emerald-700"
-               dir="auto">{!! bidi_text($product->name) !!}</a>
+               dir="{{ bidi_text_direction($product->name) }}">{!! bidi_text($product->name) !!}</a>
         </h3>
 
         <div class="product-card-price flex items-end justify-between mb-4 min-h-12">

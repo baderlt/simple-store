@@ -23,9 +23,11 @@ class MixedDirectionProductNameTest extends TestCase
 
         $latinFirstName = 'GINSENG - الجنسينغ - 1 gramme x10';
         $arabicFirstName = 'املو بذور اليقطين (زريعة الكرعة) - 750g / بالعسل';
+        $arabicOnlyName = 'عسل الزعتر الطبيعي';
 
         $latinFirstProduct = $this->createProduct($category, $latinFirstName, 'ginseng-mixed-name');
         $arabicFirstProduct = $this->createProduct($category, $arabicFirstName, 'amlo-mixed-name');
+        $this->createProduct($category, $arabicOnlyName, 'arabic-only-name');
 
         $listing = $this->withSession(['locale' => 'ar'])->get(route('products.index'));
         $listing->assertOk()
@@ -34,7 +36,9 @@ class MixedDirectionProductNameTest extends TestCase
             ->assertSee('املو بذور اليقطين (زريعة الكرعة)')
             ->assertSee('750g')
             ->assertSee('بالعسل')
+            ->assertSee($arabicOnlyName)
             ->assertSee('bidi-auto bidi-auto-block', false)
+            ->assertSee('dir="rtl"><span class="bidi-text" dir="rtl"', false)
             ->assertSee('class="bidi-text" dir="ltr"', false)
             ->assertSee('class="bidi-text" dir="rtl"', false)
             ->assertSee('class="bidi-text-segment" dir="rtl"', false)
