@@ -25,6 +25,12 @@
     text-align: left !important;
 }
 
+[dir="rtl"] .bidi-auto,
+[dir="rtl"] .bidi-auto .bidi-text,
+[dir="rtl"] .bidi-auto-block {
+    text-align: right !important;
+}
+
 /*
  * Applied by rtl-icon-spacing.js only when a leading Font Awesome icon is
  * followed by visible label text and the rendered elements have no real gap.
