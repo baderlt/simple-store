@@ -260,6 +260,8 @@
                     </div>
                 </div>
 
+                @include('admin.products.partials.seo-fields')
+
                 <!-- Images -->
                 <div class="product-form-section" id="product-images">
                     <div class="product-form-section-heading flex items-center mb-4 sm:mb-6">

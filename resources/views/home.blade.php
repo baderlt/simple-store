@@ -18,9 +18,11 @@
                                                 srcset="{{ asset('storage/' . $banner->mobile_image_path) }}">
                                     @endif
                                     <img src="{{ asset('storage/' . $banner->image_path) }}"
-                                         alt="{{ $banner->title }}"
+                                         alt="{{ $banner->localized_title ?: settings('store_name', 'Wany Bio') }}"
                                          loading="{{ $loop->first ? 'eager' : 'lazy' }}"
                                          decoding="async"
+                                         width="1920"
+                                         height="1000"
                                          @if($loop->first) fetchpriority="high" @endif
                                          data-fallback-src="{{ asset('storage/' . $banner->image_path) }}"
                                          onerror="this.onerror=null; this.parentElement.querySelectorAll('source').forEach(function(source) { source.remove(); }); this.src=this.dataset.fallbackSrc;"
@@ -30,20 +32,20 @@
                                 <div class="absolute inset-0 flex items-center">
                                     <div class="container mx-auto px-4 md:px-8">
                                         <div class="max-w-xl md:max-w-2xl">
-                                            @if($banner->title)
+                                            @if($banner->localized_title)
                                                 <h1 class="mb-3 text-3xl font-bold leading-tight text-white animate-fade-in-up sm:text-4xl md:mb-4 md:text-6xl">
-                                                    {{ $banner->title }}
+                                                    {{ $banner->localized_title }}
                                                 </h1>
                                             @endif
-                                            @if($banner->description)
+                                            @if($banner->localized_description)
                                                 <p class="mb-6 max-w-lg text-base leading-relaxed text-white/90 animate-fade-in-up animation-delay-200 sm:text-xl md:mb-8 md:text-2xl">
-                                                    {{ $banner->description }}
+                                                    {{ $banner->localized_description }}
                                                 </p>
                                             @endif
-                                            @if($banner->cta_text && $banner->cta_link)
+                                            @if($banner->localized_cta_text && $banner->cta_link)
                                                 <a href="{{ $banner->cta_link }}" 
                                                    class="inline-block rounded-full bg-white px-6 py-3 text-base font-semibold text-amber-800 shadow-lg transition-all duration-300 animate-fade-in-up animation-delay-400 hover:bg-amber-50 md:px-8 md:py-4 md:text-lg md:hover:scale-105">
-                                                    {{ $banner->cta_text }}
+                                                    {{ $banner->localized_cta_text }}
                                                 </a>
                                             @endif
                                         </div>
@@ -159,8 +161,10 @@
                                         <div class="relative h-40 md:h-48 lg:h-56 overflow-hidden">
                                             @if($category->image)
                                                 <img src="{{ asset('storage/' . $category->image) }}" 
-                                                     alt="{{ $category->name }}"
-                                                     loading="lazy"   
+                                                     alt="{{ $category->localized_name }}"
+                                                     loading="lazy"
+                                                     width="600"
+                                                     height="400"
                                                      class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                                                 <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
                                             @else
@@ -185,7 +189,7 @@
                                         <!-- Text Content -->
                                         <div class="p-4 md:p-5 text-center">
                                             <h3 class="font-bold {{ $colors['text'] }} text-base md:text-lg mb-2 group-hover:text-gray-900 transition-colors duration-300 line-clamp-2">
-                                                {{ $category->name }}
+                                                {{ $category->localized_name }}
                                             </h3>
                                             
                                             <div class="inline-flex items-center gap-1 text-sm font-medium {{ $colors['text'] }} group-hover:text-gray-800 transition-colors duration-300">
@@ -225,26 +229,28 @@
                 <div class="container mx-auto px-4">
                     <div class="relative rounded-2xl overflow-hidden shadow-xl">
                         <img src="{{ asset('storage/' . $banner->image_path) }}" 
-                             alt="{{ $banner->title }}" 
+                             alt="{{ $banner->localized_title ?: settings('store_name', 'Wany Bio') }}"
                              loading="lazy"  
+                             width="1920"
+                             height="1000"
                              class="w-full h-64 md:h-80 object-cover">
                         <div class="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent"></div>
                         <div class="absolute inset-0 flex items-center">
                             <div class="px-8 md:px-12 max-w-xl">
-                                @if($banner->title)
+                                @if($banner->localized_title)
                                     <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
-                                        {{ $banner->title }}
+                                        {{ $banner->localized_title }}
                                     </h2>
                                 @endif
-                                @if($banner->description)
+                                @if($banner->localized_description)
                                     <p class="text-lg text-gray-200 mb-6">
-                                        {{ $banner->description }}
+                                        {{ $banner->localized_description }}
                                     </p>
                                 @endif
-                                @if($banner->cta_text && $banner->cta_link)
+                                @if($banner->localized_cta_text && $banner->cta_link)
                                     <a href="{{ $banner->cta_link }}" 
                                        class="inline-block bg-white text-green-700 hover:bg-green-50 px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105">
-                                        {{ $banner->cta_text }}
+                                        {{ $banner->localized_cta_text }}
                                     </a>
                                 @endif
                             </div>
@@ -435,28 +441,30 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="bg-gradient-to-r from-green-600 to-teal-600 rounded-3xl overflow-hidden shadow-2xl">
                         <div class="grid md:grid-cols-2 items-center">
                             <div class="p-8 md:p-12">
-                                @if($banner->title)
+                                @if($banner->localized_title)
                                     <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
-                                        {{ $banner->title }}
+                                        {{ $banner->localized_title }}
                                     </h2>
                                 @endif
-                                @if($banner->description)
+                                @if($banner->localized_description)
                                     <p class="text-lg text-gray-100 mb-8">
-                                        {{ $banner->description }}
+                                        {{ $banner->localized_description }}
                                     </p>
                                 @endif
-                                @if($banner->cta_text && $banner->cta_link)
+                                @if($banner->localized_cta_text && $banner->cta_link)
                                     <a href="{{ $banner->cta_link }}" 
                                        class="inline-flex items-center gap-2 bg-white text-green-700 hover:bg-gray-100 px-6 py-3 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105">
-                                        <span>{{ $banner->cta_text }}</span>
+                                        <span>{{ $banner->localized_cta_text }}</span>
                                         <i class="fas fa-arrow-right"></i>
                                     </a>
                                 @endif
                             </div>
                             <div class="h-64 md:h-auto">
                                 <img src="{{ asset('storage/' . $banner->image_path) }}" 
-                                     alt="{{ $banner->title }}" 
+                                     alt="{{ $banner->localized_title ?: settings('store_name', 'Wany Bio') }}"
                                      loading="lazy"  
+                                     width="1920"
+                                     height="1000"
                                      class="w-full h-full object-cover">
                             </div>
                         </div>

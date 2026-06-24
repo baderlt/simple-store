@@ -137,15 +137,26 @@
                             <td class="px-6 py-4">
                                 <div>
                                     <h4 class="font-semibold text-gray-900">{{ $banner->title ?? 'Sans titre' }}</h4>
+                                    @if($banner->title_ar)
+                                        <p class="mt-1 text-sm font-semibold text-emerald-700" dir="rtl">{{ $banner->title_ar }}</p>
+                                    @endif
                                     <p class="text-sm text-gray-600 mt-1 line-clamp-2">
                                         {{ $banner->description ?? 'Sans description' }}
                                     </p>
+                                    @if($banner->description_ar)
+                                        <p class="mt-1 text-sm text-gray-600 line-clamp-2" dir="rtl">{{ $banner->description_ar }}</p>
+                                    @endif
                                     @if($banner->cta_text)
                                         <div class="mt-2">
                                             <span class="inline-flex items-center gap-1 bg-green-50 text-green-700 px-2 py-1 rounded text-xs">
                                                 <i class="fas fa-mouse-pointer"></i>
                                                 {{ $banner->cta_text }}
                                             </span>
+                                            @if($banner->cta_text_ar)
+                                                <span class="ml-2 inline-flex items-center bg-emerald-50 text-emerald-700 px-2 py-1 rounded text-xs" dir="rtl">
+                                                    {{ $banner->cta_text_ar }}
+                                                </span>
+                                            @endif
                                         </div>
                                     @endif
                                 </div>

@@ -1,6 +1,53 @@
 @extends('layouts.app')
 
-@section('title', $product->name)
+@section('title', $product->seo_meta_title)
+@section('description', $product->seo_meta_description)
+@section('keywords', $product->seo_meta_keywords)
+@section('canonical', $product->seo_canonical_url)
+@section('og_type', 'product')
+@section('og_title', $product->seo_og_title)
+@section('og_description', $product->seo_og_description)
+@section('twitter_title', $product->seo_og_title)
+@section('twitter_description', $product->seo_og_description)
+@php
+    $ogImage = $product->seo_og_image_url;
+    $schemaPrice = $product->getDiscountedPrice($product->getCurrentPrice());
+    $productSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'Product',
+        'name' => $product->name,
+        'description' => $product->seo_meta_description,
+        'image' => $product->structuredDataImageUrls(),
+        'brand' => ['@type' => 'Brand', 'name' => 'Wany Bio'],
+        'category' => $product->category?->localized_name,
+        'sku' => $product->sku,
+        'offers' => [
+            '@type' => 'Offer',
+            'url' => $product->seo_canonical_url,
+            'priceCurrency' => 'MAD',
+            'price' => number_format($schemaPrice, 2, '.', ''),
+            'availability' => $product->inStock() ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+            'itemCondition' => 'https://schema.org/NewCondition',
+        ],
+    ];
+    $breadcrumbSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'BreadcrumbList',
+        'itemListElement' => [
+            ['@type' => 'ListItem', 'position' => 1, 'name' => __('messages.home'), 'item' => route('home')],
+            ['@type' => 'ListItem', 'position' => 2, 'name' => __('messages.products'), 'item' => route('products.index')],
+            ['@type' => 'ListItem', 'position' => 3, 'name' => $product->category?->localized_name ?? __('messages.categories'), 'item' => $product->category ? route('categories.show', $product->category) : route('categories.index')],
+            ['@type' => 'ListItem', 'position' => 4, 'name' => $product->name, 'item' => $product->seo_canonical_url],
+        ],
+    ];
+@endphp
+
+@push('head')
+    <meta property="product:price:amount" content="{{ number_format($schemaPrice, 2, '.', '') }}">
+    <meta property="product:price:currency" content="MAD">
+    <script type="application/ld+json">@json($productSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)</script>
+    <script type="application/ld+json">@json($breadcrumbSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)</script>
+@endpush
 
 @section('content')
 @php
@@ -65,7 +112,9 @@
                         <img id="mainImage" 
                              loading="lazy"
                              src="{{ $initialImageUrl }}"
-                             alt="{{ $product->name }}" 
+                             alt="{{ $product->primary_image_alt }}"
+                             width="900"
+                             height="900"
                              class="w-full h-[360px] sm:h-[440px] lg:h-[500px] object-contain p-4 sm:p-6 transition-all duration-500 group-hover:scale-[1.01]">
                         
                         <!-- Zoom Overlay -->
@@ -116,6 +165,8 @@
                                         <img src="{{ asset('storage/' . $image->image_path) }}" 
                                              alt="{{ $product->name }} - Image {{ $index + 1 }}" 
                                              loading="lazy"
+                                             width="160"
+                                             height="160"
                                              class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
                                         <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                         
@@ -152,7 +203,7 @@
                     <a href="{{ route('products.index', ['category' => $product->category_id]) }}" 
                        class="inline-flex items-center bg-emerald-50 text-emerald-700 px-4 py-2 rounded-full text-sm font-semibold hover:bg-emerald-100 transition-colors">
                         <i class="fas fa-tag mr-2"></i>
-                        {{ $product->category->name }}
+                        {{ $product->category->localized_name }}
                     </a>
                     
                     @if($product->sku)
@@ -404,8 +455,10 @@
                             <a href="{{ route('products.show', $related->slug) }}" class="block">
                                 <div class="aspect-square bg-gray-50 overflow-hidden">
                                     <img src="{{ $related->primaryImage ? asset('storage/' . $related->primaryImage->image_path) : 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop' }}" 
-                                         alt="{{ $related->name }}" 
+                                         alt="{{ $related->primary_image_alt }}"
                                          loading="lazy"
+                                         width="400"
+                                         height="400"
                                          class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                                 </div>
                             </a>
@@ -468,7 +521,9 @@
                             onclick="changeModalImage('{{ asset('storage/' . $image->image_path) }}', {{ $index + 1 }})" 
                             class="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 border-transparent hover:border-white transition-colors">
                         <img src="{{ asset('storage/' . $image->image_path) }}" 
-                             alt="Thumbnail {{ $index + 1 }}" 
+                             alt="{{ $product->primary_image_alt }} - Image {{ $index + 1 }}"
+                             width="96"
+                             height="96"
                              class="w-full h-full object-cover">
                     </button>
                 @endforeach

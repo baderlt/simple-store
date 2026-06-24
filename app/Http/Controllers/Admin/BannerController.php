@@ -39,12 +39,15 @@ class BannerController extends Controller
     {
         $validated = $request->validate([
             'title' => 'nullable|string|max:255',
+            'title_ar' => 'nullable|string|max:255',
             'description' => 'nullable|string',
+            'description_ar' => 'nullable|string',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'mobile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'position' => 'required|in:hero,middle,bottom,sidebar',
             'order' => 'nullable|integer|min:0|max:100',
             'cta_text' => 'nullable|string|max:50',
+            'cta_text_ar' => 'nullable|string|max:50',
             'cta_link' => 'nullable|url|max:500',
             'start_at' => 'nullable|date',
             'end_at' => 'nullable|date|after:start_at',
@@ -85,13 +88,16 @@ class BannerController extends Controller
     {
         $validated = $request->validate([
             'title' => 'nullable|string|max:255',
+            'title_ar' => 'nullable|string|max:255',
             'description' => 'nullable|string',
+            'description_ar' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'mobile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'delete_mobile_image' => 'nullable|boolean',
             'position' => 'required|in:hero,middle,bottom,sidebar',
             'order' => 'nullable|integer|min:0|max:100',
             'cta_text' => 'nullable|string|max:50',
+            'cta_text_ar' => 'nullable|string|max:50',
             'cta_link' => 'nullable|url|max:500',
             'start_at' => 'nullable|date',
             'end_at' => 'nullable|date|after:start_at',

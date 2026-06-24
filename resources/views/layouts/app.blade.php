@@ -3,22 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    @php
+        $pageTitle = trim($__env->yieldContent('title', settings('seo_title', settings('store_name', 'Simple Store'))));
+        $pageDescription = trim($__env->yieldContent('description', settings('seo_description', settings('store_description', 'Discover carefully selected products from our store.'))));
+        $pageCanonical = trim($__env->yieldContent('canonical', url()->current()));
+        $pageOgTitle = trim($__env->yieldContent('og_title', $pageTitle));
+        $pageOgDescription = trim($__env->yieldContent('og_description', $pageDescription));
+        $pageTwitterTitle = trim($__env->yieldContent('twitter_title', $pageOgTitle));
+        $pageTwitterDescription = trim($__env->yieldContent('twitter_description', $pageOgDescription));
+    @endphp
     
     {{-- SEO Meta Tags --}}
-    <title>@yield('title', settings('seo_title', settings('store_name', 'Simple Store'))) - {{ settings('store_slogan', 'Premium products, beautifully presented') }}</title>
-    <meta name="description" content="@yield('description', settings('seo_description', settings('store_description', 'Discover carefully selected products from our store.')))">
+    <title>{{ $pageTitle }} - {{ settings('store_slogan', 'Premium products, beautifully presented') }}</title>
+    <meta name="description" content="{{ $pageDescription }}">
     <meta name="keywords" content="@yield('keywords', settings('seo_keywords', 'online store, premium products, delivery'))">
     <meta name="author" content="{{ settings('store_name', 'Simple Store') }}">
     
     {{-- Canonical --}}
-    <link rel="canonical" href="{{ url()->current() }}">
+    <link rel="canonical" href="{{ $pageCanonical }}">
     
     {{-- Open Graph --}}
-    <meta property="og:locale" content="fr_FR">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="@yield('title', settings('store_name', 'Simple Store'))">
-    <meta property="og:description" content="@yield('description', settings('seo_description', settings('store_description', 'Discover carefully selected products from our store.')))">
-    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:locale" content="{{ app()->getLocale() === 'ar' ? 'ar_MA' : 'fr_MA' }}">
+    <meta property="og:type" content="@yield('og_type', 'website')">
+    <meta property="og:title" content="{{ $pageOgTitle }}">
+    <meta property="og:description" content="{{ $pageOgDescription }}">
+    <meta property="og:url" content="{{ $pageCanonical }}">
     <meta property="og:site_name" content="{{ settings('store_name', 'Simple Store') }}">
     @php
         $ogImage = $ogImage ?? (settings('logo') ? asset('storage/' . settings('logo')) : asset('img/default-og.jpg'));
@@ -31,8 +40,8 @@
     
     {{-- Twitter Card --}}
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="@yield('title', settings('store_name', 'Simple Store'))">
-    <meta name="twitter:description" content="@yield('description', settings('seo_description', settings('store_description', 'Discover carefully selected products from our store.')))">
+    <meta name="twitter:title" content="{{ $pageTwitterTitle }}">
+    <meta name="twitter:description" content="{{ $pageTwitterDescription }}">
     <meta name="twitter:image" content="{{ $ogImage }}">
     
     {{-- Robots --}}
@@ -474,6 +483,8 @@
             }
         }
     </style>
+    @stack('head')
+    @yield('styles')
 </head>
 <body style="background-color: var(--background-color)" class="bg-gray-50 min-h-screen flex flex-col">
      {{-- Top Bar --}}
@@ -1754,6 +1765,7 @@ button:disabled {
 }
 </style>
 
+@yield('scripts')
 
 </body>
 </html>

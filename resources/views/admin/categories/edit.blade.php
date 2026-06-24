@@ -80,6 +80,31 @@
                                 @enderror
                             </div>
 
+                            <!-- Nom arabe -->
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700">
+                                    Nom arabe
+                                    <span class="text-xs font-normal text-gray-500 block mt-1">Optionnel, affiché quand le client choisit AR</span>
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class="fas fa-language text-gray-400"></i>
+                                    </div>
+                                    <input type="text"
+                                           name="name_ar"
+                                           value="{{ old('name_ar', $category->name_ar) }}"
+                                           dir="rtl"
+                                           placeholder="مثال: العسل"
+                                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 @error('name_ar') border-red-500 ring-2 ring-red-200 @enderror">
+                                </div>
+                                @error('name_ar')
+                                    <div class="flex items-center text-red-600 text-sm mt-1">
+                                        <i class="fas fa-exclamation-circle mr-2"></i>
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+
                             <!-- Slug -->
                             <div class="space-y-2">
                                 <label class="block text-sm font-semibold text-gray-700">
