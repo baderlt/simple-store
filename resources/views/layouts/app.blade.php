@@ -213,6 +213,12 @@
             width: 100%;
         }
 
+        [dir="rtl"] .bidi-auto,
+        [dir="rtl"] .bidi-auto .bidi-text,
+        [dir="rtl"] .bidi-auto-block {
+            text-align: right !important;
+        }
+
         /*
          * Stable desktop navigation structure.
          * These rules are intentionally defined here instead of relying on

@@ -8,6 +8,29 @@
     text-align: right;
 }
 
+.product-detail-title {
+    display: block;
+    width: 100%;
+}
+
+.product-detail-title-rtl,
+.product-detail-title-rtl .bidi-text {
+    direction: rtl;
+    text-align: right !important;
+}
+
+.product-detail-title-ltr,
+.product-detail-title-ltr .bidi-text {
+    direction: ltr;
+    text-align: left !important;
+}
+
+[dir="rtl"] .bidi-auto,
+[dir="rtl"] .bidi-auto .bidi-text,
+[dir="rtl"] .bidi-auto-block {
+    text-align: right !important;
+}
+
 /*
  * Applied by rtl-icon-spacing.js only when a leading Font Awesome icon is
  * followed by visible label text and the rendered elements have no real gap.
