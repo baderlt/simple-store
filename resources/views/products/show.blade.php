@@ -84,6 +84,7 @@
     if ($galleryImageUrls->isEmpty()) {
         $galleryImageUrls = collect([$fallbackImageUrl]);
     }
+    $productNameDirection = bidi_text_direction($product->name, app()->getLocale() === 'ar' ? 'rtl' : 'ltr');
 
     $variantPayload = $usesVariants ? $activeVariants->map(function ($variant) use ($product) {
         return [
@@ -214,8 +215,8 @@
                 </div>
 
                 <!-- Product Name -->
-                <h1 class="bidi-auto text-3xl lg:text-4xl font-bold text-gray-900 leading-tight"
-                    dir="auto">{!! bidi_text($product->name) !!}</h1>
+                <h1 class="product-detail-title product-detail-title-{{ $productNameDirection }} bidi-auto text-3xl lg:text-4xl font-bold text-gray-900 leading-tight"
+                    dir="{{ $productNameDirection }}">{!! bidi_text($product->name) !!}</h1>
 
                 <!-- Price Section with Improved Spacing -->
                 <div class="py-6 border-y border-gray-200">
