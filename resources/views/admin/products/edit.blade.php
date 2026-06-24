@@ -298,7 +298,7 @@
                     </div>
                 </div>
 
-    
+                @include('admin.products.partials.seo-fields', ['product' => $product])
 
 <div class="product-form-section" id="product-images">
 @if($product->images->count() > 0)

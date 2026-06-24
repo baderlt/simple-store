@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Category extends Model
 {
     protected $fillable = [
-        'name', 'slug', 'description', 'image', 'is_active'
+        'name', 'name_ar', 'slug', 'description', 'image', 'is_active'
     ];
 
     protected $casts = [
@@ -43,5 +43,19 @@ class Category extends Model
     public function getProductsCountAttribute(): int
     {
         return $this->products()->count();
+    }
+
+    public function getLocalizedNameAttribute(): string
+    {
+        if (app()->getLocale() === 'ar' && filled($this->name_ar)) {
+            return $this->name_ar;
+        }
+
+        return $this->name;
+    }
+
+    public function getLocalizedDescriptionAttribute(): ?string
+    {
+        return $this->description;
     }
 }

@@ -65,7 +65,7 @@ class ProductController extends Controller
         $relatedProducts = Product::where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
             ->where('is_active', true)
-            ->with(['primaryImage', 'activeDiscount'])
+            ->with(['primaryImage', 'activeDiscount', 'category'])
             ->take(4)
             ->get();
 
@@ -75,8 +75,11 @@ class ProductController extends Controller
 {
     $query = $request->get('q');
     
-    $products = Product::where('name', 'like', '%' . $query . '%')
-        ->orWhere('description', 'like', '%' . $query . '%')
+    $products = Product::where('is_active', true)
+        ->where(function ($productsQuery) use ($query) {
+            $productsQuery->where('name', 'like', '%' . $query . '%')
+                ->orWhere('description', 'like', '%' . $query . '%');
+        })
         ->with('category')
         ->take(10)
         ->get();
@@ -90,7 +93,7 @@ class ProductController extends Controller
                 'price' => $product->price,
                 'final_price' => $product->final_price,
                 'has_discount' => $product->has_discount,
-                'category_name' => $product->category ? $product->category->name : null,
+                'category_name' => $product->category ? $product->category->localized_name : null,
             ];
         })
     );

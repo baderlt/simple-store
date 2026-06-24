@@ -14,6 +14,7 @@
     <a href="#product-basics"><i class="fas fa-box"></i><span>Essentiel</span></a>
     <a href="#product-inventory"><i class="fas fa-cubes"></i><span>Stock</span></a>
     <a href="#product-description"><i class="fas fa-align-left"></i><span>Description</span></a>
+    <a href="#product-seo"><i class="fas fa-magnifying-glass-chart"></i><span>SEO</span></a>
     <a href="#product-images"><i class="fas fa-images"></i><span>Images</span></a>
     <a href="#product-options"><i class="fas fa-sliders"></i><span>Options</span></a>
     <a href="#variantsManager"><i class="fas fa-layer-group"></i><span>Variantes</span></a>

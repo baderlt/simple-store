@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Catégories - ' . settings('store_name', 'Maison Dorée'))
+@section('canonical', route('categories.index'))
 
 @section('content')
 <div class="min-h-screen bg-gradient-to-b from-gray-50 to-white">
@@ -85,8 +86,10 @@
                         <div class="relative h-48 overflow-hidden rounded-t-2xl">
                             @if($categoryImage)
                                 <img src="{{ $categoryImage }}" 
-                                     alt="{{ $category->name }}"
+                                     alt="{{ $category->localized_name }}"
                                      loading="lazy"
+                                     width="600"
+                                     height="400"
                                      class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
                             @else
@@ -125,7 +128,7 @@
                             <div class="flex items-start justify-between mb-3">
                                 <div class="flex-1">
                                     <h3 class="text-xl font-bold {{ $colors['text'] }} mb-2 group-hover:text-gray-900 transition-colors duration-300">
-                                        {{ $category->name }}
+                                        {{ $category->localized_name }}
                                     </h3>
                                     @if($category->description)
                                         <p class="text-gray-600 text-sm mb-4 line-clamp-2">
@@ -212,7 +215,7 @@
                                     @endif
                                 </div>
                                 <div>
-                                    <h3 class="font-bold text-xl">{{ $category->name }}</h3>
+                                    <h3 class="font-bold text-xl">{{ $category->localized_name }}</h3>
                                     <p class="text-white/70 text-sm">{{ $category->products_count }} produits</p>
                                 </div>
                             </div>

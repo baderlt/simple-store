@@ -213,6 +213,22 @@
                             @enderror
                         </div>
 
+                        <div class="mb-6">
+                            <label for="title_ar" class="block text-sm font-medium text-gray-700 mb-2">
+                                Titre arabe <span class="text-xs font-normal text-gray-500">(optionnel)</span>
+                            </label>
+                            <input type="text"
+                                   name="title_ar"
+                                   id="title_ar"
+                                   value="{{ old('title_ar', $banner->title_ar) }}"
+                                   dir="rtl"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                   placeholder="عنوان البانر">
+                            @error('title_ar')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
                         <!-- Description -->
                         <div class="mb-6">
                             <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
@@ -224,6 +240,21 @@
                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                       placeholder="Description de la bannière">{{ old('description', $banner->description) }}</textarea>
                             @error('description')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="mb-6">
+                            <label for="description_ar" class="block text-sm font-medium text-gray-700 mb-2">
+                                Description arabe <span class="text-xs font-normal text-gray-500">(optionnelle)</span>
+                            </label>
+                            <textarea name="description_ar"
+                                      id="description_ar"
+                                      rows="3"
+                                      dir="rtl"
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                      placeholder="وصف البانر">{{ old('description_ar', $banner->description_ar) }}</textarea>
+                            @error('description_ar')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
@@ -354,6 +385,22 @@
                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                            placeholder="Ex: Découvrir maintenant">
                                     @error('cta_text')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div>
+                                    <label for="cta_text_ar" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Texte du bouton arabe
+                                    </label>
+                                    <input type="text"
+                                           name="cta_text_ar"
+                                           id="cta_text_ar"
+                                           value="{{ old('cta_text_ar', $banner->cta_text_ar) }}"
+                                           dir="rtl"
+                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                           placeholder="اكتشف الآن">
+                                    @error('cta_text_ar')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
                                 </div>

@@ -20,11 +20,14 @@ class Banner extends Model
      */
     protected $fillable = [
         'title',
+        'title_ar',
         'description',
+        'description_ar',
         'image_path',
         'mobile_image_path',
         'position',
         'cta_text',
+        'cta_text_ar',
         'cta_link',
         'order',
         'is_active',
@@ -181,6 +184,33 @@ class Banner extends Model
         ];
 
         return $icons[$this->position] ?? 'image';
+    }
+
+    public function getLocalizedTitleAttribute(): ?string
+    {
+        if (app()->getLocale() === 'ar' && filled($this->title_ar)) {
+            return $this->title_ar;
+        }
+
+        return $this->title;
+    }
+
+    public function getLocalizedDescriptionAttribute(): ?string
+    {
+        if (app()->getLocale() === 'ar' && filled($this->description_ar)) {
+            return $this->description_ar;
+        }
+
+        return $this->description;
+    }
+
+    public function getLocalizedCtaTextAttribute(): ?string
+    {
+        if (app()->getLocale() === 'ar' && filled($this->cta_text_ar)) {
+            return $this->cta_text_ar;
+        }
+
+        return $this->cta_text;
     }
 
     /**

@@ -51,7 +51,7 @@
                             class="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent">
                         <option value="">Toutes catégories</option>
                         @foreach($categories as $category)
-                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                            <option value="{{ $category->id }}">{{ $category->localized_name }}</option>
                         @endforeach
                     </select>
                     
@@ -130,7 +130,7 @@
                                 @if($product->category)
                                     <div class="mb-2">
                                         <span class="text-xs text-green-600 font-semibold bg-green-50 px-2 py-1 rounded">
-                                            {{ $product->category->name }}
+                                            {{ $product->category->localized_name }}
                                         </span>
                                     </div>
                                 @endif
@@ -284,7 +284,7 @@
                                 @if($product->category)
                                     <div class="mb-2">
                                         <span class="text-xs text-gray-600 font-medium">
-                                            {{ $product->category->name }}
+                                            {{ $product->category->localized_name }}
                                         </span>
                                     </div>
                                 @endif
@@ -389,7 +389,7 @@
                         <a href="{{ route('products.index', ['category' => $category->id]) }}" 
                            class="bg-white rounded-lg p-4 border border-gray-200 hover:border-red-300 hover:shadow-md transition-all duration-300">
                             <div class="flex items-center justify-between mb-2">
-                                <h3 class="font-semibold text-gray-800">{{ $category->name }}</h3>
+                                <h3 class="font-semibold text-gray-800">{{ $category->localized_name }}</h3>
                                 <span class="text-sm bg-red-100 text-red-700 px-2 py-1 rounded">
                                     {{ $category->products_count }} promo(s)
                                 </span>

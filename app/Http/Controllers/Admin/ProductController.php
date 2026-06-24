@@ -71,7 +71,7 @@ class ProductController extends Controller
 
         try {
             DB::transaction(function () use ($request, $validated, $variantsPayload, &$storedPaths) {
-                $validated['slug'] = Str::slug($validated['name']);
+                $validated['slug'] = $this->uniqueSlugForProduct($validated['name']);
                 $validated['is_active'] = $request->has('is_active');
                 $validated['is_featured'] = $request->has('is_featured');
 
@@ -167,7 +167,7 @@ class ProductController extends Controller
         $this->validateImageLimit($request, $product);
 
         DB::transaction(function () use ($request, $product, $validated, $variantsPayload) {
-            $validated['slug'] = Str::slug($validated['name']);
+            $validated['slug'] = $this->uniqueSlugForProduct($validated['name'], $product);
             $validated['is_active'] = $request->has('is_active');
             $validated['is_featured'] = $request->has('is_featured');
 
@@ -217,6 +217,13 @@ class ProductController extends Controller
             'sku' => 'nullable|string|' . ($productId ? 'unique:products,sku,' . $productId : 'unique:products,sku'),
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
+            'meta_title' => 'nullable|string|max:70',
+            'meta_description' => 'nullable|string|max:170',
+            'meta_keywords' => 'nullable|string|max:255',
+            'canonical_url' => 'nullable|url|max:2048',
+            'og_title' => 'nullable|string|max:95',
+            'og_description' => 'nullable|string|max:170',
+            'og_image' => 'nullable|string|max:2048',
             'has_variants' => 'nullable|boolean',
             'variants_payload' => 'nullable|string',
             'variant_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
@@ -517,6 +524,22 @@ class ProductController extends Controller
             'success' => true,
             'message' => __('admin.image_deleted'),
         ]);
+    }
+
+    private function uniqueSlugForProduct(string $name, ?Product $product = null): string
+    {
+        $baseSlug = Str::slug($name) ?: 'product';
+        $slug = $baseSlug;
+        $counter = 2;
+
+        while (Product::where('slug', $slug)
+            ->when($product, fn ($query) => $query->whereKeyNot($product->getKey()))
+            ->exists()) {
+            $slug = "{$baseSlug}-{$counter}";
+            $counter++;
+        }
+
+        return $slug;
     }
 
 }

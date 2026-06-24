@@ -39,7 +39,7 @@
         <a href="{{ route('products.show', $product->slug) }}" class="product-card-media-link">
             @if($productImageUrl)
                 <img src="{{ $productImageUrl }}"
-                     alt="{{ $product->name }}"
+                     alt="{{ $product->primary_image_alt }}"
                      loading="lazy"
                      decoding="async"
                      width="600"
@@ -71,7 +71,7 @@
             <a href="{{ route('products.index', ['category' => $product->category_id]) }}"
                class="inline-flex max-w-full items-center gap-1.5 text-[10px] text-emerald-600 font-semibold uppercase tracking-wider hover:text-emerald-700">
                 <i class="fas fa-tag shrink-0"></i>
-                <span class="truncate">{{ $product->category->name ?? 'Catégorie' }}</span>
+                <span class="truncate">{{ $product->category?->localized_name ?? 'Catégorie' }}</span>
             </a>
         </div>
 

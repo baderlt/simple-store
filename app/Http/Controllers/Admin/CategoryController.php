@@ -19,6 +19,7 @@ class CategoryController extends Controller
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($query) use ($search) {
                     $query->where('name', 'like', "%{$search}%")
+                        ->orWhere('name_ar', 'like', "%{$search}%")
                         ->orWhere('slug', 'like', "%{$search}%")
                         ->orWhere('description', 'like', "%{$search}%");
                 });
@@ -40,12 +41,13 @@ class CategoryController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'name_ar' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5048',
             'is_active' => 'boolean',
         ]);
 
-        $validated['slug'] = Str::slug($validated['name']);
+        $validated['slug'] = $this->uniqueSlugForCategory($validated['name']);
         $validated['is_active'] = $request->has('is_active');
 
         if ($request->hasFile('image')) {
@@ -67,12 +69,14 @@ class CategoryController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'name_ar' => 'nullable|string|max:255',
+            'slug' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5048',
             'is_active' => 'boolean',
         ]);
 
-        $validated['slug'] = Str::slug($validated['name']);
+        $validated['slug'] = $this->uniqueSlugForCategory($validated['slug'] ?: $validated['name'], $category);
         $validated['is_active'] = $request->has('is_active');
 
         if ($request->boolean('delete_image') && ! $request->hasFile('image')) {
@@ -109,5 +113,21 @@ class CategoryController extends Controller
 
         return redirect()->route('admin.categories.index')
             ->with('success', __('admin.category_deleted'));
+    }
+
+    private function uniqueSlugForCategory(string $value, ?Category $category = null): string
+    {
+        $baseSlug = Str::slug($value) ?: 'category';
+        $slug = $baseSlug;
+        $counter = 2;
+
+        while (Category::where('slug', $slug)
+            ->when($category, fn ($query) => $query->whereKeyNot($category->getKey()))
+            ->exists()) {
+            $slug = "{$baseSlug}-{$counter}";
+            $counter++;
+        }
+
+        return $slug;
     }
 }

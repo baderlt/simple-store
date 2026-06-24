@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PromotionController;
+use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +35,7 @@ Route::get('/lang/{locale}', function ($locale) {
 
 
 Route::get('/promotions', [PromotionController::class, 'index'])->name('promotions.index');
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap.index');
 
 // Products
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');

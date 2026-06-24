@@ -1,6 +1,17 @@
 @extends('layouts.app')
 
 @section('title', 'Produits')
+@section('canonical', route('products.index'))
+@section('robots', request()->hasAny(['search', 'category', 'sort']) ? 'noindex, follow' : 'index, follow, max-image-preview:large')
+
+@push('head')
+    @if($products->previousPageUrl())
+        <link rel="prev" href="{{ $products->previousPageUrl() }}">
+    @endif
+    @if($products->nextPageUrl())
+        <link rel="next" href="{{ $products->nextPageUrl() }}">
+    @endif
+@endpush
 
 @section('content')
 <div class="min-h-screen bg-gray-50">
@@ -38,7 +49,7 @@
                                 <li>
                                     <a href="{{ route('products.index', ['category' => $category->id]) }}" 
                                        class="flex items-center justify-between p-3 rounded-lg hover:bg-emerald-50 transition-colors {{ request('category') == $category->id ? 'bg-emerald-50 text-emerald-700 font-semibold' : 'text-gray-700' }}">
-                                        <span>{{ $category->name }}</span>
+                                        <span>{{ $category->localized_name }}</span>
                                         <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-sm">
                                             {{ $category->products_count }}
                                         </span>
@@ -119,11 +130,11 @@
                 <!-- Results Header -->
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 bg-white p-4 rounded-xl shadow-sm">
                     <div>
-                        <h2 class="text-2xl font-bold text-gray-800 mb-2">Produits</h2>
+                        <h1 class="text-2xl font-bold text-gray-800 mb-2">Produits</h1>
                         <p class="text-gray-600">
                             {{ $products->total() }} produit{{ $products->total() > 1 ? 's' : '' }} trouvé{{ $products->total() > 1 ? 's' : '' }}
                             @if(request('category'))
-                                dans "{{ $categories->find(request('category'))->name ?? '' }}"
+                                dans "{{ $categories->find(request('category'))->localized_name ?? '' }}"
                             @endif
                         </p>
                     </div>

@@ -1,2 +1,7 @@
 User-agent: *
-Disallow:
+Disallow: /admin
+Disallow: /cart
+Disallow: /checkout
+Disallow: /order/success
+
+Sitemap: https://wanybio.com/sitemap.xml

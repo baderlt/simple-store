@@ -6,13 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Str;
 
 class Product extends Model
 {
     protected $fillable = [
         'category_id', 'name', 'slug', 'description', 'price',
         'stock_quantity', 'low_stock_alert', 'sku', 'is_active', 'is_featured',
-        'review_rating', 'reviews_count', 'sales_count'
+        'review_rating', 'reviews_count', 'sales_count',
+        'meta_title', 'meta_description', 'meta_keywords', 'canonical_url',
+        'og_title', 'og_description', 'og_image',
     ];
 
     protected $casts = [
@@ -213,5 +216,113 @@ class Product extends Model
     public function isLowStock(?ProductVariant $variant = null): bool
     {
         return $this->getCurrentStock($variant) <= $this->low_stock_alert;
+    }
+
+    public function getSeoMetaTitleAttribute(): string
+    {
+        return Str::limit($this->meta_title ?: $this->fallbackSeoTitle(), 70, '');
+    }
+
+    public function getSeoMetaDescriptionAttribute(): string
+    {
+        return Str::limit($this->meta_description ?: $this->fallbackSeoDescription(), 170, '');
+    }
+
+    public function getSeoMetaKeywordsAttribute(): string
+    {
+        if ($this->meta_keywords) {
+            return $this->meta_keywords;
+        }
+
+        return collect([
+            $this->name,
+            $this->category?->localized_name ?? $this->category?->name,
+            'Wany Bio',
+            'bio',
+            'produits naturels',
+        ])
+            ->filter()
+            ->unique()
+            ->implode(', ');
+    }
+
+    public function getSeoCanonicalUrlAttribute(): string
+    {
+        return $this->canonical_url ?: route('products.show', $this->slug);
+    }
+
+    public function getSeoOgTitleAttribute(): string
+    {
+        return Str::limit($this->og_title ?: $this->seo_meta_title, 95, '');
+    }
+
+    public function getSeoOgDescriptionAttribute(): string
+    {
+        return Str::limit($this->og_description ?: $this->seo_meta_description, 170, '');
+    }
+
+    public function getSeoOgImageUrlAttribute(): string
+    {
+        if ($this->og_image) {
+            return Str::startsWith($this->og_image, ['http://', 'https://'])
+                ? $this->og_image
+                : asset('storage/' . ltrim($this->og_image, '/'));
+        }
+
+        $imagePath = $this->primaryImage?->image_path
+            ?: ($this->relationLoaded('images') ? $this->images->first()?->image_path : null);
+
+        return $imagePath
+            ? asset('storage/' . $imagePath)
+            : asset('img/default-og.jpg');
+    }
+
+    public function getPrimaryImageAltAttribute(): string
+    {
+        return trim(collect([
+            $this->name,
+            $this->category?->localized_name ?? $this->category?->name,
+            'Wany Bio',
+        ])->filter()->implode(' - '));
+    }
+
+    public function structuredDataImageUrls(): array
+    {
+        $images = $this->relationLoaded('images') ? $this->images : $this->images()->get();
+
+        return $images
+            ->pluck('image_path')
+            ->filter()
+            ->map(fn (string $path) => asset('storage/' . $path))
+            ->values()
+            ->all() ?: [$this->seo_og_image_url];
+    }
+
+    private function fallbackSeoTitle(): string
+    {
+        return collect([
+            $this->name,
+            $this->category?->localized_name ?? $this->category?->name,
+            'Wany Bio',
+        ])->filter()->implode(' | ');
+    }
+
+    private function fallbackSeoDescription(): string
+    {
+        $description = trim(strip_tags((string) $this->description));
+
+        if ($description !== '') {
+            return $description;
+        }
+
+        $category = $this->category?->localized_name ?? $this->category?->name;
+        $price = number_format((float) $this->getCurrentPrice(), 2, '.', '');
+
+        return trim(sprintf(
+            '%s%s disponible chez Wany Bio à partir de %s MAD.',
+            $this->name,
+            $category ? ' - ' . $category : '',
+            $price
+        ));
     }
 }

@@ -5,6 +5,7 @@
 @extends('layouts.app')
 
 @section('title', __('checkout.success_page_title'))
+@section('robots', 'noindex, nofollow')
 
 @section('content')
 @php

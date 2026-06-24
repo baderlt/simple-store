@@ -146,6 +146,9 @@
                                                 {{ $category->name }}
                                             </a>
                                         </p>
+                                        @if($category->name_ar)
+                                            <p class="mt-1 text-sm font-semibold text-emerald-700" dir="rtl">{{ $category->name_ar }}</p>
+                                        @endif
                                         <p class="text-xs text-gray-500 mt-1">
                                             @if($category->slug)
                                                 <i class="fas fa-link mr-1"></i>
@@ -301,6 +304,9 @@
                             @endif
                             <div>
                                 <h3 class="font-semibold text-gray-900">{{ $category->name }}</h3>
+                                @if($category->name_ar)
+                                    <p class="mt-1 text-sm font-semibold text-emerald-700" dir="rtl">{{ $category->name_ar }}</p>
+                                @endif
                                 @if($category->slug)
                                     <p class="text-xs text-gray-500 mt-1">
                                         <i class="fas fa-link mr-1"></i>
