@@ -105,7 +105,7 @@
                                         </div>
 
                                         <!-- City -->
-                                        <div>
+                                        <div id="customerCityField">
                                             <label for="customer_city" class="block text-sm font-semibold text-gray-700 mb-2">
                                                 {{ __('checkout.city') }} <span class="text-rose-500">*</span>
                                             </label>
@@ -380,6 +380,7 @@
         thresholdDeliveryIsFree: @json((bool) ($threshold && $subtotal > $threshold)),
         freeLabel: @json(__('checkout.free')),
         currency: @json($checkoutCurrency),
+        laayouneCity: 'Laâyoune',
     };
 
     function formatPrice(value) {
@@ -411,8 +412,41 @@
         }
     }
 
-    document.getElementById('is_laayoune_delivery')?.addEventListener('change', updateCheckoutPricing);
-    document.addEventListener('DOMContentLoaded', updateCheckoutPricing);
+    function syncLaayouneCityField() {
+        const laayouneDelivery = document.getElementById('is_laayoune_delivery');
+        const cityField = document.getElementById('customer_city');
+        const cityWrapper = document.getElementById('customerCityField');
+
+        if (!laayouneDelivery || !cityField || !cityWrapper) return;
+
+        if (laayouneDelivery.checked) {
+            if (cityField.value.trim() && cityField.value.trim() !== checkoutPricing.laayouneCity) {
+                cityField.dataset.previousCity = cityField.value;
+            }
+
+            cityField.value = checkoutPricing.laayouneCity;
+            cityField.classList.remove('border-rose-500', 'bg-rose-50');
+            cityWrapper.querySelector('.error-message')?.remove();
+            cityWrapper.classList.add('hidden');
+            cityWrapper.setAttribute('aria-hidden', 'true');
+            return;
+        }
+
+        cityWrapper.classList.remove('hidden');
+        cityWrapper.removeAttribute('aria-hidden');
+
+        if (cityField.value.trim() === checkoutPricing.laayouneCity) {
+            cityField.value = cityField.dataset.previousCity || '';
+        }
+    }
+
+    function handleLaayouneDeliveryChange() {
+        syncLaayouneCityField();
+        updateCheckoutPricing();
+    }
+
+    document.getElementById('is_laayoune_delivery')?.addEventListener('change', handleLaayouneDeliveryChange);
+    document.addEventListener('DOMContentLoaded', handleLaayouneDeliveryChange);
 
     // Format phone number as user types (Moroccan format)
     const phoneInput = document.getElementById('customer_phone');
@@ -458,6 +492,8 @@
 
     if (form) {
         form.addEventListener('submit', function(e) {
+            syncLaayouneCityField();
+
             // Client-side validation before submission
             const name = document.getElementById('customer_name');
             const phone = document.getElementById('customer_phone');
