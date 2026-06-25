@@ -106,6 +106,12 @@ class CheckoutController extends Controller
 
     public function store(Request $request)
     {
+        if ($request->boolean('is_laayoune_delivery')) {
+            $request->merge([
+                'customer_city' => 'Laâyoune',
+            ]);
+        }
+
         $validated = $request->validate([
             'customer_name' => 'required|string|max:255',
             'customer_phone' => 'required|string|max:20',
