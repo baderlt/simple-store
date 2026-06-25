@@ -2,6 +2,8 @@
 // app/Models/Order.php - COMPLETE FIXED VERSION
 namespace App\Models;
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -53,7 +55,51 @@ class Order extends Model
      */
     public static function generateOrderNumber(): string
     {
-        $lastSequence = self::query()
+        if (! Schema::hasTable('order_sequences')) {
+            return self::generateOrderNumberFromExistingOrders();
+        }
+
+        return DB::transaction(function (): string {
+            $sequence = DB::table('order_sequences')
+                ->where('name', 'orders')
+                ->lockForUpdate()
+                ->first();
+
+            if (! $sequence) {
+                DB::table('order_sequences')->insertOrIgnore([
+                    'name' => 'orders',
+                    'current_number' => self::highestExistingOrderSequence(),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                $sequence = DB::table('order_sequences')
+                    ->where('name', 'orders')
+                    ->lockForUpdate()
+                    ->first();
+            }
+
+            $nextSequence = ((int) $sequence->current_number) + 1;
+
+            DB::table('order_sequences')
+                ->where('name', 'orders')
+                ->update([
+                    'current_number' => $nextSequence,
+                    'updated_at' => now(),
+                ]);
+
+            return self::formatOrderNumber($nextSequence);
+        });
+    }
+
+    private static function generateOrderNumberFromExistingOrders(): string
+    {
+        return self::formatOrderNumber(self::highestExistingOrderSequence() + 1);
+    }
+
+    private static function highestExistingOrderSequence(): int
+    {
+        return self::query()
             ->where('order_number', 'like', 'ORD-%')
             ->pluck('order_number')
             ->reduce(function (int $highest, string $orderNumber): int {
@@ -63,8 +109,11 @@ class Order extends Model
 
                 return max($highest, (int) $matches[1]);
             }, 0);
+    }
 
-        return 'ORD-' . str_pad((string) ($lastSequence + 1), 4, '0', STR_PAD_LEFT);
+    private static function formatOrderNumber(int $sequence): string
+    {
+        return 'ORD-' . str_pad((string) $sequence, 4, '0', STR_PAD_LEFT);
     }
 
     /**

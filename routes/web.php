@@ -42,6 +42,7 @@ Route::get('/products', [ProductController::class, 'index'])->name('products.ind
 Route::get('/products/{slug}', [ProductController::class, 'show'])->name('products.show');
 // routes/web.php
 Route::get('/products/search/suggestions', [ProductController::class, 'searchSuggestions'])
+    ->middleware('throttle:60,1')
     ->name('products.search.suggestions');
 
 ///categories
@@ -62,10 +63,10 @@ Route::delete('/cart/ajax/remove/{id}', [CartController::class, 'ajaxRemove'])->
 // Checkout (No login required)
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
 // Direct checkout route
-Route::get('/checkout/direct/{id}', [CheckoutController::class, 'direct'])->name('checkout.direct');
+Route::post('/checkout/direct/{id}', [CheckoutController::class, 'direct'])->middleware('throttle:20,1')->name('checkout.direct');
     
 
-Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+Route::post('/checkout', [CheckoutController::class, 'store'])->middleware('throttle:10,1')->name('checkout.store');
 Route::get('/order/success/{id}', [CheckoutController::class, 'success'])->name('order.success');
 
 // About page

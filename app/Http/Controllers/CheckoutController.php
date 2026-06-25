@@ -10,6 +10,7 @@ use App\Models\StockLog;
 use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
@@ -252,9 +253,6 @@ class CheckoutController extends Controller
             // Count one additional sale per distinct product in this order, regardless of quantity or variant lines.
             Product::whereKey(array_keys($purchasedProductIds))->increment('sales_count');
 
-            // Send notifications
-            $this->sendOrderNotifications($order);
-
             // Clear cart/direct checkout session
             if ($isDirect) {
                 session()->forget('direct_checkout');
@@ -263,6 +261,9 @@ class CheckoutController extends Controller
             }
 
             DB::commit();
+
+            $this->rememberSuccessfulOrder($order);
+            $this->sendOrderNotificationsSafely($order);
 
             return redirect()->route('order.success', $order->id)
                 ->with('success', __('checkout.order_placed'));
@@ -323,7 +324,11 @@ class CheckoutController extends Controller
         */
         
         // For now, just log the SMS that would be sent
-        \Log::info('SMS would be sent to: ' . $phoneNumber . ' - Message: ' . $message);
+        Log::info('SMS notification prepared for order.', [
+            'order_id' => $order->id,
+            'order_number' => $order->order_number,
+            'admin_phone' => $phoneNumber,
+        ]);
         
         return true;
     }
@@ -331,7 +336,44 @@ class CheckoutController extends Controller
     public function success($orderId)
     {
         $order = Order::with('items.variant')->findOrFail($orderId);
+
+        if (! $this->canViewSuccessfulOrder($order)) {
+            abort(404);
+        }
+
         return view('checkout.success', compact('order'));
+    }
+
+    private function sendOrderNotificationsSafely(Order $order): void
+    {
+        try {
+            $this->sendOrderNotifications($order);
+        } catch (\Throwable $e) {
+            Log::error('New order notification failed.', [
+                'order_id' => $order->id,
+                'order_number' => $order->order_number,
+                'exception' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    private function rememberSuccessfulOrder(Order $order): void
+    {
+        $orderIds = session()->get('checkout_success_order_ids', []);
+        $orderIds[] = $order->id;
+
+        session()->put('checkout_success_order_ids', array_values(array_unique(array_slice($orderIds, -5))));
+    }
+
+    private function canViewSuccessfulOrder(Order $order): bool
+    {
+        $user = auth()->user();
+
+        if ($user && ($user->isAdmin() || (int) $order->user_id === (int) $user->id)) {
+            return true;
+        }
+
+        return in_array($order->id, session()->get('checkout_success_order_ids', []), true);
     }
 
 }

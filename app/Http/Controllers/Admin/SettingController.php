@@ -30,13 +30,13 @@ class SettingController extends Controller
             'email' => 'required|email|max:255',
             'whatsapp' => 'nullable|string|max:20',
             'address' => 'required|string|max:500',
-            "instagram_url"=>'nullable|string',
-            "facebook_url"=>"nullable|string",
+            "instagram_url" => 'nullable|url:http,https|max:2048',
+            "facebook_url" => 'nullable|url:http,https|max:2048',
 
             // Localisation GPS
             'latitude' => 'required|numeric|between:-90,90',
             'longitude' => 'required|numeric|between:-180,180',
-            'maps_link' => 'nullable|string',
+            'maps_link' => 'nullable|url:http,https|max:2048',
 
 
             // Paramètres de Livraison
@@ -46,8 +46,8 @@ class SettingController extends Controller
             'free_delivery_threshold' => 'nullable|numeric|min:0',
 
             // Logo
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,svg,webp|max:2048',
-            'favicon' => 'nullable|image|mimes:png,jpg,jpeg,svg,webp,ico|max:1024',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'favicon' => 'nullable|image|mimes:png,jpg,jpeg,webp,ico|max:1024',
             'primary_color' => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'secondary_color' => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'accent_color' => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
@@ -67,7 +67,7 @@ class SettingController extends Controller
             'longitude.between' => 'La longitude doit être comprise entre -180 et 180.',
             'delivery_fee.min' => 'Les frais de livraison ne peuvent pas être négatifs.',
             'logo.image' => 'Le logo doit être une image.',
-            'logo.mimes' => 'Le logo doit être au format JPEG, PNG, JPG ou SVG.',
+            'logo.mimes' => 'Le logo doit être au format JPEG, PNG, JPG ou WEBP.',
             'logo.max' => 'Le logo ne doit pas dépasser 2MB.',
         ]);
 

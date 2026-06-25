@@ -73,12 +73,18 @@ class ProductController extends Controller
     }
     public function searchSuggestions(Request $request)
 {
-    $query = $request->get('q');
+    $query = trim((string) $request->query('q', ''));
+
+    if (mb_strlen($query) < 2 || mb_strlen($query) > 80) {
+        return response()->json([]);
+    }
+
+    $likeQuery = addcslashes($query, '\\%_');
     
     $products = Product::where('is_active', true)
-        ->where(function ($productsQuery) use ($query) {
-            $productsQuery->where('name', 'like', '%' . $query . '%')
-                ->orWhere('description', 'like', '%' . $query . '%');
+        ->where(function ($productsQuery) use ($likeQuery) {
+            $productsQuery->where('name', 'like', '%' . $likeQuery . '%')
+                ->orWhere('description', 'like', '%' . $likeQuery . '%');
         })
         ->with('category')
         ->take(10)
