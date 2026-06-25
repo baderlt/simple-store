@@ -324,7 +324,8 @@
                                 <span class="relative z-10">{{ __('cart.add_to_pack') }}</span>
                             </button>
 
-                            <form action="{{ route('checkout.direct', $product->id) }}" method="GET" id="buyNowForm">
+                            <form action="{{ route('checkout.direct', $product->id) }}" method="POST" id="buyNowForm">
+                                @csrf
                                 <input type="hidden" name="quantity" id="buyNowQuantity" value="{{ $defaultVariant?->minimumOrderQuantity() ?? 1 }}">
                                     <input type="hidden" name="variant_id" class="selectedVariantInput" value="{{ $defaultVariant?->id }}">
                                 <button type="submit" 
@@ -356,7 +357,8 @@
                                     
                                     <!-- Action Column -->
                                     <div class="flex-1 max-w-[280px] ml-auto">
-                                        <form action="{{ route('checkout.direct', $product->id) }}" method="GET" id="fixedBuyNowForm" class="w-full">
+                                        <form action="{{ route('checkout.direct', $product->id) }}" method="POST" id="fixedBuyNowForm" class="w-full">
+                                            @csrf
                                             <input type="hidden" name="quantity" id="fixedBuyNowQuantity" value="1">
                                             <input type="hidden" name="variant_id" class="selectedVariantInput" value="{{ $defaultVariant?->id }}">
                                             <button type="submit"

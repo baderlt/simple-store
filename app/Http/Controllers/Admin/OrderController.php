@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -7,6 +8,7 @@ use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\StockLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -46,73 +48,121 @@ class OrderController extends Controller
         return view('admin.orders.show', compact('order'));
     }
 
-public function updateStatus(Request $request, Order $order)
-{
-    $validated = $request->validate([
-        'status' => 'required|in:pending,preparing,out_for_delivery,delivered,cancelled'
-    ]);
-    
-    $oldStatus = $order->status;
-    $newStatus = $request->status;
-    
-    // Si on annule la commande, restaurer le stock
-    if($newStatus == 'cancelled' && $oldStatus != 'cancelled') {
-        foreach($order->items as $item) {
-            $product = Product::find($item->product_id);
-            $variant = $item->product_variant_id ? ProductVariant::find($item->product_variant_id) : null;
+    public function updateStatus(Request $request, Order $order)
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:pending,preparing,out_for_delivery,delivered,cancelled',
+        ]);
 
-            if($product) {
-                if ($variant) {
-                    $variant->increment('stock_quantity', $item->quantity);
-                    $quantityAfter = $variant->fresh()->stock_quantity;
-                } else {
-                    $product->increment('stock_quantity', $item->quantity);
-                    $quantityAfter = $product->fresh()->stock_quantity;
+        try {
+            DB::transaction(function () use ($order, $validated) {
+                $lockedOrder = Order::whereKey($order->id)
+                    ->with('items')
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
+                $oldStatus = $lockedOrder->status;
+                $newStatus = $validated['status'];
+
+                if ($newStatus === 'cancelled' && $oldStatus !== 'cancelled') {
+                    $this->restoreOrderStock($lockedOrder);
+                } elseif ($oldStatus === 'cancelled' && $newStatus !== 'cancelled') {
+                    $this->deductOrderStock($lockedOrder);
                 }
 
-                StockLog::create([
-                    'product_id' => $product->id,
-                    'user_id' => auth()->id(),
-                    'quantity_change' => $item->quantity,
-                    'quantity_after' => $quantityAfter,
-                    'type' => 'return',
-                    'notes' => "Commande annulée #{$order->order_number}"
-                ]);
+                $lockedOrder->update($validated);
+            });
+        } catch (\RuntimeException $e) {
+            return back()->with('error', $e->getMessage());
+        }
+
+        return back()->with('success', __('admin.order_status_updated'));
+    }
+
+    private function restoreOrderStock(Order $order): void
+    {
+        foreach ($order->items as $item) {
+            [$product, $variant] = $this->lockStockTarget($item);
+
+            if ($variant) {
+                $variant->increment('stock_quantity', $item->quantity);
+                $quantityAfter = $variant->fresh()->stock_quantity;
+            } else {
+                $product->increment('stock_quantity', $item->quantity);
+                $quantityAfter = $product->fresh()->stock_quantity;
             }
+
+            StockLog::create([
+                'product_id' => $product->id,
+                'user_id' => auth()->id(),
+                'quantity_change' => $item->quantity,
+                'quantity_after' => $quantityAfter,
+                'type' => 'return',
+                'notes' => "Commande annulée #{$order->order_number}",
+            ]);
         }
     }
-    // Si on réactive une commande annulée, déduire le stock
-    else if($oldStatus == 'cancelled' && $newStatus != 'cancelled') {
-        foreach($order->items as $item) {
-            $product = Product::find($item->product_id);
-            $variant = $item->product_variant_id ? ProductVariant::find($item->product_variant_id) : null;
-            $stock = $variant ? $variant->stock_quantity : ($product?->stock_quantity ?? 0);
 
-            if($product && $stock >= $item->quantity) {
-                if ($variant) {
-                    $variant->decrement('stock_quantity', $item->quantity);
-                    $quantityAfter = $variant->fresh()->stock_quantity;
-                } else {
-                    $product->decrement('stock_quantity', $item->quantity);
-                    $quantityAfter = $product->fresh()->stock_quantity;
-                }
+    private function deductOrderStock(Order $order): void
+    {
+        $targets = [];
 
-                StockLog::create([
-                    'product_id' => $product->id,
-                    'user_id' => auth()->id(),
-                    'quantity_change' => -$item->quantity,
-                    'quantity_after' => $quantityAfter,
-                    'type' => 'sale',
-                    'notes' => "Commande réactivée #{$order->order_number}"
-                ]);
+        foreach ($order->items as $item) {
+            [$product, $variant] = $this->lockStockTarget($item);
+            $availableStock = $variant ? $variant->stock_quantity : $product->stock_quantity;
+
+            if ($availableStock < $item->quantity) {
+                throw new \RuntimeException("Stock insuffisant pour réactiver la commande #{$order->order_number}.");
             }
+
+            $targets[] = compact('item', 'product', 'variant');
+        }
+
+        foreach ($targets as $target) {
+            ['item' => $item, 'product' => $product, 'variant' => $variant] = $target;
+
+            if ($variant) {
+                $variant->decrement('stock_quantity', $item->quantity);
+                $quantityAfter = $variant->fresh()->stock_quantity;
+            } else {
+                $product->decrement('stock_quantity', $item->quantity);
+                $quantityAfter = $product->fresh()->stock_quantity;
+            }
+
+            StockLog::create([
+                'product_id' => $product->id,
+                'user_id' => auth()->id(),
+                'quantity_change' => -$item->quantity,
+                'quantity_after' => $quantityAfter,
+                'type' => 'sale',
+                'notes' => "Commande réactivée #{$order->order_number}",
+            ]);
         }
     }
-    
-    $order->update($validated);
 
-    return back()->with('success', __('admin.order_status_updated'));
-}
+    private function lockStockTarget($item): array
+    {
+        $product = Product::whereKey($item->product_id)->lockForUpdate()->first();
+
+        if (! $product) {
+            throw new \RuntimeException('Produit introuvable pour cette commande.');
+        }
+
+        $variant = null;
+
+        if ($item->product_variant_id) {
+            $variant = ProductVariant::whereKey($item->product_variant_id)
+                ->where('product_id', $product->id)
+                ->lockForUpdate()
+                ->first();
+
+            if (! $variant) {
+                throw new \RuntimeException('Variante introuvable pour cette commande.');
+            }
+        }
+
+        return [$product, $variant];
+    }
 
     public function invoice(Order $order)
     {

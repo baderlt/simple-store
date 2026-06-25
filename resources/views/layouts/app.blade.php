@@ -1096,12 +1096,33 @@
                 timeout = setTimeout(later, wait);
             };
         }
+
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, function (character) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                }[character];
+            });
+        }
+
+        function escapeRegExp(value) {
+            return String(value ?? '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
         
         // Function to highlight search term in text
         function highlightText(text, searchTerm) {
-            if (!searchTerm) return text;
-            const regex = new RegExp(`(${searchTerm})`, 'gi');
-            return text.replace(regex, '<span class="search-suggestion-highlight">$1</span>');
+            const safeText = escapeHtml(text);
+
+            if (!searchTerm) return safeText;
+
+            const safeSearchTerm = escapeHtml(searchTerm);
+            const regex = new RegExp(`(${escapeRegExp(safeSearchTerm)})`, 'gi');
+
+            return safeText.replace(regex, '<span class="search-suggestion-highlight">$1</span>');
         }
         
         // Function to fetch search suggestions
@@ -1146,17 +1167,18 @@
             suggestions.forEach(product => {
                 const highlightedName = highlightText(product.name, searchTerm);
                 const price = product.has_discount ? product.final_price : product.price;
+                const productUrl = baseProductRoute.replace(':slug', encodeURIComponent(product.slug ?? ''));
                 
                 html += `
-              <a href="${baseProductRoute.replace(':slug', product.slug)}" 
+              <a href="${escapeHtml(productUrl)}"
                     class="search-suggestion-item block">
                         <div class="search-suggestion-name bidi-auto" dir="auto">${highlightedName}</div>
                         ${product.category_name ? `
                             <span class="search-suggestion-category">
-                                <i class="fas fa-tag text-xs mr-1"></i>${product.category_name}
-                            </sapn>
+                                <i class="fas fa-tag text-xs mr-1"></i>${escapeHtml(product.category_name)}
+                            </span>
                         ` : ''}
-                        <span class="ml-4 search-suggestion-price">${price} DH</span>
+                        <span class="ml-4 search-suggestion-price">${escapeHtml(price)} DH</span>
                     </a>
                 `;
             });
@@ -1363,7 +1385,7 @@
             itemsContainer.innerHTML = '';
             
             if (!items || items.length === 0) {
-                itemsContainer.innerHTML = `<p class="text-center text-gray-500 py-4">${window.appTranslations.cart_empty_line}</p>`;
+                itemsContainer.innerHTML = `<p class="text-center text-gray-500 py-4">${escapeHtml(window.appTranslations.cart_empty_line)}</p>`;
                 return;
             }
             
@@ -1374,15 +1396,20 @@
                     (item.final_price * item.quantity) : 
                     (item.price * item.quantity);
                 
-                const productUrl = baseRoute.replace(':slug', item.slug);
+                const itemId = escapeHtml(item.key || item.id);
+                const productUrl = escapeHtml(baseRoute.replace(':slug', encodeURIComponent(item.slug ?? '')));
+                const itemName = escapeHtml(item.name);
+                const itemDisplayName = escapeHtml(item.display_name || item.name);
+                const itemVariantLabel = escapeHtml(item.variant_label || '');
+                const itemImage = escapeHtml(item.image || '');
                 
                 const itemElement = `
-                    <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg" data-item-id="${item.key || item.id}">
+                    <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg" data-item-id="${itemId}">
                         <!-- Product Image -->
                         <div class="flex-shrink-0">
                             <div class="w-16 h-16 bg-gray-200 rounded-lg overflow-hidden">
                                 ${item.image ? 
-                                    `<img src="/storage/${item.image}" alt="${item.name}" loading="lazy" class="w-full h-full object-cover">` : 
+                                    `<img src="/storage/${itemImage}" alt="${itemName}" loading="lazy" class="w-full h-full object-cover">` :
                                     `<div class="w-full h-full flex items-center justify-center text-gray-400"><i class="fas fa-image"></i></div>`
                                 }
                             </div>
@@ -1392,12 +1419,12 @@
                         <div class="flex-1">
                             <h4 class="font-medium text-gray-900 text-sm line-clamp-1">
                                 <a href="${productUrl}" class="bidi-auto bidi-auto-block hover:text-emerald-600" dir="auto">
-                                    ${item.display_name || item.name}
+                                    ${itemDisplayName}
                                 </a>
                             </h4>
                             
                             <!-- Price -->
-                            <div class="bidi-auto text-xs text-gray-500 mt-1" dir="auto">${item.variant_label || ''}</div>
+                            <div class="bidi-auto text-xs text-gray-500 mt-1" dir="auto">${itemVariantLabel}</div>
                             <div class="flex items-center justify-between mt-2">
                                 <div>
                                     ${item.has_discount ? 
@@ -1417,7 +1444,7 @@
                                 <div class="flex items-center space-x-2">
                                     <button type="button" 
                                             data-action="decrease" 
-                                            data-product-id="${item.key || item.id}"
+                                            data-product-id="${itemId}"
                                             class="w-4 h-4 lg:w-6 lg:h-6 flex items-center justify-center bg-gray-200 rounded hover:bg-gray-300 transition-colors">
                                         <i class="fas fa-minus text-xs"></i>
                                     </button>
@@ -1426,7 +1453,7 @@
                                     
                                     <button type="button" 
                                             data-action="increase" 
-                                            data-product-id="${item.key || item.id}"
+                                            data-product-id="${itemId}"
                                             class="w-4 h-4 lg:w-6 lg:h-6 flex items-center justify-center bg-gray-200 rounded hover:bg-gray-300 transition-colors">
                                         <i class="fas fa-plus text-xs"></i>
                                     </button>
@@ -1436,7 +1463,7 @@
                         
                         <!-- Remove Button -->
                         <button type="button" 
-                                data-product-id="${item.key || item.id}"
+                                data-product-id="${itemId}"
                                 class="remove-from-cart-btn text-red-400 hover:text-red-600 transition-colors">
                             <i class="fas fa-trash"></i>
                         </button>
