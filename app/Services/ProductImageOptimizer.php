@@ -9,7 +9,7 @@ use RuntimeException;
 
 class ProductImageOptimizer
 {
-    public function store(UploadedFile $file): string
+    public function store(UploadedFile $file, string $directory = 'products'): string
     {
         $source = @imagecreatefromstring($file->getContent());
 
@@ -54,7 +54,7 @@ class ProductImageOptimizer
             imagedestroy($source);
         }
 
-        $path = 'products/'.Str::uuid().'.'.$extension;
+        $path = trim($directory, '/').'/'.Str::uuid().'.'.$extension;
 
         if (!Storage::disk('public')->put($path, $contents)) {
             throw new RuntimeException('The optimized product image could not be written.');

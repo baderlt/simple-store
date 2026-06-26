@@ -20,7 +20,7 @@ class CategoryController extends Controller
     {
         $products = $category->products()
             ->where("is_active",true)
-            ->with(['category.activeDiscounts', 'primaryImage', 'activeDiscount', 'defaultVariant', 'variants.items.attribute', 'variants.items.value'])
+            ->withStorefrontRelations()
             ->latest()
             ->paginate(12);
 

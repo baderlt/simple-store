@@ -7,12 +7,13 @@ use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Support\StorefrontCache;
 
 class DiscountController extends Controller
 {
     public function index()
     {
-        $discounts = Discount::with(['product', 'category'])
+        $discounts = Discount::with(['product.images', 'product.category', 'category'])
             ->latest()
             ->paginate(15);
         
@@ -119,6 +120,8 @@ class DiscountController extends Controller
         // No overlapping discounts, create the new one
         Discount::create($validated);
 
+        StorefrontCache::clearHome();
+
         return redirect()->route('admin.discounts.index')
             ->with('success', __('admin.discount_created'));
     }
@@ -191,6 +194,8 @@ class DiscountController extends Controller
 
         // Create the new discount
         Discount::create($validated);
+
+        StorefrontCache::clearHome();
 
         return redirect()->route('admin.discounts.index')
             ->with('success', __('admin.discount_created'));
@@ -294,6 +299,8 @@ class DiscountController extends Controller
 
         $discount->update($validated);
 
+        StorefrontCache::clearHome();
+
         return redirect()->route('admin.discounts.index')
             ->with('success', __('admin.discount_updated'));
     }
@@ -362,6 +369,8 @@ class DiscountController extends Controller
 
         $discount->update($validated);
 
+        StorefrontCache::clearHome();
+
         return redirect()->route('admin.discounts.index')
             ->with('success', __('admin.discount_updated'));
     }
@@ -369,6 +378,8 @@ class DiscountController extends Controller
     public function destroy(Discount $discount)
     {
         $discount->delete();
+
+        StorefrontCache::clearHome();
 
         return redirect()->route('admin.discounts.index')
             ->with('success', __('admin.discount_deleted'));

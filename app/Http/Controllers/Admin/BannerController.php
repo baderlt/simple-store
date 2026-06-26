@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Banner;
 use Illuminate\Http\Request;
 use App\Support\OptimizesImages;
+use App\Support\StorefrontCache;
 
 class BannerController extends Controller
 {
@@ -69,6 +70,8 @@ class BannerController extends Controller
         }
         
         Banner::create($validated);
+
+        StorefrontCache::clearHome();
         
         return redirect()->route('admin.banners.index')
             ->with('success', __('admin.banner_created'));
@@ -131,6 +134,8 @@ class BannerController extends Controller
         unset($validated['delete_mobile_image']);
         
         $banner->update($validated);
+
+        StorefrontCache::clearHome();
         
         return redirect()->route('admin.banners.index')
             ->with('success', __('admin.banner_updated'));
@@ -139,6 +144,8 @@ class BannerController extends Controller
     public function destroy(Banner $banner)
     {
         $banner->delete();
+
+        StorefrontCache::clearHome();
         
         return redirect()->route('admin.banners.index')
             ->with('success', __('admin.banner_deleted'));
@@ -147,6 +154,8 @@ class BannerController extends Controller
     public function toggle(Banner $banner)
     {
         $banner->update(['is_active' => !$banner->is_active]);
+
+        StorefrontCache::clearHome();
         
         $status = $banner->is_active ? 'activée' : 'désactivée';
         
@@ -158,6 +167,8 @@ class BannerController extends Controller
         $newBanner = $banner->replicate();
         $newBanner->title = $newBanner->title . ' (Copie)';
         $newBanner->save();
+
+        StorefrontCache::clearHome();
         
         return redirect()->route('admin.banners.edit', $newBanner)
             ->with('success', __('admin.banner_duplicated'));

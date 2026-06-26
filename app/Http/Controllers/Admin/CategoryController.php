@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use App\Support\OptimizesImages;
+use App\Support\StorefrontCache;
 
 class CategoryController extends Controller
 {
@@ -56,6 +57,8 @@ class CategoryController extends Controller
 
         Category::create($validated);
 
+        StorefrontCache::clearHome();
+
         return redirect()->route('admin.categories.index')
             ->with('success', __('admin.category_created'));
     }
@@ -95,6 +98,8 @@ class CategoryController extends Controller
 
         $category->update($validated);
 
+        StorefrontCache::clearHome();
+
         return redirect()->route('admin.categories.index')
             ->with('success', __('admin.category_updated'));
     }
@@ -110,6 +115,8 @@ class CategoryController extends Controller
         }
 
         $category->delete();
+
+        StorefrontCache::clearHome();
 
         return redirect()->route('admin.categories.index')
             ->with('success', __('admin.category_deleted'));

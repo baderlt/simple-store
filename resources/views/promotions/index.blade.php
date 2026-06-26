@@ -115,6 +115,9 @@
                                         <img src="{{ asset('storage/' . $product->primaryImage->image_path) }}" 
                                              alt="{{ $product->name }}" 
                                              loading="lazy"
+                                             decoding="async"
+                                             width="600"
+                                             height="400"
                                              class="w-full h-48 object-cover hover:scale-105 transition-transform duration-500">
                                     @else
                                         <div class="w-full h-48 bg-gradient-to-br from-orange-100 to-red-100 flex items-center justify-center">
@@ -269,6 +272,9 @@
                                         <img src="{{ asset('storage/' . $product->primaryImage->image_path) }}" 
                                              alt="{{ $product->name }}" 
                                              loading="lazy"
+                                             decoding="async"
+                                             width="600"
+                                             height="400"
                                              class="w-full h-48 object-cover hover:scale-105 transition-transform duration-500">
                                     @else
                                         <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">

@@ -76,9 +76,7 @@ class Product extends Model
     public function activeDiscount(): HasOne
     {
         return $this->hasOne(Discount::class)
-            ->where('is_active', true)
-            ->where('start_date', '<=', now())
-            ->where('end_date', '>=', now());
+            ->active();
     }
 
     public function stockLogs(): HasMany
@@ -150,11 +148,7 @@ class Product extends Model
 
     public function getDiscountedPrice(float $basePrice): float
     {
-        $discount = $this->activeDiscount;
-
-        if (!$discount && $this->category) {
-            $discount = $this->category->activeDiscounts()->first();
-        }
+        $discount = $this->resolveActiveDiscount();
 
         if ($discount) {
             $discountAmount = ($basePrice * $discount->discount_percentage) / 100;
@@ -171,34 +165,83 @@ class Product extends Model
 
     public function hasDiscount(): bool
     {
-        if ($this->activeDiscount) {
-            return true;
-        }
-
-        if ($this->category) {
-            return $this->category->activeDiscounts()->exists();
-        }
-
-        return false;
+        return $this->resolveActiveDiscount() !== null;
     }
 
     public function getActiveDiscountAttribute()
     {
-        $productDiscount = $this->discounts()
-            ->where('is_active', true)
-            ->where('start_date', '<=', now())
-            ->where('end_date', '>=', now())
-            ->first();
+        return $this->resolveActiveDiscount();
+    }
 
-        if ($productDiscount) {
-            return $productDiscount;
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    public function scopeWithStorefrontRelations($query)
+    {
+        return $query->with([
+            'category.activeDiscounts',
+            'primaryImage',
+            'activeDiscount',
+            'defaultVariant',
+            'variants.items.attribute',
+            'variants.items.value',
+        ]);
+    }
+
+    public function scopeWithActiveDiscounts($query)
+    {
+        return $query->with(['activeDiscount', 'category.activeDiscounts']);
+    }
+
+    public function scopeWithAnyActiveDiscount($query)
+    {
+        return $query->where(function ($query) {
+            $query->whereHas('discounts', fn ($discountQuery) => $discountQuery->active())
+                ->orWhereHas('category.discounts', fn ($discountQuery) => $discountQuery->active());
+        });
+    }
+
+    public function resolveActiveDiscount(): ?Discount
+    {
+        if ($this->relationLoaded('activeDiscount')) {
+            $productDiscount = $this->getRelation('activeDiscount');
+
+            if ($productDiscount) {
+                return $productDiscount;
+            }
+        } elseif (! $this->relationLoaded('discounts')) {
+            $productDiscount = $this->discounts()->active()->first();
+
+            if ($productDiscount) {
+                return $productDiscount;
+            }
         }
 
-        if ($this->category) {
-            return $this->category->activeDiscounts()->first();
+        if ($this->relationLoaded('discounts')) {
+            $now = now();
+            $productDiscount = $this->discounts
+                ->first(fn (Discount $discount): bool => $discount->is_active
+                    && $discount->start_date <= $now
+                    && $discount->end_date >= $now);
+
+            if ($productDiscount) {
+                return $productDiscount;
+            }
         }
 
-        return null;
+        $category = $this->relationLoaded('category') ? $this->category : $this->category()->first();
+
+        if (! $category) {
+            return null;
+        }
+
+        if ($category->relationLoaded('activeDiscounts') || $category->relationLoaded('discounts')) {
+            return $category->loadedActiveDiscounts()->first();
+        }
+
+        return $category->activeDiscounts()->first();
     }
 
 
