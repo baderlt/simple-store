@@ -348,7 +348,6 @@ function removeImage() {
 // Réinitialiser les filtres (fonction globale)
 window.resetFilters = function() {
     // Cette fonction est définie pour éviter les erreurs
-    console.log('Reset filters function called');
 };
 
 document.addEventListener('DOMContentLoaded', function() {

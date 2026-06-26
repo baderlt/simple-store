@@ -105,18 +105,10 @@ class Product extends Model
 
     public function getCurrentPrice(?ProductVariant $variant = null): float
     {
-        if ($variant) {
-            return (float) $variant->price;
-        }
+        $currentVariant = $this->resolveCurrentVariant($variant);
 
-        if ($this->usesVariants()) {
-            $defaultVariant = $this->relationLoaded('defaultVariant') ? $this->defaultVariant : $this->defaultVariant()->first();
-            if (!$defaultVariant && $this->relationLoaded('variants')) {
-                $defaultVariant = $this->variants->firstWhere('is_active', true);
-            }
-            if ($defaultVariant) {
-                return (float) $defaultVariant->price;
-            }
+        if ($currentVariant) {
+            return (float) $currentVariant->price;
         }
 
         return (float) $this->price;
@@ -124,18 +116,10 @@ class Product extends Model
 
     public function getCurrentStock(?ProductVariant $variant = null): int
     {
-        if ($variant) {
-            return (int) $variant->stock_quantity;
-        }
+        $currentVariant = $this->resolveCurrentVariant($variant);
 
-        if ($this->usesVariants()) {
-            $defaultVariant = $this->relationLoaded('defaultVariant') ? $this->defaultVariant : $this->defaultVariant()->first();
-            if (!$defaultVariant && $this->relationLoaded('variants')) {
-                $defaultVariant = $this->variants->firstWhere('is_active', true);
-            }
-            if ($defaultVariant) {
-                return (int) $defaultVariant->stock_quantity;
-            }
+        if ($currentVariant) {
+            return (int) $currentVariant->stock_quantity;
         }
 
         return (int) $this->stock_quantity;
@@ -367,5 +351,26 @@ class Product extends Model
             $category ? ' - ' . $category : '',
             $price
         ));
+    }
+
+    private function resolveCurrentVariant(?ProductVariant $variant = null): ?ProductVariant
+    {
+        if ($variant) {
+            return $variant;
+        }
+
+        if (! $this->usesVariants()) {
+            return null;
+        }
+
+        $defaultVariant = $this->relationLoaded('defaultVariant')
+            ? $this->defaultVariant
+            : $this->defaultVariant()->first();
+
+        if (! $defaultVariant && $this->relationLoaded('variants')) {
+            return $this->variants->firstWhere('is_active', true);
+        }
+
+        return $defaultVariant;
     }
 }

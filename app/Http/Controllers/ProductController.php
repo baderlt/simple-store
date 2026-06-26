@@ -13,14 +13,12 @@ class ProductController extends Controller
         $query = Product::active()
             ->withStorefrontRelations();
 
-        // Search
-        if ($request->has('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%');
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->query('search') . '%');
         }
 
-        // Filter by category
-        if ($request->has('category')) {
-            $query->where('category_id', $request->category);
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->query('category'));
         }
 
         // Sort
@@ -71,37 +69,38 @@ class ProductController extends Controller
 
         return view('products.show', compact('product', 'relatedProducts'));
     }
+
     public function searchSuggestions(Request $request)
-{
-    $query = trim((string) $request->query('q', ''));
+    {
+        $query = trim((string) $request->query('q', ''));
 
-    if (mb_strlen($query) < 2 || mb_strlen($query) > 80) {
-        return response()->json([]);
+        if (mb_strlen($query) < 2 || mb_strlen($query) > 80) {
+            return response()->json([]);
+        }
+
+        $likeQuery = addcslashes($query, '\\%_');
+
+        $products = Product::active()
+            ->with(['category', 'activeDiscount', 'category.activeDiscounts'])
+            ->where(function ($productsQuery) use ($likeQuery) {
+                $productsQuery->where('name', 'like', '%' . $likeQuery . '%')
+                    ->orWhere('description', 'like', '%' . $likeQuery . '%');
+            })
+            ->take(10)
+            ->get();
+
+        return response()->json(
+            $products->map(function (Product $product): array {
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'slug' => $product->slug,
+                    'price' => $product->price,
+                    'final_price' => $product->final_price,
+                    'has_discount' => $product->hasDiscount(),
+                    'category_name' => $product->category?->localized_name,
+                ];
+            })
+        );
     }
-
-    $likeQuery = addcslashes($query, '\\%_');
-    
-    $products = Product::active()
-        ->withActiveDiscounts()
-        ->where(function ($productsQuery) use ($likeQuery) {
-            $productsQuery->where('name', 'like', '%' . $likeQuery . '%')
-                ->orWhere('description', 'like', '%' . $likeQuery . '%');
-        })
-        ->take(10)
-        ->get();
-    
-    return response()->json(
-        $products->map(function ($product) {
-            return [
-                'id' => $product->id,
-                'name' => $product->name,
-                'slug' => $product->slug,
-                'price' => $product->price,
-                'final_price' => $product->final_price,
-                'has_discount' => $product->has_discount,
-                'category_name' => $product->category ? $product->category->localized_name : null,
-            ];
-        })
-    );
-}
 }
