@@ -158,6 +158,11 @@
     position: relative;
     z-index: 1;
     isolation: isolate;
+    background:
+        linear-gradient(135deg,
+            color-mix(in srgb, var(--secondary-color, #3d2b1f) 92%, #0f172a) 0%,
+            color-mix(in srgb, var(--secondary-color, #3d2b1f) 78%, #0f172a) 62%,
+            color-mix(in srgb, var(--primary-color, #b7791f) 36%, #3d2b1f) 100%);
 }
 
 .bottom-cta-content::before {
@@ -166,8 +171,8 @@
     inset: 0;
     z-index: -1;
     background:
-        linear-gradient(135deg, rgba(42, 27, 18, 0.84), rgba(61, 43, 31, 0.48)),
-        linear-gradient(90deg, rgba(0, 0, 0, 0.22), transparent);
+        radial-gradient(circle at 90% 15%, rgba(183, 121, 31, 0.24), transparent 28%),
+        linear-gradient(135deg, rgba(42, 27, 18, 0.94), rgba(61, 43, 31, 0.72));
 }
 
 .bottom-cta-title,
