@@ -138,6 +138,35 @@
     opacity: 1;
 }
 
+/* Bottom CTA banner: keep text readable even when brand colors or uploaded
+   banner images are very light. */
+.bottom-cta-banner {
+    background: linear-gradient(135deg, #047857 0%, #0f766e 100%);
+    background:
+        linear-gradient(135deg,
+            color-mix(in srgb, var(--primary-color, #047857) 76%, #0f172a) 0%,
+            color-mix(in srgb, var(--secondary-color, #0f766e) 72%, #0f172a) 100%);
+}
+
+.bottom-cta-content {
+    position: relative;
+    z-index: 1;
+    isolation: isolate;
+}
+
+.bottom-cta-content::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.42), rgba(15, 23, 42, 0.14));
+}
+
+.bottom-cta-title,
+.bottom-cta-description {
+    text-shadow: 0 2px 8px rgba(15, 23, 42, 0.45);
+}
+
 /* ============================================
    ANIMATIONS
    ============================================ */
