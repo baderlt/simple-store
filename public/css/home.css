@@ -138,14 +138,20 @@
     opacity: 1;
 }
 
-/* Bottom CTA banner: keep text readable even when brand colors or uploaded
-   banner images are very light. */
+/* Bottom CTA banner: premium store colors with safe text contrast. */
 .bottom-cta-banner {
-    background: linear-gradient(135deg, #047857 0%, #0f766e 100%);
+    background: linear-gradient(135deg, #2a1b12 0%, #3d2b1f 45%, #b7791f 100%);
     background:
+        radial-gradient(circle at 88% 12%,
+            color-mix(in srgb, var(--primary-color, #b7791f) 34%, transparent) 0%,
+            transparent 34%),
+        radial-gradient(circle at 8% 90%,
+            color-mix(in srgb, var(--primary-color, #b7791f) 22%, transparent) 0%,
+            transparent 30%),
         linear-gradient(135deg,
-            color-mix(in srgb, var(--primary-color, #047857) 76%, #0f172a) 0%,
-            color-mix(in srgb, var(--secondary-color, #0f766e) 72%, #0f172a) 100%);
+            color-mix(in srgb, var(--secondary-color, #3d2b1f) 86%, #0f172a) 0%,
+            color-mix(in srgb, var(--secondary-color, #3d2b1f) 70%, #0f172a) 48%,
+            color-mix(in srgb, var(--primary-color, #b7791f) 78%, #3d2b1f) 100%);
 }
 
 .bottom-cta-content {
@@ -159,7 +165,9 @@
     position: absolute;
     inset: 0;
     z-index: -1;
-    background: linear-gradient(135deg, rgba(15, 23, 42, 0.42), rgba(15, 23, 42, 0.14));
+    background:
+        linear-gradient(135deg, rgba(42, 27, 18, 0.84), rgba(61, 43, 31, 0.48)),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.22), transparent);
 }
 
 .bottom-cta-title,
