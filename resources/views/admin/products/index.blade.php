@@ -20,7 +20,7 @@
                 <input type="hidden" name="category_id" value="{{ request('category_id') }}">
             @endif
             <!-- Barre de recherche - Pleine largeur sur mobile -->
-            <div class="w-full sm:w-auto sm:flex-1">
+            <div class="admin-product-search-wrapper w-full sm:w-auto sm:flex-1">
                 <div class="flex gap-2">
                     <div class="relative min-w-0 flex-1">
                         <input type="text"
@@ -537,7 +537,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     /* Assurer que la barre de recherche prend toute la largeur */
-    .w-full {
+    #adminProductSearchForm,
+    #adminProductSearchForm .admin-product-search-wrapper {
         width: 100%;
     }
 
@@ -555,11 +556,11 @@ document.addEventListener('DOMContentLoaded', function() {
 /* Styles pour desktop */
 @media (min-width: 641px) {
     /* La barre de recherche a une largeur flexible */
-    .sm\\:w-auto {
+    #adminProductSearchForm .sm\\:w-auto {
         width: auto;
     }
 
-    .sm\\:flex-1 {
+    #adminProductSearchForm .sm\\:flex-1 {
         flex: 1;
     }
 }

@@ -124,7 +124,8 @@
                         
                         <!-- Zoom Overlay -->
                         <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <button type="button" onclick="openImageModal()" 
+                            <button type="button" onclick="openImageModal()"
+                                    aria-label="{{ app()->getLocale() === 'ar' ? 'تكبير صورة المنتج' : 'Agrandir l’image du produit' }}"
                                     class="absolute bottom-6 right-6 bg-white/90 backdrop-blur-sm w-12 h-12 rounded-full flex items-center justify-center text-gray-700 hover:bg-white hover:text-emerald-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-110">
                                 <i class="fas fa-expand-arrows-alt"></i>
                             </button>
@@ -150,11 +151,13 @@
                     <div class="relative">
                         @if($galleryImages->count() > 4)
                             <!-- Navigation Arrows -->
-                            <button type="button" onclick="scrollThumbnails(-1)" 
+                            <button type="button" onclick="scrollThumbnails(-1)"
+                                    aria-label="{{ __('pagination.previous') }}"
                                     class="absolute left-0 top-1/2 transform -translate-y-1/2 -ml-6 w-10 h-10 bg-white rounded-full shadow-lg border border-gray-200 flex items-center justify-center text-gray-600 hover:text-emerald-600 hover:border-emerald-300 z-10 transition-all duration-200 hover:shadow-xl">
                                 <i class="fas fa-chevron-left"></i>
                             </button>
-                            <button type="button" onclick="scrollThumbnails(1)" 
+                            <button type="button" onclick="scrollThumbnails(1)"
+                                    aria-label="{{ __('pagination.next') }}"
                                     class="absolute right-0 top-1/2 transform -translate-y-1/2 -mr-6 w-10 h-10 bg-white rounded-full shadow-lg border border-gray-200 flex items-center justify-center text-gray-600 hover:text-emerald-600 hover:border-emerald-300 z-10 transition-all duration-200 hover:shadow-xl">
                                 <i class="fas fa-chevron-right"></i>
                             </button>
@@ -163,8 +166,9 @@
                         <!-- Thumbnails Container -->
                         <div id="thumbnailsContainer" class="flex overflow-x-auto space-x-3 pb-2 scrollbar-hide snap-x snap-mandatory">
                             @foreach($galleryImages as $index => $image)
-                                <button type="button" 
-                                        onclick="changeMainImage('{{ asset('storage/' . $image->image_path) }}', {{ $index + 1 }})" 
+                                <button type="button"
+                                        onclick="changeMainImage('{{ asset('storage/' . $image->image_path) }}', {{ $index + 1 }})"
+                                        aria-label="{{ app()->getLocale() === 'ar' ? 'عرض صورة المنتج رقم ' : 'Afficher l’image produit numéro ' }}{{ $index + 1 }}"
                                         class="group relative flex-shrink-0 snap-center">
                                     <div class="relative overflow-hidden rounded-xl border-2 {{ $loop->first ? 'border-emerald-500' : 'border-gray-200' }} hover:border-emerald-500 transition-all duration-200 w-20 h-20 lg:w-28 lg:h-28">
                                         <img src="{{ asset('storage/' . $image->image_path) }}" 
@@ -286,7 +290,8 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-3">Quantité</label>
                             <div class="flex items-center space-x-3">
-                                <button type="button" onclick="updateQuantity(-1)" 
+                                <button type="button" onclick="updateQuantity(-1)"
+                                        aria-label="{{ app()->getLocale() === 'ar' ? 'إنقاص الكمية' : 'Diminuer la quantité' }}"
                                         class="w-12 h-12 border border-gray-300 rounded-lg hover:border-emerald-500 hover:bg-emerald-50 transition-colors flex items-center justify-center">
                                     <i class="fas fa-minus text-gray-600"></i>
                                 </button>
@@ -303,7 +308,8 @@
                                         {{ $defaultVariant?->quantityUnit() }}
                                     </span>
                                 </div>
-                                <button type="button" onclick="updateQuantity(1)" 
+                                <button type="button" onclick="updateQuantity(1)"
+                                        aria-label="{{ app()->getLocale() === 'ar' ? 'زيادة الكمية' : 'Augmenter la quantité' }}"
                                         class="w-12 h-12 border border-gray-300 rounded-lg hover:border-emerald-500 hover:bg-emerald-50 transition-colors flex items-center justify-center">
                                     <i class="fas fa-plus text-gray-600"></i>
                                 </button>
@@ -477,7 +483,8 @@
                                 <div class="flex items-center justify-between">
                                     <span class="text-lg font-bold text-gray-900">{{ number_format($related->final_price, 2) }} DH</span>
                                     @if($related->stock_quantity > 0)
-                                           <button type="button" 
+                                           <button type="button"
+                                                    aria-label="{{ app()->getLocale() === 'ar' ? 'إضافة المنتج إلى الباقة' : 'Ajouter le produit au pack' }}"
                                                     data-product-id="{{ $related->id }}"
                                                     data-product-name="{{ $related->name }}"
                                                     data-product-stock="{{ $related->stock_quantity }}"
@@ -499,17 +506,20 @@
 <div id="imageModal" class="hidden fixed inset-0 bg-black bg-opacity-95 z-50 flex items-center justify-center p-4">
     <div class="relative w-full max-w-6xl h-full flex items-center justify-center">
         <!-- Close Button -->
-        <button type="button" onclick="closeImageModal()" 
+        <button type="button" onclick="closeImageModal()"
+                aria-label="{{ __('messages.close') }}"
                 class="absolute top-6 right-6 w-10 h-10 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors z-20">
             <i class="fas fa-times"></i>
         </button>
         
         <!-- Navigation Arrows -->
-        <button type="button" onclick="navigateModalImage(-1)" 
+        <button type="button" onclick="navigateModalImage(-1)"
+                aria-label="{{ __('pagination.previous') }}"
                 class="absolute left-6 w-10 h-10 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors z-20">
             <i class="fas fa-chevron-left"></i>
         </button>
-        <button type="button" onclick="navigateModalImage(1)" 
+        <button type="button" onclick="navigateModalImage(1)"
+                aria-label="{{ __('pagination.next') }}"
                 class="absolute right-6 w-10 h-10 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors z-20">
             <i class="fas fa-chevron-right"></i>
         </button>

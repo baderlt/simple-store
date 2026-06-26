@@ -34,6 +34,8 @@
                             @if(count($itemVariants) > 0)
                                 <button type="button"
                                         data-cart-variant-open="{{ $modalId }}"
+                                        aria-controls="{{ $modalId }}"
+                                        aria-expanded="false"
                                         class="absolute inset-x-2 bottom-2 rounded-xl bg-white/95 px-2 py-1 text-xs font-bold text-emerald-700 shadow-lg ring-1 ring-emerald-100 backdrop-blur hover:bg-emerald-50 transition">
                                     <i class="fas fa-pen-to-square mr-1"></i>{{ __('cart.edit_quantity') }}
                                 </button>
@@ -70,7 +72,9 @@
                             <form action="{{ route('cart.remove', $id) }}" method="POST">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="text-red-500 hover:text-red-700">
+                                <button type="submit"
+                                        aria-label="{{ app()->getLocale() === 'ar' ? 'حذف المنتج من الباقة' : 'Retirer le produit du pack' }}"
+                                        class="text-red-500 hover:text-red-700">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </form>
@@ -78,11 +82,17 @@
                     </div>
 
                     @if(count($itemVariants) > 0)
-                        <div id="{{ $modalId }}" class="cart-variant-modal fixed inset-0 z-50 hidden" aria-hidden="true">
+                        <div id="{{ $modalId }}" class="cart-variant-modal fixed inset-0 z-50 hidden"
+                             role="dialog"
+                             aria-modal="true"
+                             aria-hidden="true"
+                             aria-labelledby="{{ $modalId }}-title">
                             <div class="absolute inset-0 bg-gray-950/60 backdrop-blur-sm" data-cart-variant-close></div>
                             <div class="relative mx-auto mt-8 w-[92%] max-w-lg overflow-hidden rounded-3xl bg-white shadow-2xl sm:mt-16">
                                 <div class="relative bg-gradient-to-br from-emerald-50 to-white p-5">
-                                    <button type="button" data-cart-variant-close class="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white text-gray-500 shadow hover:text-gray-800">
+                                    <button type="button" data-cart-variant-close
+                                            aria-label="{{ __('messages.close') }}"
+                                            class="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white text-gray-500 shadow hover:text-gray-800">
                                         <i class="fas fa-times"></i>
                                     </button>
                                     <div class="flex gap-4 pr-10">
@@ -91,7 +101,8 @@
                                         @endif
                                         <div>
                                             <p class="text-xs font-bold uppercase tracking-wide text-emerald-600">{{ __('cart.choose_variant') }}</p>
-                                            <h2 class="bidi-auto mt-1 text-xl font-black text-gray-900"
+                                            <h2 id="{{ $modalId }}-title"
+                                                class="bidi-auto mt-1 text-xl font-black text-gray-900"
                                                 dir="auto">{!! bidi_text($item['name']) !!}</h2>
                                             <p class="mt-2 text-sm text-gray-500">{{ __('cart.choose_variant_help') }}</p>
                                         </div>
@@ -172,6 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!modal) return;
             modal.classList.remove('hidden');
             modal.setAttribute('aria-hidden', 'false');
+            button.setAttribute('aria-expanded', 'true');
             document.body.classList.add('overflow-hidden');
         });
     });
@@ -180,6 +192,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const close = () => {
             modal.classList.add('hidden');
             modal.setAttribute('aria-hidden', 'true');
+            const trigger = document.querySelector(`[data-cart-variant-open="${modal.id}"]`);
+            trigger?.setAttribute('aria-expanded', 'false');
             document.body.classList.remove('overflow-hidden');
         };
 

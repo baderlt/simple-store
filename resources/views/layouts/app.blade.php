@@ -566,7 +566,8 @@
                             <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
                                 <i class="fas fa-search"></i>
                             </div>
-                            <button type="submit" 
+                            <button type="submit"
+                                    aria-label="{{ app()->getLocale() === 'ar' ? 'بحث' : 'Rechercher' }}"
                                     class="absolute right-2 top-1/2 transform -translate-y-1/2 text-green-600 hover:text-green-700 transition-colors">
                                 <i class="fas fa-arrow-right"></i>
                             </button>
@@ -579,13 +580,19 @@
                 {{-- Action Buttons --}}
                 <div class="mobile-buttons flex items-center space-x-3 lg:space-x-6">
                     {{-- Mobile Search Button (Icon only) --}}
-                    <button type="button" id="mobile-search-toggle" 
+                    <button type="button" id="mobile-search-toggle"
+                            aria-label="{{ app()->getLocale() === 'ar' ? 'فتح البحث' : 'Ouvrir la recherche' }}"
+                            aria-controls="mobile-search-container"
+                            aria-expanded="false"
                             class="lg:hidden text-gray-600 hover:text-green-600 p-2 rounded-full hover:bg-gray-100 transition-colors">
                         <i class="fas fa-search text-xl"></i>
                     </button>
                     
                     <!-- Pack Icon -->
-                    <button type="button" id="cart-drawer-trigger" class="relative group focus:outline-none">
+                    <button type="button" id="cart-drawer-trigger" class="relative group focus:outline-none"
+                            aria-label="{{ __('cart.drawer_title') }}"
+                            aria-controls="cart-drawer"
+                            aria-expanded="false">
                         <div class="bg-green-50 p-2 rounded-full group-hover:bg-green-100 transition-colors">
                             <i class="fas fa-box-open text-lg lg:text-xl text-green-600"></i>
                             <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-sm">
@@ -697,7 +704,8 @@
                         <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
                             <i class="fas fa-search"></i>
                         </div>
-                        <button type="submit" 
+                        <button type="submit"
+                                aria-label="{{ app()->getLocale() === 'ar' ? 'بحث' : 'Rechercher' }}"
                                 class="absolute right-2 top-1/2 transform -translate-y-1/2 text-green-600 hover:text-green-700 transition-colors">
                             <i class="fas fa-arrow-right"></i>
                         </button>
@@ -962,12 +970,18 @@
     </footer>
 
     {{-- Back to Top Button --}}
-    <button id="backToTop" class="fixed bottom-8 right-8 bg-green-600 text-white p-3 rounded-full shadow-lg hover:bg-green-700 transition-all opacity-0 transform translate-y-10 z-40">
+    <button id="backToTop" type="button"
+            aria-label="{{ app()->getLocale() === 'ar' ? 'العودة إلى الأعلى' : 'Retour en haut' }}"
+            class="fixed bottom-8 right-8 bg-green-600 text-white p-3 rounded-full shadow-lg hover:bg-green-700 transition-all opacity-0 transform translate-y-10 z-40">
         <i class="fas fa-chevron-up"></i>
     </button>
 
     {{-- Pack Drawer --}}
-    <div id="cart-drawer" class="fixed inset-0 z-50 overflow-hidden hidden">
+    <div id="cart-drawer" class="fixed inset-0 z-50 overflow-hidden hidden"
+         role="dialog"
+         aria-modal="true"
+         aria-hidden="true"
+         aria-labelledby="cart-drawer-title">
         <!-- Backdrop -->
         <div id="cart-drawer-backdrop" class="absolute inset-0 bg-black bg-opacity-50 transition-opacity"></div>
         
@@ -978,11 +992,13 @@
                 <div class="h-full flex flex-col bg-white shadow-xl transform transition-transform duration-300 ease-in-out translate-x-full">
                     <!-- Header -->
                     <div class="flex items-center justify-between px-6 py-4 border-b">
-                        <h2 class="text-lg font-semibold text-gray-900">
+                        <h2 id="cart-drawer-title" class="text-lg font-semibold text-gray-900">
                             <i class="fas fa-box-open mr-2 text-emerald-600"></i>
                             {{ __('cart.drawer_title') }}
                         </h2>
-                        <button type="button" id="close-cart-drawer" class="text-gray-400 hover:text-gray-500 focus:outline-none">
+                        <button type="button" id="close-cart-drawer"
+                                aria-label="{{ __('messages.close') }}"
+                                class="text-gray-400 hover:text-gray-500 focus:outline-none">
                             <i class="fas fa-times text-xl"></i>
                         </button>
                     </div>
@@ -1266,7 +1282,9 @@
         if (mobileSearchToggle) {
             mobileSearchToggle.addEventListener('click', function() {
                 mobileSearchContainer.classList.toggle('hidden');
-                if (!mobileSearchContainer.classList.contains('hidden')) {
+                const isSearchOpen = !mobileSearchContainer.classList.contains('hidden');
+                mobileSearchToggle.setAttribute('aria-expanded', isSearchOpen ? 'true' : 'false');
+                if (isSearchOpen) {
                     // Focus on input when search is shown
                     setTimeout(() => {
                         if (mobileSearchInput) {
@@ -1293,6 +1311,8 @@
         // Cart drawer functions
         function openCartDrawer() {
             cartDrawer.classList.remove('hidden');
+            cartDrawer.setAttribute('aria-hidden', 'false');
+            cartDrawerTrigger?.setAttribute('aria-expanded', 'true');
             setTimeout(() => {
                 cartDrawer.querySelector('.transform').classList.remove('translate-x-full');
                 loadCartContent();
@@ -1304,6 +1324,8 @@
             cartDrawer.querySelector('.transform').classList.add('translate-x-full');
             setTimeout(() => {
                 cartDrawer.classList.add('hidden');
+                cartDrawer.setAttribute('aria-hidden', 'true');
+                cartDrawerTrigger?.setAttribute('aria-expanded', 'false');
             }, 300);
             document.body.style.overflow = '';
         }
@@ -1447,19 +1469,21 @@
                                 
                                 <!-- Quantity Controls -->
                                 <div class="flex items-center space-x-2">
-                                    <button type="button" 
-                                            data-action="decrease" 
+                                    <button type="button"
+                                            data-action="decrease"
                                             data-product-id="${itemId}"
-                                            class="w-4 h-4 lg:w-6 lg:h-6 flex items-center justify-center bg-gray-200 rounded hover:bg-gray-300 transition-colors">
+                                            aria-label="{{ app()->getLocale() === 'ar' ? 'إنقاص الكمية' : 'Diminuer la quantité' }}"
+                                            class="h-8 w-8 flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition-colors">
                                         <i class="fas fa-minus text-xs"></i>
                                     </button>
                                     
-                                    <span class="quantity-display w-4 lg:w-8 text-center font-medium">${item.quantity}</span>
+                                    <span class="quantity-display min-w-8 text-center font-medium">${item.quantity}</span>
                                     
-                                    <button type="button" 
-                                            data-action="increase" 
+                                    <button type="button"
+                                            data-action="increase"
                                             data-product-id="${itemId}"
-                                            class="w-4 h-4 lg:w-6 lg:h-6 flex items-center justify-center bg-gray-200 rounded hover:bg-gray-300 transition-colors">
+                                            aria-label="{{ app()->getLocale() === 'ar' ? 'زيادة الكمية' : 'Augmenter la quantité' }}"
+                                            class="h-8 w-8 flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition-colors">
                                         <i class="fas fa-plus text-xs"></i>
                                     </button>
                                 </div>
@@ -1467,8 +1491,9 @@
                         </div>
                         
                         <!-- Remove Button -->
-                        <button type="button" 
+                        <button type="button"
                                 data-product-id="${itemId}"
+                                aria-label="{{ app()->getLocale() === 'ar' ? 'حذف المنتج من الباقة' : 'Retirer le produit du pack' }}"
                                 class="remove-from-cart-btn text-red-400 hover:text-red-600 transition-colors">
                             <i class="fas fa-trash"></i>
                         </button>
