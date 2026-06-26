@@ -438,16 +438,16 @@ document.addEventListener('DOMContentLoaded', function() {
         @foreach($activeBanners['bottom'] as $banner)
             <section class="py-2 md:py-4">
                 <div class="container mx-auto px-4">
-                    <div class="bg-gradient-to-r from-green-600 to-teal-600 rounded-3xl overflow-hidden shadow-2xl">
+                    <div class="bottom-cta-banner rounded-3xl overflow-hidden shadow-2xl">
                         <div class="grid md:grid-cols-2 items-center">
-                            <div class="p-8 md:p-12">
+                            <div class="bottom-cta-content p-8 md:p-12">
                                 @if($banner->localized_title)
-                                    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+                                    <h2 class="bottom-cta-title text-3xl md:text-4xl font-bold text-white mb-4">
                                         {{ $banner->localized_title }}
                                     </h2>
                                 @endif
                                 @if($banner->localized_description)
-                                    <p class="text-lg text-gray-100 mb-8">
+                                    <p class="bottom-cta-description text-lg text-white mb-8">
                                         {{ $banner->localized_description }}
                                     </p>
                                 @endif
