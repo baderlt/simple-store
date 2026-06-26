@@ -1,59 +1,128 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Wany Bio Laravel Store
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Wany Bio is a Laravel e-commerce store with a public storefront, cart/checkout flow, admin product management, banners, categories, discounts, Arabic/French localization, SEO metadata, sitemap support, and optimized product image uploads.
 
-## About Laravel
+## Main stack
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Laravel 12
+- PHP 8.2+
+- MySQL/MariaDB recommended for production
+- Vite, Tailwind CSS, Alpine.js
+- Database-backed cache, session, and queue configuration for shared hosting
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Local setup
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+php artisan storage:link
+npm install
+npm run build
+php artisan serve
+```
 
-## Learning Laravel
+For active frontend development:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+```bash
+npm run dev
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Useful commands
 
-## Laravel Sponsors
+```bash
+php artisan test
+php artisan route:list
+php artisan optimize:clear
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Production deployment
 
-### Premium Partners
+Read the production guide before deploying:
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+[docs/production-deployment.md](docs/production-deployment.md)
 
-## Contributing
+Minimum production reminders:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- Set `APP_ENV=production`
+- Set `APP_DEBUG=false`
+- Set `APP_URL` to the HTTPS store URL
+- Run `composer install --no-dev --prefer-dist --optimize-autoloader`
+- Run `npm ci && npm run build`, or upload prebuilt `public/build`
+- Run `php artisan migrate --force`
+- Run `php artisan storage:link`
+- Cache config/routes/views after deployment
+- On shared hosting, keep the database queue running with a cron job
 
-## Code of Conduct
+## Health check
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+The application exposes Laravel's built-in health endpoint:
 
-## Security Vulnerabilities
+```text
+/up
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Use this for uptime monitoring or load balancer health checks.
 
-## License
+## Localization
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+The storefront supports French as the default language and Arabic with RTL presentation. Translation files live in:
+
+- `lang/fr`
+- `lang/ar`
+- `lang/en`
+
+Arabic-specific content fields are optional and should fall back to French/default content when empty.
+
+## SEO
+
+The storefront includes:
+
+- Product meta fields and fallback SEO generation
+- Open Graph and Twitter metadata
+- Product JSON-LD
+- Breadcrumb JSON-LD
+- XML sitemap at `/sitemap.xml`
+- Robots rules in `public/robots.txt`
+
+## Image uploads
+
+Product images are optimized through GD before storage. Relevant environment variables:
+
+```dotenv
+PRODUCT_IMAGE_MAX_WIDTH=1600
+PRODUCT_IMAGE_MAX_HEIGHT=1600
+PRODUCT_IMAGE_QUALITY=82
+```
+
+Uploaded public files require:
+
+```bash
+php artisan storage:link
+```
+
+## Testing before release
+
+Run:
+
+```bash
+php artisan test
+npm run build
+php artisan route:list
+```
+
+Manual smoke tests:
+
+- Homepage loads
+- Products and categories load
+- Arabic/French switch works
+- Product image gallery works
+- Add to pack works
+- Checkout creates an order
+- Admin can create/update products, categories, banners, and discounts
+- `/sitemap.xml` opens
+- `/up` returns HTTP 200
