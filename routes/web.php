@@ -51,14 +51,14 @@ Route::get('/categories/{category:slug}', [CategoryController::class, 'show'])->
 
 // Cart (No login required)
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
-Route::put('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
-Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
-Route::delete('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
+Route::post('/cart/add/{id}', [CartController::class, 'add'])->middleware('throttle:60,1')->name('cart.add');
+Route::put('/cart/update/{id}', [CartController::class, 'update'])->middleware('throttle:60,1')->name('cart.update');
+Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->middleware('throttle:60,1')->name('cart.remove');
+Route::delete('/cart/clear', [CartController::class, 'clear'])->middleware('throttle:60,1')->name('cart.clear');
 // Cart AJAX routes
-Route::get('/cart/ajax', [CartController::class, 'getAjax'])->name('cart.ajax.get');
-Route::put('/cart/ajax/update/{id}', [CartController::class, 'ajaxUpdate'])->name('cart.ajax.update');
-Route::delete('/cart/ajax/remove/{id}', [CartController::class, 'ajaxRemove'])->name('cart.ajax.remove');
+Route::get('/cart/ajax', [CartController::class, 'getAjax'])->middleware('throttle:60,1')->name('cart.ajax.get');
+Route::put('/cart/ajax/update/{id}', [CartController::class, 'ajaxUpdate'])->middleware('throttle:60,1')->name('cart.ajax.update');
+Route::delete('/cart/ajax/remove/{id}', [CartController::class, 'ajaxRemove'])->middleware('throttle:60,1')->name('cart.ajax.remove');
 
 // Checkout (No login required)
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');

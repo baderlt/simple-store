@@ -114,6 +114,7 @@
                     <div class="relative overflow-hidden rounded-2xl bg-white shadow-2xl border border-gray-100">
                         <img id="mainImage" 
                              loading="lazy"
+                             decoding="async"
                              src="{{ $initialImageUrl }}"
                              alt="{{ $product->primary_image_alt }}"
                              width="900"
@@ -168,6 +169,7 @@
                                         <img src="{{ asset('storage/' . $image->image_path) }}" 
                                              alt="{{ $product->name }} - Image {{ $index + 1 }}" 
                                              loading="lazy"
+                                             decoding="async"
                                              width="160"
                                              height="160"
                                              class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">

@@ -11,14 +11,17 @@ use App\Models\ProductImage;
 use App\Models\ProductVariant;
 use App\Models\ProductVariantItem;
 use App\Services\ProductImageOptimizer;
+use App\Support\StorefrontCache;
 use Illuminate\Database\QueryException;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use Carbon\Carbon;
 
 class ProductController extends Controller
 {
@@ -91,6 +94,9 @@ class ProductController extends Controller
             throw $exception;
         }
 
+        StorefrontCache::clearHome();
+        Cache::forget('admin.dashboard.v1');
+
         return redirect()->route('admin.products.index')
             ->with('success', __('admin.product_created'));
     }
@@ -106,55 +112,77 @@ class ProductController extends Controller
     {
         $product->load(['category', 'images', 'variants.items.attribute', 'variants.items.value']);
 
-        $orderItemsQuery = OrderItem::where('product_id', $product->id)
-            ->whereHas('order', function($query) {
-                $query->where('status', '!=', 'cancelled');
-            })
-            ->with(['order' => function($query) {
-                $query->select('id', 'order_number', 'status', 'created_at');
-            }])
-            ->orderBy('created_at', 'desc');
+        $validOrderItemsQuery = OrderItem::query()
+            ->where('product_id', $product->id)
+            ->whereHas('order', fn ($query) => $query->where('status', '!=', 'cancelled'));
 
-        $orderItems = $orderItemsQuery->get();
-        $recentOrders = (clone $orderItemsQuery)->take(10)->get();
+        $allOrderItemsQuery = OrderItem::query()
+            ->where('product_id', $product->id)
+            ->whereHas('order');
 
-        $allOrderItems = OrderItem::where('product_id', $product->id)
-            ->with(['order' => function($query) {
-                $query->select('id', 'order_number', 'status', 'created_at');
-            }])
+        $validStats = (clone $validOrderItemsQuery)
+            ->selectRaw('COUNT(*) as total_orders')
+            ->selectRaw('COALESCE(SUM(quantity), 0) as total_quantity')
+            ->selectRaw('COALESCE(SUM(subtotal), 0) as total_revenue')
+            ->selectRaw('COALESCE(AVG(subtotal), 0) as average_order_value')
+            ->selectRaw('MIN(created_at) as first_order_date')
+            ->selectRaw('MAX(created_at) as last_order_date')
+            ->first();
+
+        $allStats = (clone $allOrderItemsQuery)
+            ->selectRaw('COUNT(*) as total_all_orders')
+            ->selectRaw('COALESCE(SUM(quantity), 0) as total_all_quantity')
+            ->selectRaw('COALESCE(SUM(subtotal), 0) as total_all_revenue')
+            ->first();
+
+        $cancelledStats = OrderItem::query()
+            ->where('product_id', $product->id)
+            ->whereHas('order', fn ($query) => $query->where('status', 'cancelled'))
+            ->selectRaw('COUNT(*) as cancelled_orders_count')
+            ->selectRaw('COALESCE(SUM(quantity), 0) as cancelled_quantity')
+            ->selectRaw('COALESCE(SUM(subtotal), 0) as cancelled_revenue')
+            ->first();
+
+        $statusStats = OrderItem::query()
+            ->join('orders', 'orders.id', '=', 'order_items.order_id')
+            ->where('order_items.product_id', $product->id)
+            ->select('orders.status')
+            ->selectRaw('COUNT(*) as order_count')
+            ->selectRaw('COALESCE(SUM(order_items.quantity), 0) as total_quantity')
+            ->selectRaw('COALESCE(SUM(order_items.subtotal), 0) as total_revenue')
+            ->groupBy('orders.status')
             ->get();
 
-        $cancelledOrderItems = $allOrderItems->filter(fn ($item) => $item->order && $item->order->status === 'cancelled');
-        $statusStats = $allOrderItems
-            ->filter(fn ($item) => $item->order)
-            ->groupBy(fn ($item) => $item->order->status)
-            ->map(function ($items, $status) {
-                return (object) [
-                    'status' => $status,
-                    'order_count' => $items->count(),
-                    'total_quantity' => $items->sum('quantity'),
-                    'total_revenue' => $items->sum('subtotal'),
-                ];
-            })
-            ->values();
+        $recentOrders = (clone $validOrderItemsQuery)
+            ->with(['order' => function ($query) {
+                $query->select('id', 'order_number', 'status', 'created_at');
+            }])
+            ->latest()
+            ->take(10)
+            ->get();
+
+        $totalOrders = (int) $validStats->total_orders;
+        $totalAllOrders = (int) $allStats->total_all_orders;
+        $firstOrderDate = $validStats->first_order_date ? Carbon::parse($validStats->first_order_date) : null;
+        $lastOrderDate = $validStats->last_order_date ? Carbon::parse($validStats->last_order_date) : null;
 
         $ordersData = [
-            'total_orders' => $orderItems->count(),
-            'total_quantity' => $orderItems->sum('quantity'),
-            'total_revenue' => $orderItems->sum('subtotal'),
-            'average_order_value' => $orderItems->avg('subtotal'),
-            'last_order_date' => $orderItems->max('created_at'),
+            'total_orders' => $totalOrders,
+            'total_quantity' => (int) $validStats->total_quantity,
+            'total_revenue' => (float) $validStats->total_revenue,
+            'average_order_value' => (float) $validStats->average_order_value,
+            'last_order_date' => $lastOrderDate,
             'recent_orders' => $recentOrders,
             'status_stats' => $statusStats,
-            'cancelled_orders_count' => $cancelledOrderItems->count(),
-            'cancelled_quantity' => $cancelledOrderItems->sum('quantity'),
-            'cancelled_revenue' => $cancelledOrderItems->sum('subtotal'),
-            'total_all_orders' => $allOrderItems->count(),
-            'total_all_quantity' => $allOrderItems->sum('quantity'),
-            'total_all_revenue' => $allOrderItems->sum('subtotal'),
-            'avg_quantity_per_order' => $orderItems->count() > 0 ? round($orderItems->sum('quantity') / $orderItems->count(), 2) : 0,
-            'activity_period' => $orderItems->isNotEmpty() ? $orderItems->min('created_at')->format('d/m/Y') . ' - ' . $orderItems->max('created_at')->format('d/m/Y') : 'Aucune commande valide',
-            'cancellation_rate' => $allOrderItems->count() > 0 ? round(($cancelledOrderItems->count() / $allOrderItems->count()) * 100, 2) : 0
+            'cancelled_orders_count' => (int) $cancelledStats->cancelled_orders_count,
+            'cancelled_quantity' => (int) $cancelledStats->cancelled_quantity,
+            'cancelled_revenue' => (float) $cancelledStats->cancelled_revenue,
+            'total_all_orders' => $totalAllOrders,
+            'total_all_quantity' => (int) $allStats->total_all_quantity,
+            'total_all_revenue' => (float) $allStats->total_all_revenue,
+            'avg_quantity_per_order' => $totalOrders > 0 ? round(((int) $validStats->total_quantity) / $totalOrders, 2) : 0,
+            'activity_period' => $firstOrderDate && $lastOrderDate ? $firstOrderDate->format('d/m/Y') . ' - ' . $lastOrderDate->format('d/m/Y') : 'Aucune commande valide',
+            'cancellation_rate' => $totalAllOrders > 0 ? round(((int) $cancelledStats->cancelled_orders_count / $totalAllOrders) * 100, 2) : 0,
         ];
 
         return view('admin.products.show', compact('product', 'ordersData'));
@@ -177,6 +205,9 @@ class ProductController extends Controller
             $this->syncVariants($request, $product, $variantsPayload, $storedPaths);
         });
 
+        StorefrontCache::clearHome();
+        Cache::forget('admin.dashboard.v1');
+
         return redirect()->route('admin.products.index')
             ->with('success', __('admin.product_updated'));
     }
@@ -193,6 +224,9 @@ class ProductController extends Controller
         }
 
         $product->delete();
+
+        StorefrontCache::clearHome();
+        Cache::forget('admin.dashboard.v1');
 
         return redirect()->route('admin.products.index')
             ->with('success', __('admin.product_deleted'));
@@ -413,7 +447,10 @@ class ProductController extends Controller
                 if ($imagePath) {
                     Storage::disk('public')->delete($imagePath);
                 }
-                $imagePath = $request->file("variant_images.$key")->store('products/variants', 'public');
+                $imagePath = $this->productImageOptimizer->store(
+                    $request->file("variant_images.$key"),
+                    'products/variants'
+                );
                 if (!$imagePath) {
                     throw ValidationException::withMessages([
                         'variant_images' => __('admin.image_upload_failed'),

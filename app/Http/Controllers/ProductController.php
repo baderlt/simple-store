@@ -10,8 +10,8 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::where('is_active', true)
-            ->with(['primaryImage', 'activeDiscount', 'category.activeDiscounts', 'defaultVariant', 'variants.items.attribute', 'variants.items.value']);
+        $query = Product::active()
+            ->withStorefrontRelations();
 
         // Search
         if ($request->has('search')) {
@@ -65,7 +65,7 @@ class ProductController extends Controller
         $relatedProducts = Product::where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
             ->where('is_active', true)
-            ->with(['primaryImage', 'activeDiscount', 'category'])
+            ->withStorefrontRelations()
             ->take(4)
             ->get();
 
@@ -81,12 +81,12 @@ class ProductController extends Controller
 
     $likeQuery = addcslashes($query, '\\%_');
     
-    $products = Product::where('is_active', true)
+    $products = Product::active()
+        ->withActiveDiscounts()
         ->where(function ($productsQuery) use ($likeQuery) {
             $productsQuery->where('name', 'like', '%' . $likeQuery . '%')
                 ->orWhere('description', 'like', '%' . $likeQuery . '%');
         })
-        ->with('category')
         ->take(10)
         ->get();
     

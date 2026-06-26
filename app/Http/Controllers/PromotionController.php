@@ -1,133 +1,44 @@
 <?php
-// app/Http/Controllers/PromotionController.php
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
 use App\Models\Category;
 use App\Models\Discount;
-use Illuminate\Http\Request;
+use App\Models\Product;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 class PromotionController extends Controller
 {
     public function index()
     {
-        // Méthode 1: Récupérer les produits qui ont une réduction active (produit OU catégorie)
-        $productsWithDiscount = Product::where('is_active', true)
-            ->available()
-            ->where(function($query) {
-                $query->whereHas('discounts', function($q) {
-                    $q->where('is_active', true)
-                      ->where('start_date', '<=', now())
-                      ->where('end_date', '>=', now());
-                })->orWhereHas('category', function($q) {
-                    $q->whereHas('discounts', function($q2) {
-                        $q2->where('is_active', true)
-                           ->where('start_date', '<=', now())
-                           ->where('end_date', '>=', now());
-                    });
-                });
-            })
-            ->with(['category', 'primaryImage', 'variants', 'discounts' => function($query) {
-                $query->where('is_active', true)
-                      ->where('start_date', '<=', now())
-                      ->where('end_date', '>=', now());
-            }])
+        $productsWithDiscount = $this->discountedProductsQuery()
+            ->latest()
             ->paginate(12);
 
-        // Méthode 2: Produits phares (avec les plus grandes réductions)
-        $featuredProducts = Product::where('is_active', true)
-            ->available()
-            ->where(function($query) {
-                $query->whereHas('discounts', function($q) {
-                    $q->where('is_active', true)
-                      ->where('start_date', '<=', now())
-                      ->where('end_date', '>=', now());
-                })->orWhereHas('category', function($q) {
-                    $q->whereHas('discounts', function($q2) {
-                        $q2->where('is_active', true)
-                           ->where('start_date', '<=', now())
-                           ->where('end_date', '>=', now());
-                    });
-                });
-            })
-            ->with(['category', 'primaryImage', 'variants', 'discounts' => function($query) {
-                $query->where('is_active', true)
-                      ->where('start_date', '<=', now())
-                      ->where('end_date', '>=', now());
-            }])
-            ->get()
-            ->sortByDesc(function($product) {
-                // Trier par pourcentage de réduction
-                if ($product->activeDiscount) {
-                    return $product->activeDiscount->discount_percentage;
-                }
-                return 0;
-            })
-            ->take(4);
+        $featuredProducts = $this->discountedProductsQuery()
+            ->select('products.*')
+            ->selectSub($this->activeProductDiscountPercentageSubquery(), 'product_active_discount_percentage')
+            ->selectSub($this->activeCategoryDiscountPercentageSubquery(), 'category_active_discount_percentage')
+            ->orderByRaw('CASE WHEN COALESCE(product_active_discount_percentage, 0) >= COALESCE(category_active_discount_percentage, 0) THEN COALESCE(product_active_discount_percentage, 0) ELSE COALESCE(category_active_discount_percentage, 0) END DESC')
+            ->orderByDesc('products.created_at')
+            ->take(4)
+            ->get();
 
-        // Catégories qui ont des produits en promotion
-        $categoriesWithDiscounts = Category::whereHas('products', function($query) {
-            $query->where('is_active', true)
-                  ->available()
-                  ->where(function($q) {
-                      $q->whereHas('discounts', function($q2) {
-                          $q2->where('is_active', true)
-                             ->where('start_date', '<=', now())
-                             ->where('end_date', '>=', now());
-                      })->orWhereHas('category', function($q2) {
-                          $q2->whereHas('discounts', function($q3) {
-                              $q3->where('is_active', true)
-                                 ->where('start_date', '<=', now())
-                                 ->where('end_date', '>=', now());
-                          });
-                      });
-                  });
+        $categoriesWithDiscounts = Category::whereHas('products', function (Builder $query) {
+            $this->applyDiscountedProductFilters($query);
         })
-        ->withCount(['products' => function($query) {
-            $query->where('is_active', true)
-                  ->available()
-                  ->where(function($q) {
-                      $q->whereHas('discounts', function($q2) {
-                          $q2->where('is_active', true)
-                             ->where('start_date', '<=', now())
-                             ->where('end_date', '>=', now());
-                      })->orWhereHas('category', function($q2) {
-                          $q2->whereHas('discounts', function($q3) {
-                              $q3->where('is_active', true)
-                                 ->where('start_date', '<=', now())
-                                 ->where('end_date', '>=', now());
-                          });
-                      });
-                  });
-        }])
-        ->having('products_count', '>', 0)
-        ->get();
+            ->withCount(['products' => function (Builder $query) {
+                $this->applyDiscountedProductFilters($query);
+            }])
+            ->having('products_count', '>', 0)
+            ->get();
 
-        // Toutes les catégories pour le filtre
-        $categories = Category::whereHas('products', function($query) {
-            $query->where('is_active', true)
-                  ->available()
-                  ->where(function($q) {
-                      $q->whereHas('discounts', function($q2) {
-                          $q2->where('is_active', true)
-                             ->where('start_date', '<=', now())
-                             ->where('end_date', '>=', now());
-                      })->orWhereHas('category', function($q2) {
-                          $q2->whereHas('discounts', function($q3) {
-                              $q3->where('is_active', true)
-                                 ->where('start_date', '<=', now())
-                                 ->where('end_date', '>=', now());
-                          });
-                      });
-                  });
+        $categories = Category::whereHas('products', function (Builder $query) {
+            $this->applyDiscountedProductFilters($query);
         })->get();
 
-        // Réduction maximale active
-        $maxDiscount = Discount::where('is_active', true)
-            ->where('start_date', '<=', now())
-            ->where('end_date', '>=', now())
-            ->max('discount_percentage');
+        $maxDiscount = Discount::active()->max('discount_percentage');
 
         return view('promotions.index', compact(
             'productsWithDiscount',
@@ -136,5 +47,36 @@ class PromotionController extends Controller
             'categories',
             'maxDiscount'
         ));
+    }
+
+    private function discountedProductsQuery(): Builder
+    {
+        return Product::active()
+            ->available()
+            ->withAnyActiveDiscount()
+            ->withStorefrontRelations();
+    }
+
+    private function applyDiscountedProductFilters(Builder $query): void
+    {
+        $query->where('is_active', true)
+            ->available()
+            ->withAnyActiveDiscount();
+    }
+
+    private function activeProductDiscountPercentageSubquery(): Builder
+    {
+        return Discount::query()
+            ->selectRaw('MAX(discount_percentage)')
+            ->whereColumn('discounts.product_id', 'products.id')
+            ->active();
+    }
+
+    private function activeCategoryDiscountPercentageSubquery(): Builder
+    {
+        return Discount::query()
+            ->selectRaw('MAX(discount_percentage)')
+            ->whereColumn('discounts.category_id', 'products.category_id')
+            ->active();
     }
 }

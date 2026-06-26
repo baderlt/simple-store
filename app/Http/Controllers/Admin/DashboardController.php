@@ -6,12 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Category;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
     public function index()
     {
+        $dashboardData = Cache::remember('admin.dashboard.v1', now()->addSeconds(60), function (): array {
         // Basic Stats
         $totalSales = Order::where('status', '!=', 'cancelled')->sum('total');
         $totalOrders = Order::count();
@@ -20,7 +22,8 @@ class DashboardController extends Controller
         
         // Low stock products
         $lowStockProducts = Product::where('stock_quantity', '<=', DB::raw('low_stock_alert'))->count();
-        $lowStockProductsList = Product::where('stock_quantity', '<=', DB::raw('low_stock_alert'))
+        $lowStockProductsList = Product::with('primaryImage')
+            ->where('stock_quantity', '<=', DB::raw('low_stock_alert'))
             ->orderBy('stock_quantity')
             ->take(5)
             ->get();
@@ -55,7 +58,10 @@ class DashboardController extends Controller
             ->get();
         
         // Best selling products
-        $bestSellingProducts = Product::withSum('orderItems as total_sold', 'quantity')
+        $bestSellingProducts = Product::with('primaryImage')
+            ->withSum(['orderItems as total_sold' => function ($query) {
+                $query->whereHas('order', fn ($orderQuery) => $orderQuery->where('status', '!=', 'cancelled'));
+            }], 'quantity')
             ->orderByDesc('total_sold')
             ->take(6)
             ->get();
@@ -108,28 +114,31 @@ class DashboardController extends Controller
             ->orderBy('date')
             ->get();
         
-        return view('admin.dashboard', compact(
-            'totalSales',
-            'totalOrders',
-            'totalProducts',
-            'totalCategories',
-            'lowStockProducts',
-            'lowStockProductsList',
-            'todaySales',
-            'todayOrders',
-            'monthlySales',
-            'monthlyOrders',
-            'avgOrderValue',
-            'pendingOrders',
-            'preparingOrders',
-            'deliveryOrders',
-            'recentOrders',
-            'bestSellingProducts',
-            'revenueByStatus',
-            'revenueData',
-            'ordersData',
-            'categoryStats',
-            'dailySales'
-        ));
+            return compact(
+                'totalSales',
+                'totalOrders',
+                'totalProducts',
+                'totalCategories',
+                'lowStockProducts',
+                'lowStockProductsList',
+                'todaySales',
+                'todayOrders',
+                'monthlySales',
+                'monthlyOrders',
+                'avgOrderValue',
+                'pendingOrders',
+                'preparingOrders',
+                'deliveryOrders',
+                'recentOrders',
+                'bestSellingProducts',
+                'revenueByStatus',
+                'revenueData',
+                'ordersData',
+                'categoryStats',
+                'dailySales'
+            );
+        });
+
+        return view('admin.dashboard', $dashboardData);
     }
 }
