@@ -55,9 +55,9 @@
                         </div>
                     @endforeach
                 </div>
-                <div class="swiper-button-next"></div>
-                <div class="swiper-button-prev"></div>
-                <div class="swiper-pagination"></div>
+                <div class="swiper-button-next" role="button" tabindex="0" aria-label="{{ app()->getLocale() === 'ar' ? 'التالي' : 'Suivant' }}"></div>
+                <div class="swiper-button-prev" role="button" tabindex="0" aria-label="{{ app()->getLocale() === 'ar' ? 'السابق' : 'Précédent' }}"></div>
+                <div class="swiper-pagination" aria-label="{{ app()->getLocale() === 'ar' ? 'ترقيم الشرائح' : 'Pagination du carrousel' }}"></div>
             </div>
         </section>
     @else
@@ -204,11 +204,11 @@
                     </div>
                     
                     <!-- Navigation Buttons -->
-                    <div class="swiper-button-next categories-next"></div>
-                    <div class="swiper-button-prev categories-prev"></div>
+                    <div class="swiper-button-next categories-next" role="button" tabindex="0" aria-label="{{ app()->getLocale() === 'ar' ? 'التالي' : 'Suivant' }}"></div>
+                    <div class="swiper-button-prev categories-prev" role="button" tabindex="0" aria-label="{{ app()->getLocale() === 'ar' ? 'السابق' : 'Précédent' }}"></div>
                     
                     <!-- Pagination -->
-                    <div class="swiper-pagination categories-pagination"></div>
+                    <div class="swiper-pagination categories-pagination" aria-label="{{ app()->getLocale() === 'ar' ? 'ترقيم الشرائح' : 'Pagination du carrousel' }}"></div>
                 </div>
             @else
                 <div class="text-center py-4">

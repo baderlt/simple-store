@@ -7,10 +7,11 @@
 @section('og_type', 'product')
 @section('og_title', $product->seo_og_title)
 @section('og_description', $product->seo_og_description)
+@section('og_image', $product->seo_og_image_url)
+@section('og_image_alt', $product->primary_image_alt)
 @section('twitter_title', $product->seo_og_title)
 @section('twitter_description', $product->seo_og_description)
 @php
-    $ogImage = $product->seo_og_image_url;
     $schemaPrice = $product->getDiscountedPrice($product->getCurrentPrice());
     $productSchema = [
         '@context' => 'https://schema.org',

@@ -11,6 +11,8 @@
         $pageOgDescription = trim($__env->yieldContent('og_description', $pageDescription));
         $pageTwitterTitle = trim($__env->yieldContent('twitter_title', $pageOgTitle));
         $pageTwitterDescription = trim($__env->yieldContent('twitter_description', $pageOgDescription));
+        $pageOgImage = trim($__env->yieldContent('og_image', ''));
+        $pageOgImageAlt = trim($__env->yieldContent('og_image_alt', settings('store_name', 'Simple Store')));
     @endphp
     
     {{-- SEO Meta Tags --}}
@@ -30,19 +32,22 @@
     <meta property="og:url" content="{{ $pageCanonical }}">
     <meta property="og:site_name" content="{{ settings('store_name', 'Simple Store') }}">
     @php
-        $ogImage = $ogImage ?? (settings('logo') ? asset('storage/' . settings('logo')) : asset('img/default-og.jpg'));
+        $ogImage = $pageOgImage !== ''
+            ? $pageOgImage
+            : ($ogImage ?? (settings('logo') ? asset('storage/' . settings('logo')) : asset('img/default-og.jpg')));
     @endphp
     <meta property="og:image" content="{{ $ogImage }}">
     <meta property="og:image:secure_url" content="{{ $ogImage }}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="{{ settings('store_name', 'Simple Store') }}">
+    <meta property="og:image:alt" content="{{ $pageOgImageAlt }}">
     
     {{-- Twitter Card --}}
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ $pageTwitterTitle }}">
     <meta name="twitter:description" content="{{ $pageTwitterDescription }}">
     <meta name="twitter:image" content="{{ $ogImage }}">
+    <meta name="twitter:image:alt" content="{{ $pageOgImageAlt }}">
     
     {{-- Robots --}}
     <meta name="robots" content="@yield('robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1')">
