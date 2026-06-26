@@ -123,7 +123,9 @@
         <div class="absolute inset-x-2 top-2 z-40 hidden max-h-[calc(100%-1rem)] overflow-y-auto rounded-2xl bg-white/95 p-2.5 shadow-2xl ring-1 ring-gray-100 backdrop-blur-md" data-variant-modal>
             <div class="mb-2 flex items-center justify-between gap-3">
                 <p class="text-xs font-black uppercase tracking-wide text-emerald-600">{{ __('products.choose_variant') }}</p>
-                <button type="button" data-variant-modal-close class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:text-gray-900">
+                <button type="button" data-variant-modal-close
+                        aria-label="{{ __('messages.close') }}"
+                        class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:text-gray-900">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -151,14 +153,20 @@
 
             <div class="mt-2 hidden rounded-xl bg-emerald-50 p-2" data-card-quantity-panel>
                 <div class="flex items-center justify-between gap-3">
-                    <button type="button" class="flex h-8 w-8 items-center justify-center rounded-full bg-white text-emerald-700 shadow-sm" data-card-quantity-change="-1">
+                    <button type="button"
+                            aria-label="{{ app()->getLocale() === 'ar' ? 'إنقاص الكمية' : 'Diminuer la quantité' }}"
+                            class="flex h-8 w-8 items-center justify-center rounded-full bg-white text-emerald-700 shadow-sm"
+                            data-card-quantity-change="-1">
                         <i class="fas fa-minus text-xs"></i>
                     </button>
                     <div class="text-center">
                         <div class="text-[11px] font-bold uppercase tracking-wide text-emerald-700">{{ __('products.choose_quantity') }}</div>
                         <div class="text-lg font-black text-gray-900"><span data-card-quantity-value>1</span><span data-card-quantity-unit></span></div>
                     </div>
-                    <button type="button" class="flex h-8 w-8 items-center justify-center rounded-full bg-white text-emerald-700 shadow-sm" data-card-quantity-change="1">
+                    <button type="button"
+                            aria-label="{{ app()->getLocale() === 'ar' ? 'زيادة الكمية' : 'Augmenter la quantité' }}"
+                            class="flex h-8 w-8 items-center justify-center rounded-full bg-white text-emerald-700 shadow-sm"
+                            data-card-quantity-change="1">
                         <i class="fas fa-plus text-xs"></i>
                     </button>
                 </div>

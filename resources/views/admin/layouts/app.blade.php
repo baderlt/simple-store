@@ -136,10 +136,6 @@
 
                 {{-- Mobile Language Switcher --}}
                 <div class="flex rounded-full border border-gray-200 bg-white p-0.5 text-[11px] font-semibold sm:p-1 sm:text-xs">
-                    <a href="{{ route('lang.switch', 'en') }}"
-                       class="rounded-full px-1.5 py-1 transition-colors sm:px-2 {{ app()->getLocale() === 'en' ? 'bg-green-600 text-white' : 'text-gray-600' }}">
-                        EN
-                    </a>
                     <a href="{{ route('lang.switch', 'fr') }}"
                        class="rounded-full px-1.5 py-1 transition-colors sm:px-2 {{ app()->getLocale() === 'fr' ? 'bg-green-600 text-white' : 'text-gray-600' }}">
                         FR
@@ -287,7 +283,9 @@
                         <p class="text-gray-400 text-xs">{{ __('store_management') }}</p>
                     </div>
                 </div>
-                <button id="closeMobileMenu" class="p-2 hover:bg-gray-700/50 rounded-lg">
+                <button id="closeMobileMenu" type="button"
+                        aria-label="{{ __('messages.close') }}"
+                        class="p-2 hover:bg-gray-700/50 rounded-lg">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -424,7 +422,10 @@
                             <p class="font-semibold text-responsive-lg">Succès !</p>
                             <p class="text-responsive">{{ session('success') }}</p>
                         </div>
-                        <button onclick="this.parentElement.remove()" class="ml-2 text-green-600 hover:text-green-800">
+                        <button type="button"
+                                onclick="this.parentElement.remove()"
+                                aria-label="{{ __('messages.close') }}"
+                                class="ml-2 text-green-600 hover:text-green-800">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
@@ -439,7 +440,10 @@
                             <p class="font-semibold text-responsive-lg">Erreur !</p>
                             <p class="text-responsive">{{ session('error') }}</p>
                         </div>
-                        <button onclick="this.parentElement.remove()" class="ml-2 text-red-600 hover:text-red-800">
+                        <button type="button"
+                                onclick="this.parentElement.remove()"
+                                aria-label="{{ __('messages.close') }}"
+                                class="ml-2 text-red-600 hover:text-red-800">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
