@@ -438,16 +438,20 @@ document.addEventListener('DOMContentLoaded', function() {
         @foreach($activeBanners['bottom'] as $banner)
             <section class="py-2 md:py-4">
                 <div class="container mx-auto px-4">
-                    <div class="bottom-cta-banner rounded-3xl overflow-hidden shadow-2xl">
-                        <div class="grid md:grid-cols-2 items-center">
-                            <div class="bottom-cta-content p-8 md:p-12">
+                    <div class="bottom-cta-banner rounded-3xl overflow-hidden shadow-2xl"
+                         style="background: linear-gradient(135deg, #2a1b12 0%, #3d2b1f 52%, #b7791f 100%);">
+                        <div class="grid md:grid-cols-2 items-stretch">
+                            <div class="bottom-cta-content flex h-full min-h-64 flex-col justify-center p-8 md:min-h-[420px] md:p-12"
+                                 style="background: linear-gradient(135deg, #2a1b12 0%, #3d2b1f 68%, #7a4f16 100%); box-shadow: inset -40px 0 70px rgba(0, 0, 0, 0.18);">
                                 @if($banner->localized_title)
-                                    <h2 class="bottom-cta-title text-3xl md:text-4xl font-bold text-white mb-4">
+                                    <h2 class="bottom-cta-title text-3xl md:text-4xl font-bold text-white mb-4"
+                                        style="color: #ffffff; text-shadow: 0 3px 10px rgba(0, 0, 0, 0.55);">
                                         {{ $banner->localized_title }}
                                     </h2>
                                 @endif
                                 @if($banner->localized_description)
-                                    <p class="bottom-cta-description text-lg text-white mb-8">
+                                    <p class="bottom-cta-description text-lg text-white mb-8"
+                                       style="color: #ffffff; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);">
                                         {{ $banner->localized_description }}
                                     </p>
                                 @endif
