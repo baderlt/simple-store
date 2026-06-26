@@ -1,10 +1,39 @@
 @extends('layouts.app')
 
 @section('title', 'Produits')
+@section('description', 'Découvrez les produits naturels Wany Bio : miels, huiles, soins, parfums et produits bio avec livraison au Maroc.')
 @section('canonical', route('products.index'))
 @section('robots', request()->hasAny(['search', 'category', 'sort']) ? 'noindex, follow' : 'index, follow, max-image-preview:large')
+@section('og_title', 'Produits Wany Bio')
+@section('og_description', 'Découvrez les produits naturels Wany Bio : miels, huiles, soins, parfums et produits bio avec livraison au Maroc.')
+@section('og_image_alt', 'Produits naturels Wany Bio')
+@php
+    $productsBreadcrumbSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'BreadcrumbList',
+        'itemListElement' => [
+            ['@type' => 'ListItem', 'position' => 1, 'name' => __('messages.home'), 'item' => route('home')],
+            ['@type' => 'ListItem', 'position' => 2, 'name' => __('messages.products'), 'item' => route('products.index')],
+        ],
+    ];
+    $productsItemListSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'ItemList',
+        'name' => 'Produits Wany Bio',
+        'itemListElement' => $products->getCollection()->values()->map(fn ($product, $index) => [
+            '@type' => 'ListItem',
+            'position' => (($products->currentPage() - 1) * $products->perPage()) + $index + 1,
+            'url' => route('products.show', $product->slug),
+            'name' => $product->name,
+        ])->all(),
+    ];
+@endphp
 
 @push('head')
+    <script type="application/ld+json">@json($productsBreadcrumbSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)</script>
+    @unless(request()->hasAny(['search', 'category', 'sort']))
+        <script type="application/ld+json">@json($productsItemListSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)</script>
+    @endunless
     @if($products->previousPageUrl())
         <link rel="prev" href="{{ $products->previousPageUrl() }}">
     @endif

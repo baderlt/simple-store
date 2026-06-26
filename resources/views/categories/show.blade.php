@@ -4,6 +4,10 @@
 @section('description', Str::limit(strip_tags($category->description ?: $category->localized_name . ' chez Wany Bio'), 170, ''))
 @section('canonical', route('categories.show', $category))
 @section('robots', $products->currentPage() > 1 ? 'noindex, follow' : 'index, follow, max-image-preview:large')
+@section('og_title', $category->localized_name . ' - Wany Bio')
+@section('og_description', Str::limit(strip_tags($category->description ?: $category->localized_name . ' chez Wany Bio'), 170, ''))
+@section('og_image', $category->image ? asset('storage/' . $category->image) : '')
+@section('og_image_alt', $category->localized_name . ' - Wany Bio')
 @php
     $breadcrumbSchema = [
         '@context' => 'https://schema.org',

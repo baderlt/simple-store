@@ -1,8 +1,47 @@
 {{-- resources/views/promotions/index.blade.php --}}
 @extends('layouts.app')
 
-@section('title', 'Promotions - Maison Dorée')
-@section('description', 'Découvrez nos offres sur les miels, thés, parfums et produits bio')
+@section('title', 'Promotions - ' . settings('store_name', 'Wany Bio'))
+@section('description', 'Découvrez les promotions Wany Bio sur les miels, thés, parfums, huiles, soins et produits naturels.')
+@section('canonical', route('promotions.index'))
+@section('robots', $productsWithDiscount->currentPage() > 1 ? 'noindex, follow' : 'index, follow, max-image-preview:large')
+@section('og_title', 'Promotions Wany Bio')
+@section('og_description', 'Découvrez les promotions Wany Bio sur les miels, thés, parfums, huiles, soins et produits naturels.')
+@section('og_image_alt', 'Promotions Wany Bio')
+@php
+    $promotionsBreadcrumbSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'BreadcrumbList',
+        'itemListElement' => [
+            ['@type' => 'ListItem', 'position' => 1, 'name' => __('messages.home'), 'item' => route('home')],
+            ['@type' => 'ListItem', 'position' => 2, 'name' => __('messages.promotions'), 'item' => route('promotions.index')],
+        ],
+    ];
+    $promotionsItemListSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'ItemList',
+        'name' => 'Promotions Wany Bio',
+        'itemListElement' => $productsWithDiscount->getCollection()->values()->map(fn ($product, $index) => [
+            '@type' => 'ListItem',
+            'position' => (($productsWithDiscount->currentPage() - 1) * $productsWithDiscount->perPage()) + $index + 1,
+            'url' => route('products.show', $product->slug),
+            'name' => $product->name,
+        ])->all(),
+    ];
+@endphp
+
+@push('head')
+    <script type="application/ld+json">@json($promotionsBreadcrumbSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)</script>
+    @if($productsWithDiscount->currentPage() === 1)
+        <script type="application/ld+json">@json($promotionsItemListSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)</script>
+    @endif
+    @if($productsWithDiscount->previousPageUrl())
+        <link rel="prev" href="{{ $productsWithDiscount->previousPageUrl() }}">
+    @endif
+    @if($productsWithDiscount->nextPageUrl())
+        <link rel="next" href="{{ $productsWithDiscount->nextPageUrl() }}">
+    @endif
+@endpush
 
 @section('content')
     {{-- Hero Section --}}

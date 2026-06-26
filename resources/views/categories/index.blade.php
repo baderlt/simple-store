@@ -1,7 +1,38 @@
 @extends('layouts.app')
 
 @section('title', 'Catégories - ' . settings('store_name', 'Maison Dorée'))
+@section('description', 'Explorez les catégories Wany Bio et trouvez facilement nos miels, huiles, parfums, soins et produits naturels.')
 @section('canonical', route('categories.index'))
+@section('robots', 'index, follow, max-image-preview:large')
+@section('og_title', 'Catégories Wany Bio')
+@section('og_description', 'Explorez les catégories Wany Bio et trouvez facilement nos miels, huiles, parfums, soins et produits naturels.')
+@section('og_image_alt', 'Catégories de produits Wany Bio')
+@php
+    $categoriesBreadcrumbSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'BreadcrumbList',
+        'itemListElement' => [
+            ['@type' => 'ListItem', 'position' => 1, 'name' => __('messages.home'), 'item' => route('home')],
+            ['@type' => 'ListItem', 'position' => 2, 'name' => __('messages.categories'), 'item' => route('categories.index')],
+        ],
+    ];
+    $categoriesItemListSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'ItemList',
+        'name' => 'Catégories Wany Bio',
+        'itemListElement' => $categories->values()->map(fn ($category, $index) => [
+            '@type' => 'ListItem',
+            'position' => $index + 1,
+            'url' => route('categories.show', $category),
+            'name' => $category->localized_name,
+        ])->all(),
+    ];
+@endphp
+
+@push('head')
+    <script type="application/ld+json">@json($categoriesBreadcrumbSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)</script>
+    <script type="application/ld+json">@json($categoriesItemListSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)</script>
+@endpush
 
 @section('content')
 <div class="min-h-screen bg-gradient-to-b from-gray-50 to-white">
