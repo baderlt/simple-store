@@ -224,16 +224,16 @@
                 </div>
 
                 <!-- Product Name -->
-                <h1 class="product-detail-title product-detail-title-{{ $productNameDirection }} bidi-auto text-3xl lg:text-4xl font-bold text-gray-900 leading-tight"
+                <h1 class="product-detail-title product-detail-title-{{ $productNameDirection }} bidi-auto text-3xl lg:text-4xl font-bold text-gray-950 leading-tight tracking-tight"
                     dir="{{ $productNameDirection }}"
                     style="text-align: {{ $productNameAlignment }} !important;">{!! bidi_text($product->name) !!}</h1>
 
                 <!-- Price Section with Improved Spacing -->
-                <div class="py-6 border-y border-gray-200">
+                <div class="rounded-2xl border border-red-100 bg-gradient-to-br from-white to-red-50/40 p-5 shadow-sm">
                     @if($product->hasDiscount())
                         <div class="flex flex-wrap items-baseline gap-x-6 gap-y-2 mb-3">
                             <!-- Discounted Price -->
-                            <span dir="ltr" class="inline-flex items-baseline gap-1 whitespace-nowrap text-4xl sm:text-5xl font-bold text-gray-900">
+                            <span dir="ltr" class="inline-flex items-baseline gap-1 whitespace-nowrap text-4xl sm:text-5xl font-bold text-red-700">
                                 <span id="variantFinalPrice">{{ format_price($currentFinalPrice) }}</span>
                                 <span>DH</span>
                             </span>
@@ -250,7 +250,7 @@
                             </span>
                         </div>
                     @else
-                        <span dir="ltr" class="inline-flex items-baseline gap-1 whitespace-nowrap text-3xl sm:text-5xl font-bold text-gray-900">
+                        <span dir="ltr" class="inline-flex items-baseline gap-1 whitespace-nowrap text-3xl sm:text-5xl font-bold text-red-700">
                             <span id="variantBasePrice">{{ format_price($currentPrice) }}</span>
                             <span>DH</span>
                         </span>
@@ -258,11 +258,16 @@
                 </div>
 
                 @if($usesVariants)
-                    <div class="{{ $hideVariantChooser ? 'hidden' : '' }} p-5 bg-white rounded-xl border border-gray-200 space-y-4" id="variantChooser"
+                    <div class="{{ $hideVariantChooser ? 'hidden' : '' }} p-5 bg-gradient-to-br from-white via-amber-50/50 to-orange-50/30 rounded-2xl border border-amber-100 shadow-sm space-y-4" id="variantChooser"
                          @if($hideVariantChooser) aria-hidden="true" @endif
                          data-variants='@json($variantPayload)' data-default-id="{{ $defaultVariant?->id }}">
-                        <div class="flex items-center justify-between">
-                            <h3 class="font-bold text-gray-900">{{ __('product.select_variant') }}</h3>
+                        <div class="flex items-center justify-between border-b border-amber-100 pb-3">
+                            <h3 class="flex items-center gap-2 font-bold text-gray-950">
+                                <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
+                                    <i class="fas fa-sliders text-sm"></i>
+                                </span>
+                                {{ __('product.select_variant') }}
+                            </h3>
                             <span class="text-xs text-gray-500"><span id="variantSku">{{ $defaultVariant?->sku }}</span><span id="variantUnit" class="ml-2">{{ $defaultVariant?->unit }}</span></span>
                         </div>
                         @foreach($variantAttributes as $attribute)
@@ -271,7 +276,7 @@
                                 <div class="flex flex-wrap gap-2">
                                     @foreach($attribute['values'] as $value)
                                         <button type="button"
-                                                class="variant-option px-4 py-2 border border-gray-300 rounded-xl text-sm font-semibold hover:border-emerald-500 hover:bg-emerald-50 transition"
+                                                class="variant-option px-4 py-2 border border-gray-300 bg-white rounded-xl text-sm font-semibold shadow-sm hover:border-amber-500 hover:shadow-md transition"
                                                 data-attribute-id="{{ $attribute['id'] }}"
                                                 data-value-id="{{ $value['id'] }}">
                                             {{ $value['value'] }}
@@ -355,12 +360,12 @@
                                     <div class="flex flex-col flex-shrink-0">
                                         @if($product->hasDiscount())
                                             <div class="flex items-baseline gap-2">
-                                                <span class="text-xl font-bold text-gray-900" id="stickyFinalPrice">{{ format_price($currentFinalPrice) }} DH</span>
+                                                <span class="text-xl font-bold text-red-700" id="stickyFinalPrice">{{ format_price($currentFinalPrice) }} DH</span>
                                                 <span class="text-sm text-gray-400 line-through" id="stickyBasePrice">{{ format_price($currentPrice) }} DH</span>
                                             </div>
                                             <span class="text-xs text-rose-600 font-medium">-{{ $product->activeDiscount->discount_percentage }}%</span>
                                         @else
-                                            <span class="text-xl font-bold text-gray-900" id="stickyFinalPrice">{{ format_price($currentPrice) }} DH</span>
+                                            <span class="text-xl font-bold text-red-700" id="stickyFinalPrice">{{ format_price($currentPrice) }} DH</span>
                                         @endif
                                     </div>
                                     
@@ -926,9 +931,10 @@ if (variantChooser) {
     function refreshOptions() {
         document.querySelectorAll('.variant-option').forEach(button => {
             const isSelected = String(selected[button.dataset.attributeId]) === String(button.dataset.valueId);
-            button.classList.toggle('bg-emerald-600', isSelected);
+            button.classList.toggle('bg-amber-500', isSelected);
             button.classList.toggle('text-white', isSelected);
-            button.classList.toggle('border-emerald-600', isSelected);
+            button.classList.toggle('border-amber-500', isSelected);
+            button.classList.toggle('shadow-md', isSelected);
             const enabled = possible(button.dataset.attributeId, button.dataset.valueId) || isSelected;
             button.disabled = !enabled;
             button.classList.toggle('opacity-40', !enabled);

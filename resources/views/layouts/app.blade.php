@@ -1419,9 +1419,8 @@
             const baseRoute = '{{ route("products.show", ":slug") }}';
             
             items.forEach(item => {
-                const itemTotal = item.has_discount ? 
-                    (item.final_price * item.quantity) : 
-                    (item.price * item.quantity);
+                const unitPrice = item.has_discount ? Number(item.final_price) : Number(item.price);
+                const itemTotal = unitPrice * Number(item.quantity);
                 
                 const itemId = escapeHtml(item.key || item.id);
                 const productUrl = escapeHtml(baseRoute.replace(':slug', encodeURIComponent(item.slug ?? '')));
@@ -1431,7 +1430,10 @@
                 const itemImage = escapeHtml(item.image || '');
                 
                 const itemElement = `
-                    <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg" data-item-id="${itemId}">
+                    <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg"
+                         data-item-id="${itemId}"
+                         data-unit-price="${unitPrice}"
+                         data-minimum-quantity="${Number(item.minimum_quantity || 1)}">
                         <!-- Product Image -->
                         <div class="flex-shrink-0">
                             <div class="w-16 h-16 bg-gray-200 rounded-lg overflow-hidden">
@@ -1458,11 +1460,11 @@
                                         `<div class="text-sm">
                                             <span class="font-bold text-emerald-600">${item.final_price.toFixed(2)} DH</span>
                                             <span class="text-gray-400 line-through text-xs ml-2">${item.price.toFixed(2)} DH</span>
-                                            <div class="text-xs text-rose-600 mt-0.5">{{ __('cart.total') }} ${itemTotal.toFixed(2)} DH</div>
+                                            <div class="text-xs text-rose-600 mt-0.5">{{ __('cart.total') }} <span class="cart-line-total inline-block" dir="ltr" style="unicode-bidi: isolate;">${itemTotal.toFixed(2)} DH</span></div>
                                         </div>` :
                                         `<div>
                                             <span class="font-bold text-gray-900">${item.price.toFixed(2)} DH</span>
-                                            <div class="text-xs text-gray-600 mt-0.5">{{ __('cart.total') }} ${itemTotal.toFixed(2)} DH</div>
+                                            <div class="text-xs text-gray-600 mt-0.5">{{ __('cart.total') }} <span class="cart-line-total inline-block" dir="ltr" style="unicode-bidi: isolate;">${itemTotal.toFixed(2)} DH</span></div>
                                         </div>`
                                     }
                                 </div>
@@ -1512,6 +1514,36 @@
             document.getElementById('cart-subtotal').textContent = data.total.toFixed(2) + ' DH';
             document.getElementById('cart-total').textContent = data.total.toFixed(2) + ' DH';
         }
+
+        function formatDrawerMoney(value) {
+            return `${Number(value || 0).toFixed(2)} DH`;
+        }
+
+        function parseDrawerMoney(value) {
+            return Number(String(value || '0').replace(/[^\d.-]/g, '')) || 0;
+        }
+
+        function updateCartLineTotal(itemElement, quantity, serverLineTotal = null) {
+            if (!itemElement) return 0;
+
+            const lineTotal = serverLineTotal !== null
+                ? parseDrawerMoney(serverLineTotal)
+                : parseDrawerMoney(itemElement.dataset.unitPrice) * Number(quantity || 0);
+            const lineTotalElement = itemElement.querySelector('.cart-line-total');
+
+            if (lineTotalElement) {
+                lineTotalElement.textContent = formatDrawerMoney(lineTotal);
+            }
+
+            return lineTotal;
+        }
+
+        function refreshCartSummaryFromRows() {
+            const total = [...document.querySelectorAll('#cart-items [data-item-id]')]
+                .reduce((sum, itemElement) => sum + parseDrawerMoney(itemElement.querySelector('.cart-line-total')?.textContent), 0);
+
+            updateCartSummary({ total });
+        }
         
         // Attach events to cart item buttons
         function attachCartItemEvents() {
@@ -1519,12 +1551,14 @@
                 btn.addEventListener('click', async function() {
                     const productId = this.getAttribute('data-product-id');
                     const action = this.getAttribute('data-action');
-                    const quantityDisplay = this.closest('[data-item-id]').querySelector('.quantity-display');
+                    const itemElement = this.closest('[data-item-id]');
+                    const quantityDisplay = itemElement.querySelector('.quantity-display');
+                    const minimumQuantity = parseInt(itemElement.dataset.minimumQuantity || '1', 10) || 1;
                     let currentQuantity = parseInt(quantityDisplay.textContent);
                     
                     if (action === 'increase') {
                         currentQuantity++;
-                    } else if (action === 'decrease' && currentQuantity > 1) {
+                    } else if (action === 'decrease' && currentQuantity > minimumQuantity) {
                         currentQuantity--;
                     } else {
                         return;
@@ -1533,6 +1567,10 @@
                     this.disabled = true;
                     const originalHTML = this.innerHTML;
                     this.innerHTML = '<i class="fas fa-spinner fa-spin text-xs"></i>';
+
+                    quantityDisplay.textContent = currentQuantity;
+                    updateCartLineTotal(itemElement, currentQuantity);
+                    refreshCartSummaryFromRows();
                     
                     await updateCartItemQuantity(productId, currentQuantity);
                     
@@ -1576,10 +1614,12 @@
                 if (response.ok && data.success) {
                     updateCartCount(data.cart_count);
                     
-                    const quantityDisplay = document.querySelector(`[data-item-id="${productId}"] .quantity-display`);
+                    const itemElement = document.querySelector(`[data-item-id="${productId}"]`);
+                    const quantityDisplay = itemElement?.querySelector('.quantity-display');
                     if (quantityDisplay) {
                         quantityDisplay.textContent = data.quantity;
                     }
+                    updateCartLineTotal(itemElement, data.quantity, data.item_total);
                     
                     updateCartSummary({
                         total: parseFloat(data.cart_total.replace(',', '')) || 0
