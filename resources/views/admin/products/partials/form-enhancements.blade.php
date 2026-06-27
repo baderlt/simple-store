@@ -15,7 +15,7 @@
 
     .product-form-nav {
         position: sticky;
-        top: 0;
+        top: -1px;
         z-index: 20;
         display: flex;
         gap: .5rem;
@@ -55,7 +55,7 @@
     }
 
     .product-form-section {
-        scroll-margin-top: 5.5rem;
+        scroll-margin-top: 4.25rem;
         margin-bottom: 1rem !important;
         padding: 1.25rem;
         border: 1px solid #e5e7eb;
@@ -73,8 +73,8 @@
         position: sticky;
         bottom: 0;
         z-index: 25;
-        margin: 0 -1rem -1rem;
-        padding: .9rem 1rem;
+        margin: 1rem -1rem 0;
+        padding: .9rem 1rem max(.9rem, env(safe-area-inset-bottom));
         border-top: 1px solid #e5e7eb;
         background: rgba(255, 255, 255, .97);
         backdrop-filter: blur(14px);
@@ -105,18 +105,18 @@
         }
 
         .product-form-actions {
-            margin: 0 -2rem -2rem;
-            padding: 1rem 2rem;
+            margin: 1.25rem -2rem 0;
+            padding: 1rem 2rem max(1rem, env(safe-area-inset-bottom));
         }
     }
 
     @media (max-width: 639px) {
         .product-form-nav {
-            top: 0;
+            top: -1px;
         }
 
         .product-form-section {
-            scroll-margin-top: 5rem;
+            scroll-margin-top: 4rem;
         }
 
         .product-form-card {
@@ -173,7 +173,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const section = document.querySelector(link.getAttribute('href'));
             if (!section) return;
             event.preventDefault();
-            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            const scrollContainer = document.querySelector('main.overflow-y-auto') || document.scrollingElement;
+            const nav = document.querySelector('.product-form-nav');
+            const containerRect = scrollContainer.getBoundingClientRect();
+            const sectionRect = section.getBoundingClientRect();
+            const offset = (nav?.offsetHeight || 56) + 12;
+            const nextTop = scrollContainer.scrollTop + sectionRect.top - containerRect.top - offset;
+
+            scrollContainer.scrollTo({ top: Math.max(nextTop, 0), behavior: 'smooth' });
         });
     });
 
