@@ -261,15 +261,6 @@
                     <div class="{{ $hideVariantChooser ? 'hidden' : '' }} p-5 bg-gradient-to-br from-white via-amber-50/50 to-orange-50/30 rounded-2xl border border-amber-100 shadow-sm space-y-4" id="variantChooser"
                          @if($hideVariantChooser) aria-hidden="true" @endif
                          data-variants='@json($variantPayload)' data-default-id="{{ $defaultVariant?->id }}">
-                        <div class="flex items-center justify-between border-b border-amber-100 pb-3">
-                            <h3 class="flex items-center gap-2 font-bold text-gray-950">
-                                <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
-                                    <i class="fas fa-sliders text-sm"></i>
-                                </span>
-                                {{ __('product.select_variant') }}
-                            </h3>
-                            <span class="text-xs text-gray-500"><span id="variantSku">{{ $defaultVariant?->sku }}</span><span id="variantUnit" class="ml-2">{{ $defaultVariant?->unit }}</span></span>
-                        </div>
                         @foreach($variantAttributes as $attribute)
                             <div class="space-y-2" data-attribute="{{ $attribute['id'] }}">
                                 <p class="text-sm font-semibold text-gray-700">{{ $attribute['name'] }}</p>
@@ -931,10 +922,11 @@ if (variantChooser) {
     function refreshOptions() {
         document.querySelectorAll('.variant-option').forEach(button => {
             const isSelected = String(selected[button.dataset.attributeId]) === String(button.dataset.valueId);
-            button.classList.toggle('bg-amber-500', isSelected);
             button.classList.toggle('text-white', isSelected);
-            button.classList.toggle('border-amber-500', isSelected);
             button.classList.toggle('shadow-md', isSelected);
+            button.style.backgroundColor = isSelected ? 'var(--primary-color)' : '';
+            button.style.borderColor = isSelected ? 'var(--primary-color)' : '';
+            button.style.color = isSelected ? '#ffffff' : '';
             const enabled = possible(button.dataset.attributeId, button.dataset.valueId) || isSelected;
             button.disabled = !enabled;
             button.classList.toggle('opacity-40', !enabled);
