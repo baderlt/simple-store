@@ -105,18 +105,36 @@ class TranslateStaticHtml
             if (str_starts_with($part, '<')) {
                 $part = $this->translateAttributes($part, $translations);
             } else {
-                $part = strtr($part, $translations);
+                $part = $this->translateString($part, $translations);
             }
         }
 
         return implode('', $parts);
     }
 
+    private function translateString(string $value, array $translations): string
+    {
+        foreach ($translations as $source => $translation) {
+            $quotedSource = preg_quote($source, '/');
+            $pattern = preg_match('/^[\p{L}\p{N}_]+$/u', $source)
+                ? '/(?<![\p{L}\p{N}_])'.$quotedSource.'(?![\p{L}\p{N}_])/u'
+                : '/'.$quotedSource.'/u';
+
+            $value = preg_replace_callback(
+                $pattern,
+                fn (): string => $translation,
+                $value
+            ) ?? $value;
+        }
+
+        return $value;
+    }
+
     private function translateAttributes(string $tag, array $translations): string
     {
         return preg_replace_callback(
             '/\b(placeholder|title|aria-label)=("|\')(.*?)\2/is',
-            fn (array $matches): string => $matches[1].'='.$matches[2].strtr($matches[3], $translations).$matches[2],
+            fn (array $matches): string => $matches[1].'='.$matches[2].$this->translateString($matches[3], $translations).$matches[2],
             $tag
         ) ?? $tag;
     }
