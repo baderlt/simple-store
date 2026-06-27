@@ -209,18 +209,26 @@
             <!-- Product Info -->
             <div class="space-y-6">
                 <!-- Category & Brand -->
-                <div class="flex items-center space-x-4">
+                <div class="flex flex-wrap items-center gap-3" dir="{{ $isArabicLocale ? 'rtl' : 'ltr' }}">
                     <a href="{{ route('products.index', ['category' => $product->category_id]) }}" 
-                       class="inline-flex items-center bg-emerald-50 text-emerald-700 px-4 py-2 rounded-full text-sm font-semibold hover:bg-emerald-100 transition-colors">
-                        <i class="fas fa-tag mr-2"></i>
-                        {{ $product->category->localized_name }}
+                       class="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 px-4 py-2 rounded-full text-sm font-semibold hover:bg-emerald-100 transition-colors">
+                        <i class="fas fa-tag flex-shrink-0"></i>
+                        <span>{{ $product->category->localized_name }}</span>
                     </a>
                     
                     @if($product->sku)
-                        <span class="text-gray-500 text-sm">
-                            <i class="fas fa-hashtag mr-1"></i> Réf: {{ $product->sku }}
+                        <span class="inline-flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-600">
+                            <i class="fas fa-barcode flex-shrink-0 text-gray-400"></i>
+                            <span>{{ $isArabicLocale ? 'رمز المنتج' : 'Ref.' }}:</span>
+                            <bdi>{{ $product->sku }}</bdi>
                         </span>
                     @endif
+
+                    <span class="inline-flex items-center gap-2 rounded-full bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-700">
+                        <i class="fas fa-shopping-bag flex-shrink-0"></i>
+                        <span>{{ $isArabicLocale ? 'عدد المبيعات' : 'Ventes' }}:</span>
+                        <bdi>{{ number_format((int) ($product->sales_count ?? 0)) }}</bdi>
+                    </span>
                 </div>
 
                 <!-- Product Name -->

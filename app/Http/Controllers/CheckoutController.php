@@ -214,11 +214,9 @@ class CheckoutController extends Controller
 
             $order = Order::create($orderData);
 
-            // Create order items and update the exact selected stock record.
-            $purchasedProductIds = [];
+            // Create order items, update the exact selected stock record, and count sold units.
             foreach ($resolvedItems as $resolved) {
                 ['item' => $item, 'product' => $product, 'variant' => $variant, 'basePrice' => $basePrice, 'finalPrice' => $finalPrice] = $resolved;
-                $purchasedProductIds[$product->id] = true;
 
                 OrderItem::create([
                     'order_id' => $order->id,
@@ -248,10 +246,9 @@ class CheckoutController extends Controller
                     'type' => 'sale',
                     'notes' => __('checkout.stock_log_order', ['number' => $order->order_number]) . ($variant ? ' - ' . ($item['variant_label'] ?? '') : ''),
                 ]);
-            }
 
-            // Count one additional sale per distinct product in this order, regardless of quantity or variant lines.
-            Product::whereKey(array_keys($purchasedProductIds))->increment('sales_count');
+                Product::whereKey($product->id)->increment('sales_count', (int) $item['quantity']);
+            }
 
             // Clear cart/direct checkout session
             if ($isDirect) {
