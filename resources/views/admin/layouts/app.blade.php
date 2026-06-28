@@ -471,6 +471,7 @@
                 @yield('content')
             </main>
             
+            @unless($__env->yieldContent('hide_footer'))
             {{-- Footer --}}
             <footer class="bg-white border-t border-gray-200 py-3 lg:py-4 px-4 lg:px-8">
                 <div class="flex flex-col lg:flex-row items-center justify-between text-sm text-gray-500 space-y-2 lg:space-y-0">
@@ -486,6 +487,7 @@
                     </div>
                 </div>
             </footer>
+            @endunless
         </div>
     </div>
     

@@ -1,4 +1,11 @@
 <style>
+    .product-editor-shell {
+        width: min(100%, 1400px);
+        margin-inline: auto;
+        --product-editor-gutter: 1rem;
+        --product-form-action-height: 6rem;
+    }
+
     .product-form-card {
         background: #fff;
         border: 1px solid #e5e7eb;
@@ -8,9 +15,15 @@
     }
 
     .product-form-header {
+        padding: 1rem var(--product-editor-gutter) !important;
         background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
         border-bottom: 1px solid #e5e7eb;
         border-radius: 1.25rem 1.25rem 0 0;
+    }
+
+    .product-form-body {
+        padding: var(--product-editor-gutter);
+        padding-bottom: calc(var(--product-form-action-height) + 1.5rem);
     }
 
     .product-form-nav {
@@ -18,9 +31,10 @@
         top: -1px;
         z-index: 20;
         display: flex;
+        align-items: center;
         gap: .5rem;
         overflow-x: auto;
-        padding: .75rem 1rem;
+        padding: .85rem var(--product-editor-gutter);
         border-bottom: 1px solid #e5e7eb;
         background: rgba(255, 255, 255, .96);
         backdrop-filter: blur(12px);
@@ -55,8 +69,8 @@
     }
 
     .product-form-section {
-        scroll-margin-top: 4.25rem;
-        margin-bottom: 1rem !important;
+        scroll-margin-top: 4.75rem;
+        margin-bottom: 1.25rem !important;
         padding: 1.25rem;
         border: 1px solid #e5e7eb;
         border-radius: 1rem;
@@ -73,8 +87,9 @@
         position: sticky;
         bottom: 0;
         z-index: 25;
-        margin: 1rem -1rem 0;
-        padding: .9rem 1rem max(.9rem, env(safe-area-inset-bottom));
+        margin: 1.5rem calc(var(--product-editor-gutter) * -1) calc((var(--product-form-action-height) + 1.5rem) * -1);
+        min-height: var(--product-form-action-height);
+        padding: .85rem var(--product-editor-gutter) max(.85rem, env(safe-area-inset-bottom));
         border-top: 1px solid #e5e7eb;
         background: rgba(255, 255, 255, .97);
         backdrop-filter: blur(14px);
@@ -95,32 +110,37 @@
     }
 
     @media (min-width: 640px) {
-        .product-form-nav {
-            padding-inline: 1.5rem;
+        .product-editor-shell {
+            --product-editor-gutter: 1.5rem;
+            --product-form-action-height: 5.75rem;
+        }
+
+        .product-form-header {
+            padding-block: 1.25rem !important;
         }
 
         .product-form-section {
             padding: 1.5rem;
             margin-bottom: 1.25rem !important;
         }
-
-        .product-form-actions {
-            margin: 1.25rem -2rem 0;
-            padding: 1rem 2rem max(1rem, env(safe-area-inset-bottom));
-        }
     }
 
     @media (max-width: 639px) {
+        .product-editor-shell {
+            --product-form-action-height: 9.75rem;
+        }
+
         .product-form-nav {
             top: -1px;
+            gap: .45rem;
+            padding-block: .7rem;
         }
 
         .product-form-section {
-            scroll-margin-top: 4rem;
+            scroll-margin-top: 4.5rem;
         }
 
         .product-form-card {
-            margin-inline: -.75rem;
             border-right: 0;
             border-left: 0;
             border-radius: 0;

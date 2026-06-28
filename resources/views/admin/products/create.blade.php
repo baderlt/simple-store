@@ -4,9 +4,11 @@
 @section('header', 'Ajouter un Produit')
 @section('subheader', 'Créer un nouveau produit dans le catalogue')
 
+@section('hide_footer', true)
+
 @section('content')
 @include('admin.products.partials.form-enhancements')
-<div class="max-w-7xl mx-auto px-3 sm:px-6">
+<div class="product-editor-shell">
     <!-- Card Container -->
     <div class="product-form-card">
         <!-- Card Header -->
@@ -34,7 +36,7 @@
             @csrf
             @include('admin.products.partials.form-navigation')
 
-            <div class="p-4 sm:p-8">
+            <div class="product-form-body">
                 <!-- Informations de base -->
                 <div class="product-form-section" id="product-basics">
                     <div class="product-form-section-heading flex items-center mb-4 sm:mb-6">
