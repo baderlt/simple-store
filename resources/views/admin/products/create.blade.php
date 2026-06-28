@@ -5,12 +5,16 @@
 @section('subheader', 'Créer un nouveau produit dans le catalogue')
 
 @section('hide_footer', true)
+@section('admin_main_class', 'p-4 lg:p-6')
 
 @section('content')
 @include('admin.products.partials.form-enhancements')
 <div class="product-editor-shell">
-    <!-- Card Container -->
-    <div class="product-form-card">
+    <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data" id="productForm">
+        @csrf
+
+        <!-- Card Container -->
+        <div class="product-form-card">
         <!-- Card Header -->
         <div class="product-form-header px-4 sm:px-8 py-6">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-4 sm:space-y-0">
@@ -31,9 +35,6 @@
             </div>
         </div>
 
-        <!-- Form Container -->
-        <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data" id="productForm">
-            @csrf
             @include('admin.products.partials.form-navigation')
 
             <div class="product-form-body">
@@ -461,9 +462,11 @@
                 </div>
 
                 @include('admin.products.partials.variants', ['showVariantToggle' => false])
+            </div>
+        </div>
 
-                <!-- Actions -->
-                <div class="product-form-actions">
+        <!-- Actions -->
+        <div class="product-form-actions">
                     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div class="hidden lg:flex items-center text-gray-600 text-sm">
                             <i class="fas fa-history mr-2"></i>
@@ -485,9 +488,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </form>
-    </div>
+    </form>
 </div>
 
 <!-- JavaScript amélioré pour mobile -->

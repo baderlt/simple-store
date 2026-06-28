@@ -467,7 +467,7 @@
             </div>
 
             {{-- Content --}}
-            <main class="flex-1 overflow-y-auto p-4 lg:p-8 bg-gray-50">
+            <main class="flex-1 overflow-y-auto bg-gray-50 {{ $__env->yieldContent('admin_main_class') ?: 'p-4 lg:p-8' }}">
                 @yield('content')
             </main>
             
