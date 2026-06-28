@@ -1,9 +1,17 @@
 <style>
+    :root {
+        --admin-sidebar-width: 16rem;
+        --admin-header-height: 0px;
+        --product-tabs-height: 64px;
+        --product-action-bar-height: 96px;
+    }
+
     .product-editor-shell {
         width: min(100%, 1400px);
         margin-inline: auto;
+        padding-inline: 1rem;
+        padding-bottom: calc(var(--product-action-bar-height) + 40px);
         --product-editor-gutter: 1rem;
-        --product-form-action-height: 6rem;
     }
 
     .product-form-card {
@@ -23,12 +31,12 @@
 
     .product-form-body {
         padding: var(--product-editor-gutter);
-        padding-bottom: calc(var(--product-form-action-height) + 1.5rem);
+        padding-bottom: calc(var(--product-action-bar-height) + 40px);
     }
 
     .product-form-nav {
         position: sticky;
-        top: -1px;
+        top: var(--admin-header-height);
         z-index: 20;
         display: flex;
         align-items: center;
@@ -69,7 +77,7 @@
     }
 
     .product-form-section {
-        scroll-margin-top: 4.75rem;
+        scroll-margin-top: calc(var(--admin-header-height) + var(--product-tabs-height) + 20px);
         margin-bottom: 1.25rem !important;
         padding: 1.25rem;
         border: 1px solid #e5e7eb;
@@ -84,16 +92,27 @@
     }
 
     .product-form-actions {
-        position: sticky;
+        position: fixed;
         bottom: 0;
+        left: var(--admin-sidebar-width);
+        right: 0;
         z-index: 25;
-        margin: 1.5rem calc(var(--product-editor-gutter) * -1) calc((var(--product-form-action-height) + 1.5rem) * -1);
-        min-height: var(--product-form-action-height);
-        padding: .85rem var(--product-editor-gutter) max(.85rem, env(safe-area-inset-bottom));
+        min-height: var(--product-action-bar-height);
+        padding: .85rem 1.5rem max(.85rem, env(safe-area-inset-bottom));
         border-top: 1px solid #e5e7eb;
-        background: rgba(255, 255, 255, .97);
+        background: rgba(255, 255, 255, .98);
         backdrop-filter: blur(14px);
         box-shadow: 0 -10px 30px rgba(15, 23, 42, .07);
+    }
+
+    [dir="rtl"] .product-form-actions {
+        right: var(--admin-sidebar-width);
+        left: 0;
+    }
+
+    .product-form-actions > div {
+        width: min(100%, 1400px);
+        margin-inline: auto;
     }
 
     .product-form-section input,
@@ -111,8 +130,8 @@
 
     @media (min-width: 640px) {
         .product-editor-shell {
+            padding-inline: 1.5rem;
             --product-editor-gutter: 1.5rem;
-            --product-form-action-height: 5.75rem;
         }
 
         .product-form-header {
@@ -125,19 +144,27 @@
         }
     }
 
+    @media (max-width: 1023px) {
+        .product-form-actions,
+        [dir="rtl"] .product-form-actions {
+            right: 0;
+            left: 0;
+        }
+    }
+
     @media (max-width: 639px) {
+        :root {
+            --product-action-bar-height: 172px;
+        }
+
         .product-editor-shell {
-            --product-form-action-height: 9.75rem;
+            padding-inline: 0;
         }
 
         .product-form-nav {
-            top: -1px;
+            top: var(--admin-header-height);
             gap: .45rem;
             padding-block: .7rem;
-        }
-
-        .product-form-section {
-            scroll-margin-top: 4.5rem;
         }
 
         .product-form-card {
@@ -178,6 +205,17 @@
             width: 100%;
             min-height: 3rem;
         }
+
+        .product-form-actions {
+            right: 0;
+            left: 0;
+            padding-inline: 1rem;
+        }
+
+        [dir="rtl"] .product-form-actions {
+            right: 0;
+            left: 0;
+        }
     }
 </style>
 
@@ -187,21 +225,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const sections = links
         .map(link => document.querySelector(link.getAttribute('href')))
         .filter(Boolean);
+    const scrollContainer = document.querySelector('main.overflow-y-auto') || document.scrollingElement;
+    const nav = document.querySelector('.product-form-nav');
+
+    const scrollToSection = section => {
+        if (!section || !scrollContainer) return;
+
+        const containerRect = scrollContainer.getBoundingClientRect();
+        const sectionRect = section.getBoundingClientRect();
+        const styles = getComputedStyle(section);
+        const scrollMarginTop = parseFloat(styles.scrollMarginTop) || 0;
+        const navHeight = nav?.offsetHeight || 64;
+        const offset = Math.max(scrollMarginTop, navHeight + 20);
+        const nextTop = scrollContainer.scrollTop + sectionRect.top - containerRect.top - offset;
+
+        scrollContainer.scrollTo({ top: Math.max(nextTop, 0), behavior: 'smooth' });
+    };
 
     links.forEach(link => {
         link.addEventListener('click', event => {
             const section = document.querySelector(link.getAttribute('href'));
             if (!section) return;
             event.preventDefault();
-
-            const scrollContainer = document.querySelector('main.overflow-y-auto') || document.scrollingElement;
-            const nav = document.querySelector('.product-form-nav');
-            const containerRect = scrollContainer.getBoundingClientRect();
-            const sectionRect = section.getBoundingClientRect();
-            const offset = (nav?.offsetHeight || 56) + 12;
-            const nextTop = scrollContainer.scrollTop + sectionRect.top - containerRect.top - offset;
-
-            scrollContainer.scrollTo({ top: Math.max(nextTop, 0), behavior: 'smooth' });
+            scrollToSection(section);
         });
     });
 
@@ -218,6 +264,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const firstInvalid = document.querySelector('.product-form-section .border-red-500');
-    firstInvalid?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (firstInvalid) {
+        scrollToSection(firstInvalid.closest('.product-form-section'));
+    }
 });
 </script>

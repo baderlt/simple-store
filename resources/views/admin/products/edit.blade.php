@@ -5,12 +5,17 @@
 @section('subheader', 'Mettre à jour les informations du produit')
 
 @section('hide_footer', true)
+@section('admin_main_class', 'p-4 lg:p-6')
 
 @section('content')
 @include('admin.products.partials.form-enhancements')
 <div class="product-editor-shell">
-    <!-- Card Container -->
-    <div class="product-form-card">
+    <form action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data" id="editProductForm">
+        @csrf
+        @method('PUT')
+
+        <!-- Card Container -->
+        <div class="product-form-card">
         <!-- Card Header -->
         <div class="product-form-header px-4 sm:px-8 py-6">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -42,10 +47,6 @@
             </div>
         </div>
 
-        <!-- Form Container -->
-        <form action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data" id="editProductForm">
-            @csrf
-            @method('PUT')
             @include('admin.products.partials.form-navigation')
 
             <div class="product-form-body">
@@ -533,9 +534,11 @@
     </div>
 </div>
                 @include('admin.products.partials.variants', ['showVariantToggle' => false])
+            </div>
+        </div>
 
-                <!-- Actions -->
-                <div class="product-form-actions">
+        <!-- Actions -->
+        <div class="product-form-actions">
                     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div class="hidden lg:flex items-center space-x-4">
                             <div class="flex items-center text-gray-600">
@@ -564,9 +567,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </form>
-    </div>
+    </form>
 </div>
 
 <!-- JavaScript pour les fonctionnalités améliorées -->
