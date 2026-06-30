@@ -64,8 +64,9 @@
         padding: .55rem .8rem;
         color: #475569;
         background: #fff;
-        font-size: .78rem;
-        font-weight: 700;
+        font-size: .875rem;
+        line-height: 1.2;
+        font-weight: 600;
         transition: border-color .2s ease, color .2s ease, background-color .2s ease;
     }
 
