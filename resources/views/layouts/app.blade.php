@@ -65,6 +65,7 @@
     {{-- Styles --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     @include('layouts.typography-overrides')
+    <link rel="stylesheet" href="{{ asset('css/premium-footer.css') }}?v=20260630">
     
     {{-- Favicon --}}
     @php
@@ -851,12 +852,12 @@
     </main>
 
     {{-- Footer --}}
-    <footer class="bg-gradient-to-br from-gray-900 to-gray-800 text-white ">
-        <div class="container mx-auto px-4 py-12">
-            <div class="grid md:grid-cols-4 gap-8">
+    <footer class="premium-footer" aria-labelledby="premium-footer-title">
+        <div class="container">
+            <div class="grid">
                 {{-- Company Info --}}
                 <div class="space-y-4">
-                    <div class="flex items-center space-x-3">
+                    <div class="flex">
                         @if($logoPath && file_exists(public_path('storage/'.$logoPath)))
                             <img src="{{ asset('storage/'.$logoPath) }}" alt="{{ $storeName }}" 
                                  class="h-12 w-auto object-contain"
@@ -866,21 +867,21 @@
                                 <i class="fas fa-jar text-2xl"></i>
                             </div>
                         @endif
-                        <span class="text-2xl font-bold">{{ $storeName }}</span>
+                        <span id="premium-footer-title" class="text-2xl font-bold">{{ $storeName }}</span>
                     </div>
                     <p class="text-gray-300">{{ settings('footer_text', settings('store_slogan', 'Premium products for every lifestyle.')) }}</p>
-                    <div class="flex space-x-4 pt-2">
-                        <a href="{{ settings('facebook_url', '#') }}" target="_blank" 
+                    <div class="flex pt-2">
+                        <a href="{{ settings('facebook_url', '#') }}" target="_blank" rel="noopener" aria-label="Facebook"
                            class="bg-gray-800 hover:bg-green-600 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
                             <i class="fab fa-facebook-f"></i>
                         </a>
-                        <a href="{{ settings('instagram_url', '#') }}" target="_blank" 
+                        <a href="{{ settings('instagram_url', '#') }}" target="_blank" rel="noopener" aria-label="Instagram"
                            class="bg-gray-800 hover:bg-green-600 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
                             <i class="fab fa-instagram"></i>
                         </a>
                         @foreach(['twitter_url' => 'fa-x-twitter', 'tiktok_url' => 'fa-tiktok', 'youtube_url' => 'fa-youtube'] as $socialKey => $icon)
                             @if(settings($socialKey))
-                                <a href="{{ settings($socialKey) }}" target="_blank" rel="noopener" class="bg-gray-800 hover:bg-green-600 w-10 h-10 rounded-full flex items-center justify-center transition-colors"><i class="fab {{ $icon }}"></i></a>
+                                <a href="{{ settings($socialKey) }}" target="_blank" rel="noopener" aria-label="{{ str_replace('_url', '', $socialKey) }}" class="bg-gray-800 hover:bg-green-600 w-10 h-10 rounded-full flex items-center justify-center transition-colors"><i class="fab {{ $icon }}"></i></a>
                             @endif
                         @endforeach
                     </div>
@@ -906,7 +907,7 @@
                 <div>
                     <h3 class="text-xl font-bold mb-6 text-green-400">{{ __('messages.contact') }}</h3>
                     <ul class="space-y-4">
-                        <li class="flex items-start gap-3">
+                        <li class="flex gap-3">
                             <i class="fas fa-map-marker-alt shrink-0 text-green-400 mt-1"></i>
                             <span class="text-gray-300">{{ settings('address', 'Adresse par défaut') }}</span>
                         </li>
