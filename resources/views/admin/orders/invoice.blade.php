@@ -22,6 +22,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ __('invoice') }} {{ $order->order_number }} · {{ $storeName }}</title>
     @include('layouts.google-fonts')
+    @include('layouts.typography-overrides')
     <style>
         :root {
             --brand: #059669;
