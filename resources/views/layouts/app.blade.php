@@ -851,9 +851,11 @@
     </main>
 
     {{-- Footer --}}
-    <footer class="bg-gradient-to-br from-gray-900 to-gray-800 text-white ">
-        <div class="container mx-auto px-4 py-12">
-            <div class="grid md:grid-cols-4 gap-8">
+    <footer class="premium-footer" aria-label="{{ app()->getLocale() === 'ar' ? 'تذييل الموقع' : 'Pied de page' }}">
+        <span class="premium-footer__leaf premium-footer__leaf--left" aria-hidden="true"></span>
+        <span class="premium-footer__leaf premium-footer__leaf--right" aria-hidden="true"></span>
+        <div class="container mx-auto px-4 premium-footer__inner">
+            <div class="grid md:grid-cols-4 gap-8 premium-footer__content">
                 {{-- Company Info --}}
                 <div class="space-y-4">
                     <div class="flex items-center space-x-3">
@@ -870,17 +872,17 @@
                     </div>
                     <p class="text-gray-300">{{ settings('footer_text', settings('store_slogan', 'Premium products for every lifestyle.')) }}</p>
                     <div class="flex space-x-4 pt-2">
-                        <a href="{{ settings('facebook_url', '#') }}" target="_blank" 
+                        <a href="{{ settings('facebook_url', '#') }}" target="_blank" rel="noopener" aria-label="{{ $storeName }} Facebook"
                            class="bg-gray-800 hover:bg-green-600 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
                             <i class="fab fa-facebook-f"></i>
                         </a>
-                        <a href="{{ settings('instagram_url', '#') }}" target="_blank" 
+                        <a href="{{ settings('instagram_url', '#') }}" target="_blank" rel="noopener" aria-label="{{ $storeName }} Instagram"
                            class="bg-gray-800 hover:bg-green-600 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
                             <i class="fab fa-instagram"></i>
                         </a>
                         @foreach(['twitter_url' => 'fa-x-twitter', 'tiktok_url' => 'fa-tiktok', 'youtube_url' => 'fa-youtube'] as $socialKey => $icon)
                             @if(settings($socialKey))
-                                <a href="{{ settings($socialKey) }}" target="_blank" rel="noopener" class="bg-gray-800 hover:bg-green-600 w-10 h-10 rounded-full flex items-center justify-center transition-colors"><i class="fab {{ $icon }}"></i></a>
+                                <a href="{{ settings($socialKey) }}" target="_blank" rel="noopener" aria-label="{{ $storeName }} {{ str_replace('_url', '', $socialKey) }}" class="bg-gray-800 hover:bg-green-600 w-10 h-10 rounded-full flex items-center justify-center transition-colors"><i class="fab {{ $icon }}"></i></a>
                             @endif
                         @endforeach
                     </div>
