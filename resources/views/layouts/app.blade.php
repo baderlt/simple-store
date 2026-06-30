@@ -861,14 +861,14 @@
                     <div class="flex items-center space-x-3">
                         @if($logoPath && file_exists(public_path('storage/'.$logoPath)))
                             <img src="{{ asset('storage/'.$logoPath) }}" alt="{{ $storeName }}" 
-                                 class="h-12 w-auto object-contain"
+                                 class="premium-footer__brand-logo h-12 w-auto object-contain"
                                  loading="lazy">
                         @else
                             <div class="bg-green-600 p-2 rounded-lg">
                                 <i class="fas fa-jar text-2xl"></i>
                             </div>
+                            <span class="text-2xl font-bold">{{ $storeName }}</span>
                         @endif
-                        <span class="text-2xl font-bold">{{ $storeName }}</span>
                     </div>
                     <p>{{ settings('footer_text', settings('store_slogan', 'Premium products for every lifestyle.')) }}</p>
                     <div class="flex space-x-4 pt-2">
