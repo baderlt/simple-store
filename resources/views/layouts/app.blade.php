@@ -864,25 +864,25 @@
                                  class="h-12 w-auto object-contain"
                                  loading="lazy">
                         @else
-                            <div class="bg-green-600 text-white p-2 rounded-lg">
+                            <div class="bg-green-600 p-2 rounded-lg">
                                 <i class="fas fa-jar text-2xl"></i>
                             </div>
                         @endif
                         <span class="text-2xl font-bold">{{ $storeName }}</span>
                     </div>
-                    <p class="text-gray-300">{{ settings('footer_text', settings('store_slogan', 'Premium products for every lifestyle.')) }}</p>
+                    <p>{{ settings('footer_text', settings('store_slogan', 'Premium products for every lifestyle.')) }}</p>
                     <div class="flex space-x-4 pt-2">
                         <a href="{{ settings('facebook_url', '#') }}" target="_blank" rel="noopener" aria-label="{{ $storeName }} Facebook"
-                           class="bg-gray-800 hover:bg-green-600 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                           class="w-10 h-10 rounded-full flex items-center justify-center transition-colors">
                             <i class="fab fa-facebook-f"></i>
                         </a>
                         <a href="{{ settings('instagram_url', '#') }}" target="_blank" rel="noopener" aria-label="{{ $storeName }} Instagram"
-                           class="bg-gray-800 hover:bg-green-600 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                           class="w-10 h-10 rounded-full flex items-center justify-center transition-colors">
                             <i class="fab fa-instagram"></i>
                         </a>
                         @foreach(['twitter_url' => 'fa-x-twitter', 'tiktok_url' => 'fa-tiktok', 'youtube_url' => 'fa-youtube'] as $socialKey => $icon)
                             @if(settings($socialKey))
-                                <a href="{{ settings($socialKey) }}" target="_blank" rel="noopener" aria-label="{{ $storeName }} {{ str_replace('_url', '', $socialKey) }}" class="bg-gray-800 hover:bg-green-600 w-10 h-10 rounded-full flex items-center justify-center transition-colors"><i class="fab {{ $icon }}"></i></a>
+                                <a href="{{ settings($socialKey) }}" target="_blank" rel="noopener" aria-label="{{ $storeName }} {{ str_replace('_url', '', $socialKey) }}" class="w-10 h-10 rounded-full flex items-center justify-center transition-colors"><i class="fab {{ $icon }}"></i></a>
                             @endif
                         @endforeach
                     </div>
@@ -890,15 +890,15 @@
 
                 {{-- Quick Links --}}
                 <div>
-                    <h3 class="text-xl font-bold mb-6 text-green-400">{{ __('messages.navigation') }}</h3>
+                    <h3 class="text-xl font-bold mb-6">{{ __('messages.navigation') }}</h3>
                     <ul class="space-y-3">
-                        <li><a href="{{ route('home') }}" class="text-gray-300 hover:text-green-400 transition-colors flex items-center">
+                        <li><a href="{{ route('home') }}" class="transition-colors flex items-center">
                             <i class="fas fa-chevron-right text-xs mr-2"></i>{{ __('messages.home') }}
                         </a></li>
-                        <li><a href="{{ route('products.index') }}" class="text-gray-300 hover:text-green-400 transition-colors flex items-center">
+                        <li><a href="{{ route('products.index') }}" class="transition-colors flex items-center">
                             <i class="fas fa-chevron-right text-xs mr-2"></i>{{ __('messages.products') }}
                         </a></li>
-                        <li><a href="{{ route('categories.index') }}" class="text-gray-300 hover:text-green-400 transition-colors flex items-center">
+                        <li><a href="{{ route('categories.index') }}" class="transition-colors flex items-center">
                             <i class="fas fa-chevron-right text-xs mr-2"></i>{{ __('messages.categories') }}
                         </a></li>
                     </ul>
@@ -906,26 +906,26 @@
 
                 {{-- Contact --}}
                 <div>
-                    <h3 class="text-xl font-bold mb-6 text-green-400">{{ __('messages.contact') }}</h3>
+                    <h3 class="text-xl font-bold mb-6">{{ __('messages.contact') }}</h3>
                     <ul class="space-y-4">
                         <li class="flex items-start gap-3">
-                            <i class="fas fa-map-marker-alt shrink-0 text-green-400 mt-1"></i>
-                            <span class="text-gray-300">{{ settings('address', 'Adresse par défaut') }}</span>
+                            <i class="fas fa-map-marker-alt shrink-0 mt-1"></i>
+                            <span>{{ settings('address', 'Adresse par défaut') }}</span>
                         </li>
                         <li class="flex items-center gap-3">
-                            <i class="fas fa-phone shrink-0 text-green-400"></i>
-                            <span class="text-gray-300">{{ settings('phone', '+212 XXX-XXXXXX') }}</span>
+                            <i class="fas fa-phone shrink-0"></i>
+                            <span>{{ settings('phone', '+212 XXX-XXXXXX') }}</span>
                         </li>
                         <li class="flex items-center gap-3">
-                            <i class="fas fa-envelope shrink-0 text-green-400"></i>
-                            <span class="text-gray-300">{{ settings('email', 'contact@maisondoree.ma') }}</span>
+                            <i class="fas fa-envelope shrink-0"></i>
+                            <span>{{ settings('email', 'contact@maisondoree.ma') }}</span>
                         </li>
                     </ul>
                 </div>
 
                 {{-- Hours & Payment --}}
                 <div>
-                    <h3 class="text-xl font-bold mb-6 text-green-400">{{ __('messages.hours') }}</h3>
+                    <h3 class="text-xl font-bold mb-6">{{ __('messages.hours') }}</h3>
                     @php
                         $footerWorkingHours = working_hours_parts(
                             (string) settings('working_hours', 'Lun-Sam: 9h-20h')
@@ -933,32 +933,32 @@
                     @endphp
                     <div class="space-y-2">
                         @forelse($footerWorkingHours as $period)
-                            <div class="flex items-center justify-between gap-4 rounded-lg border border-gray-700 bg-gray-800 px-3 py-2.5"
+                            <div class="flex items-center justify-between gap-4 rounded-lg border px-3 py-2.5"
                                  dir="auto">
-                                <span class="min-w-0 font-medium text-gray-300">
+                                <span class="min-w-0 font-medium">
                                     {{ $period['days'] }}{{ $period['hours'] !== '' ? ':' : '' }}
                                 </span>
                                 @if($period['hours'] !== '')
-                                    <span class="whitespace-nowrap font-bold text-white" dir="ltr">
+                                    <span class="whitespace-nowrap font-bold" dir="ltr">
                                         {{ $period['hours'] }}
                                     </span>
                                 @endif
                             </div>
                         @empty
-                            <p class="text-gray-300">{{ settings('working_hours', 'Lun-Sam: 9h-20h') }}</p>
+                            <p>{{ settings('working_hours', 'Lun-Sam: 9h-20h') }}</p>
                         @endforelse
                     </div>
                 </div>
             </div>
 
             {{-- Bottom Bar --}}
-            <div class="border-t border-gray-700 mt-8 pt-8 text-center">
-                <p class="text-gray-400">
+            <div class="border-t mt-8 pt-8 text-center">
+                <p>
                     &copy; {{ date('Y') }} {{ $storeName }}. {{ __('messages.rights') }} 
                     <span class="mx-2">|</span>
-                    <a href="#" class="hover:text-green-400">Politique de confidentialité</a>
+                    <a href="#">Politique de confidentialité</a>
                     <span class="mx-2">|</span>
-                    <a href="#" class="hover:text-green-400">Conditions générales</a>
+                    <a href="#">Conditions générales</a>
                 </p>
             </div>
         </div>
