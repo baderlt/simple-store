@@ -56,8 +56,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
     {{-- Performance Optimizations --}}
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    @include('layouts.google-fonts')
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
 
     {{-- Vite Assets --}}
@@ -65,7 +64,6 @@
 
     {{-- Styles --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
     
     {{-- Favicon --}}
     @php
@@ -84,12 +82,6 @@
     @endif
         
     <style>
-        body {
-            font-family: {{ app()->getLocale() === 'ar'
-                ? "'Tajawal', 'Noto Sans Arabic', sans-serif"
-                : "'Poppins', sans-serif" }};
-        }
-
         :root {
             --primary-color: {{ settings('primary_color', '#B7791F') }};
             --secondary-color: {{ settings('secondary_color', '#3D2B1F') }};

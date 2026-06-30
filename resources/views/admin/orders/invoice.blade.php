@@ -21,9 +21,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ __('invoice') }} {{ $order->order_number }} · {{ $storeName }}</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    @include('layouts.google-fonts')
     <style>
         :root {
             --brand: #059669;
@@ -42,12 +40,12 @@
             margin: 0;
             background: var(--surface);
             color: var(--ink);
-            font-family: "Manrope", Arial, sans-serif;
+            font-family: "Jost", Arial, sans-serif;
             font-size: 14px;
             line-height: 1.55;
         }
 
-        [dir="rtl"] body { font-family: "Tajawal", Arial, sans-serif; }
+        [dir="rtl"] body { font-family: "Tajawal", "Noto Sans Arabic", Arial, sans-serif; }
 
         .invoice-shell {
             width: min(100% - 32px, 980px);

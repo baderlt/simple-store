@@ -8,24 +8,16 @@
         <title>{{ settings('store_name', config('app.name', 'Simple Store')) }}</title>
 
         <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        @include('layouts.google-fonts')
         
         <!-- Tailwind CSS -->
         <script src="https://cdn.tailwindcss.com"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
         <style>
-            body {
-                font-family: {{ app()->getLocale() === 'ar'
-                    ? "'Tajawal', 'Noto Sans Arabic', sans-serif"
-                    : "'Poppins', sans-serif" }};
-            }
-            
             :root {
                 --primary-color: {{ settings('primary_color', '#B7791F') }};
                 --secondary-color: {{ settings('secondary_color', '#3D2B1F') }};
