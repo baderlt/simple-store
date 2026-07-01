@@ -901,12 +901,15 @@
                         <li><a href="{{ route('categories.index') }}" class="transition-colors flex items-center">
                             <i class="fas fa-chevron-right text-xs mr-2"></i>{{ __('messages.categories') }}
                         </a></li>
+                        <li><a href="#footer-contact-title" class="transition-colors flex items-center">
+                            <i class="fas fa-chevron-right text-xs mr-2"></i>{{ __('messages.contact') }}
+                        </a></li>
                     </ul>
                 </div>
 
                 {{-- Contact --}}
                 <div>
-                    <h3 class="text-xl font-bold mb-6">{{ __('messages.contact') }}</h3>
+                    <h3 id="footer-contact-title" class="text-xl font-bold mb-6">{{ __('messages.contact') }}</h3>
                     <ul class="space-y-4">
                         <li class="flex gap-3">
                             <i class="fas fa-map-marker-alt shrink-0 text-green-400 mt-1"></i>
@@ -954,11 +957,7 @@
             {{-- Bottom Bar --}}
             <div class="border-t mt-8 pt-8 text-center">
                 <p>
-                    &copy; {{ date('Y') }} {{ $storeName }}. {{ __('messages.rights') }} 
-                    <span class="mx-2">|</span>
-                    <a href="#">Politique de confidentialité</a>
-                    <span class="mx-2">|</span>
-                    <a href="#">Conditions générales</a>
+                    &copy; 2026 Wany Bio. Tous droits réservés.
                 </p>
             </div>
         </div>
