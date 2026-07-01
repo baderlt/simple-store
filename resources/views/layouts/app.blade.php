@@ -856,7 +856,7 @@
         <div class="container">
             <div class="grid">
                 {{-- Company Info --}}
-                <div class="space-y-4">
+                <div class="premium-footer-brand space-y-4">
                     <div class="flex">
                         @if($logoPath && file_exists(public_path('storage/'.$logoPath)))
                             <img src="{{ asset('storage/'.$logoPath) }}" alt="{{ $storeName }}" 
@@ -866,7 +866,6 @@
                             <div class="bg-green-600 p-2 rounded-lg">
                                 <i class="fas fa-jar text-2xl"></i>
                             </div>
-                            <span class="text-2xl font-bold">{{ $storeName }}</span>
                         @endif
                         <span id="premium-footer-title" class="text-2xl font-bold">{{ $storeName }}</span>
                     </div>
@@ -889,7 +888,7 @@
                 </div>
 
                 {{-- Quick Links --}}
-                <div>
+                <div class="premium-footer-navigation">
                     <h3 class="text-xl font-bold mb-6">{{ __('messages.navigation') }}</h3>
                     <ul class="space-y-3">
                         <li><a href="{{ route('home') }}" class="transition-colors flex items-center">
@@ -907,8 +906,9 @@
                     </ul>
                 </div>
 
+                <div class="premium-footer-side">
                 {{-- Contact --}}
-                <div>
+                <div class="premium-footer-contact premium-footer-card">
                     <h3 id="footer-contact-title" class="text-xl font-bold mb-6">{{ __('messages.contact') }}</h3>
                     <ul class="space-y-4">
                         <li class="flex gap-3">
@@ -927,7 +927,7 @@
                 </div>
 
                 {{-- Hours & Payment --}}
-                <div>
+                <div class="premium-footer-hours premium-footer-card">
                     <h3 class="text-xl font-bold mb-6">{{ __('messages.hours') }}</h3>
                     @php
                         $footerWorkingHours = working_hours_parts(
@@ -951,6 +951,7 @@
                             <p>{{ settings('working_hours', 'Lun-Sam: 9h-20h') }}</p>
                         @endforelse
                     </div>
+                </div>
                 </div>
             </div>
 
