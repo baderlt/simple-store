@@ -504,14 +504,6 @@
                     @auth
                         <span class="hidden md:inline">Bonjour, {{ Auth::user()->name }}</span>
                     @endauth
-                    <div class="flex space-x-2">
-                        <a href="{{ settings('facebook_url', '#') }}" target="_blank" class="hover:text-gray-200">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="{{ settings('instagram_url', '#') }}" target="_blank" class="hover:text-gray-200">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                    </div>
                 </div>
             </div>
         </div>
@@ -870,39 +862,53 @@
                         <span id="premium-footer-title" class="text-2xl font-bold">{{ $storeName }}</span>
                     </div>
                     <p class="text-gray-300">{{ settings('footer_text', settings('store_slogan', 'Premium products for every lifestyle.')) }}</p>
-                    <div class="flex pt-2">
-                        <a href="{{ settings('facebook_url', '#') }}" target="_blank" rel="noopener" aria-label="Facebook"
-                           class="bg-gray-800 hover:bg-green-600 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="{{ settings('instagram_url', '#') }}" target="_blank" rel="noopener" aria-label="Instagram"
-                           class="bg-gray-800 hover:bg-green-600 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        @foreach(['twitter_url' => 'fa-x-twitter', 'tiktok_url' => 'fa-tiktok', 'youtube_url' => 'fa-youtube'] as $socialKey => $icon)
-                            @if(settings($socialKey))
-                                <a href="{{ settings($socialKey) }}" target="_blank" rel="noopener" aria-label="{{ str_replace('_url', '', $socialKey) }}" class="bg-gray-800 hover:bg-green-600 w-10 h-10 rounded-full flex items-center justify-center transition-colors"><i class="fab {{ $icon }}"></i></a>
-                            @endif
-                        @endforeach
-                    </div>
+                    @php
+                        $footerSocialLinks = collect([
+                            ['key' => 'instagram_url', 'label' => 'Instagram', 'icon' => 'fa-instagram'],
+                            ['key' => 'whatsapp_url', 'label' => 'WhatsApp', 'icon' => 'fa-whatsapp'],
+                            ['key' => 'tiktok_url', 'label' => 'TikTok', 'icon' => 'fa-tiktok'],
+                        ])->map(function ($social) {
+                            $social['url'] = trim((string) settings($social['key'], ''));
+                            return $social;
+                        })->filter(fn ($social) => $social['url'] !== '')->values();
+                    @endphp
+
+                    @if($footerSocialLinks->isNotEmpty())
+                        <div class="flex pt-2" aria-label="Social media links">
+                            @foreach($footerSocialLinks as $social)
+                                <a href="{{ e($social['url']) }}"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   aria-label="{{ $social['label'] }}"
+                                   class="bg-gray-800 hover:bg-green-600 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                                    <i class="fab {{ $social['icon'] }}" aria-hidden="true"></i>
+                                </a>
+                            @endforeach
+                        </div>
+                    @endif
                 </div>
 
                 {{-- Quick Links --}}
                 <div class="premium-footer-navigation">
                     <h3 class="text-xl font-bold mb-6">{{ __('messages.navigation') }}</h3>
-                    <ul class="space-y-3">
-                        <li><a href="{{ route('home') }}" class="transition-colors flex items-center">
-                            <i class="fas fa-chevron-right text-xs mr-2"></i>{{ __('messages.home') }}
-                        </a></li>
-                        <li><a href="{{ route('products.index') }}" class="transition-colors flex items-center">
-                            <i class="fas fa-chevron-right text-xs mr-2"></i>{{ __('messages.products') }}
-                        </a></li>
-                        <li><a href="{{ route('categories.index') }}" class="transition-colors flex items-center">
-                            <i class="fas fa-chevron-right text-xs mr-2"></i>{{ __('messages.categories') }}
-                        </a></li>
-                        <li><a href="#footer-contact-title" class="transition-colors flex items-center">
-                            <i class="fas fa-chevron-right text-xs mr-2"></i>{{ __('messages.contact') }}
-                        </a></li>
+                    @php
+                        $footerNavLinks = [
+                            ['label' => __('messages.home'), 'url' => route('home'), 'active' => request()->routeIs('home')],
+                            ['label' => __('messages.products'), 'url' => route('products.index'), 'active' => request()->routeIs('products.*')],
+                            ['label' => __('messages.categories'), 'url' => route('categories.index'), 'active' => request()->routeIs('categories.*')],
+                            ['label' => __('messages.contact'), 'url' => '#footer-contact-title', 'active' => false],
+                        ];
+                    @endphp
+                    <ul class="premium-footer-nav-list">
+                        @foreach($footerNavLinks as $link)
+                            <li>
+                                <a href="{{ $link['url'] }}"
+                                   class="premium-footer-nav-link {{ $link['active'] ? 'is-active' : '' }}"
+                                   @if($link['active']) aria-current="page" @endif>
+                                    {{ $link['label'] }}
+                                </a>
+                            </li>
+                        @endforeach
                     </ul>
                 </div>
 

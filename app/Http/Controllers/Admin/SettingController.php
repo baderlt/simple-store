@@ -30,8 +30,9 @@ class SettingController extends Controller
             'email' => 'required|email|max:255',
             'whatsapp' => 'nullable|string|max:20',
             'address' => 'required|string|max:500',
-            "instagram_url" => 'nullable|url:http,https|max:2048',
-            "facebook_url" => 'nullable|url:http,https|max:2048',
+            'instagram_url' => 'nullable|url:http,https|max:2048',
+            'whatsapp_url' => 'nullable|url:http,https|max:2048',
+            'tiktok_url' => 'nullable|url:http,https|max:2048',
 
             // Localisation GPS
             'latitude' => 'required|numeric|between:-90,90',
@@ -106,11 +107,11 @@ class SettingController extends Controller
             'latitude' => 'number',
             'longitude' => 'number',
             'maps_link' => 'text',
-            "instagram_url"=>"text",
-            "facebook_url"=>"text",
-            "twitter_url"=>"text",
-            "tiktok_url"=>"text",
-            "youtube_url"=>"text",
+            'instagram_url' => 'text',
+            'whatsapp_url' => 'text',
+            'twitter_url' => 'text',
+            'tiktok_url' => 'text',
+            'youtube_url' => 'text',
             'delivery_zone' => 'text',
             'delivery_time' => 'text',
             'free_delivery_threshold' => 'number',
@@ -157,8 +158,9 @@ class SettingController extends Controller
             }
 
             // Handle empty values for optional fields
-            if (empty($value) && in_array($key, ['whatsapp', 'delivery_zone', 'delivery_time', 'free_delivery_threshold',
-            'primary_color', 'secondary_color', 'hero_title_prefix', 'hero_title_emphasis', 'hero_title_suffix', 'hero_subtitle'])) {
+            if (empty($value) && in_array($key, ['whatsapp', 'instagram_url', 'whatsapp_url', 'tiktok_url',
+            'delivery_zone', 'delivery_time', 'free_delivery_threshold', 'primary_color', 'secondary_color',
+            'hero_title_prefix', 'hero_title_emphasis', 'hero_title_suffix', 'hero_subtitle'])) {
                 $value = null;
             }
 
@@ -255,7 +257,7 @@ class SettingController extends Controller
         $validKeys = [
             'store_name', 'phone', 'email', 'whatsapp', 'address', 'working_hours',
             'delivery_fee', 'latitude', 'longitude', 'delivery_zone', 'delivery_time',
-            'free_delivery_threshold',
+            'free_delivery_threshold', 'instagram_url', 'whatsapp_url', 'tiktok_url',
             'primary_color', 'secondary_color', 'hero_title_prefix', 'hero_title_emphasis', 'hero_title_suffix', 'hero_subtitle'
         ];
 
@@ -286,6 +288,9 @@ class SettingController extends Controller
             'longitude' => 'numeric|between:-180,180',
             'delivery_fee' => 'numeric|min:0',
             'free_delivery_threshold' => 'numeric|min:0',
+            'instagram_url' => 'nullable|url:http,https|max:2048',
+            'whatsapp_url' => 'nullable|url:http,https|max:2048',
+            'tiktok_url' => 'nullable|url:http,https|max:2048',
         ];
 
         if (isset($validationRules[$key])) {

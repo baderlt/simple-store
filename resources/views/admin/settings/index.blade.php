@@ -181,49 +181,91 @@
                                       placeholder="Entrez votre adresse complète">{{ old('address', $settings['address'] ?? '') }}</textarea>
                         </div>
 
-                        <!-- New: Facebook Field -->
-                        <div>
-                            <label class="block font-semibold text-gray-700 mb-2 flex items-center">
-                                <i class="fab fa-facebook text-blue-600 mr-2"></i>
-                                Page Facebook
-                            </label>
-                            <div class="relative">
-                                <input type="url" name="facebook_url"
-                                       value="{{ old('facebook_url', $settings['facebook_url'] ?? '') }}"
-                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
-                                       placeholder="https://facebook.com/votre-page">
-                                <div class="absolute right-3 top-3 text-blue-600">
-                                    <i class="fab fa-facebook"></i>
-                                </div>
-                            </div>
-                            <p class="text-sm text-gray-500 mt-1 flex items-center">
-                                <i class="fas fa-info-circle mr-1"></i> Optionnel - URL complète de votre page
-                            </p>
-                        </div>
+                    </div>
+                </div>
 
-                        <!-- New: Instagram Field -->
+                <!-- Section 3: Social Media -->
+                <div class="bg-pink-50 rounded-xl p-6 border border-pink-100">
+                    <div class="flex items-center mb-6">
+                        <div class="bg-pink-500 p-3 rounded-lg mr-4">
+                            <i class="fas fa-share-alt text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800">Social Media</h3>
+                            <p class="text-gray-600">Liens affichés dans le pied de page</p>
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-3 gap-6">
                         <div>
                             <label class="block font-semibold text-gray-700 mb-2 flex items-center">
                                 <i class="fab fa-instagram text-pink-600 mr-2"></i>
-                                Compte Instagram
+                                Instagram URL
                             </label>
                             <div class="relative">
                                 <input type="url" name="instagram_url"
                                        value="{{ old('instagram_url', $settings['instagram_url'] ?? '') }}"
-                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
-                                       placeholder="https://instagram.com/votre-compte">
+                                       class="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all duration-200"
+                                       placeholder="https://instagram.com/wanybio">
                                 <div class="absolute right-3 top-3 text-pink-600">
                                     <i class="fab fa-instagram"></i>
                                 </div>
                             </div>
                             <p class="text-sm text-gray-500 mt-1 flex items-center">
-                                <i class="fas fa-info-circle mr-1"></i> Optionnel - URL complète de votre compte
+                                <i class="fas fa-info-circle mr-1"></i> Optionnel - laissez vide pour masquer l’icône
                             </p>
+                            @error('instagram_url')
+                                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold text-gray-700 mb-2 flex items-center">
+                                <i class="fab fa-whatsapp text-green-600 mr-2"></i>
+                                WhatsApp URL
+                            </label>
+                            <div class="relative">
+                                <input type="url" name="whatsapp_url"
+                                       value="{{ old('whatsapp_url', $settings['whatsapp_url'] ?? '') }}"
+                                       class="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
+                                       placeholder="https://wa.me/212600000000">
+                                <div class="absolute right-3 top-3 text-green-600">
+                                    <i class="fab fa-whatsapp"></i>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-1 flex items-center">
+                                <i class="fas fa-info-circle mr-1"></i> Utilisez un lien complet wa.me
+                            </p>
+                            @error('whatsapp_url')
+                                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold text-gray-700 mb-2 flex items-center">
+                                <i class="fab fa-tiktok text-gray-900 mr-2"></i>
+                                TikTok URL
+                            </label>
+                            <div class="relative">
+                                <input type="url" name="tiktok_url"
+                                       value="{{ old('tiktok_url', $settings['tiktok_url'] ?? '') }}"
+                                       class="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-700 focus:border-gray-700 transition-all duration-200"
+                                       placeholder="https://www.tiktok.com/@wanybio">
+                                <div class="absolute right-3 top-3 text-gray-900">
+                                    <i class="fab fa-tiktok"></i>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-1 flex items-center">
+                                <i class="fas fa-info-circle mr-1"></i> Optionnel - URL complète du profil
+                            </p>
+                            @error('tiktok_url')
+                                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
                 </div>
 
-                <!-- Section 3: Localisation GPS -->
+                <!-- Section 4: Localisation GPS -->
        <div class="bg-purple-50 rounded-xl p-6 border border-purple-100">
     <div class="flex items-center mb-6">
         <div class="bg-purple-500 p-3 rounded-lg mr-4">
@@ -481,9 +523,6 @@
                     <div class="md:col-span-2"><label class="block font-semibold text-gray-700 mb-2">Titre SEO</label><input type="text" name="seo_title" maxlength="70" value="{{ old('seo_title', $settings['seo_title'] ?? '') }}" class="w-full px-4 py-3 border border-gray-300 rounded-lg"></div>
                     <div class="md:col-span-2"><label class="block font-semibold text-gray-700 mb-2">Description SEO</label><textarea name="seo_description" maxlength="170" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg">{{ old('seo_description', $settings['seo_description'] ?? '') }}</textarea></div>
                     <div class="md:col-span-2"><label class="block font-semibold text-gray-700 mb-2">Texte du pied de page</label><textarea name="footer_text" rows="2" class="w-full px-4 py-3 border border-gray-300 rounded-lg">{{ old('footer_text', $settings['footer_text'] ?? '') }}</textarea></div>
-                    <div><label class="block font-semibold text-gray-700 mb-2">X / Twitter</label><input type="url" name="twitter_url" value="{{ old('twitter_url', $settings['twitter_url'] ?? '') }}" class="w-full px-4 py-3 border border-gray-300 rounded-lg"></div>
-                    <div><label class="block font-semibold text-gray-700 mb-2">TikTok</label><input type="url" name="tiktok_url" value="{{ old('tiktok_url', $settings['tiktok_url'] ?? '') }}" class="w-full px-4 py-3 border border-gray-300 rounded-lg"></div>
-                    <div><label class="block font-semibold text-gray-700 mb-2">YouTube</label><input type="url" name="youtube_url" value="{{ old('youtube_url', $settings['youtube_url'] ?? '') }}" class="w-full px-4 py-3 border border-gray-300 rounded-lg"></div>
                     <div><label class="block font-semibold text-gray-700 mb-2">Titre hero (début)</label><input type="text" name="hero_title_prefix" value="{{ old('hero_title_prefix', $settings['hero_title_prefix'] ?? 'Your') }}" class="w-full px-4 py-3 border border-gray-300 rounded-lg"></div>
                     <div><label class="block font-semibold text-gray-700 mb-2">Titre hero (accent)</label><input type="text" name="hero_title_emphasis" value="{{ old('hero_title_emphasis', $settings['hero_title_emphasis'] ?? 'Store') }}" class="w-full px-4 py-3 border border-gray-300 rounded-lg"></div>
                     <div class="md:col-span-2"><label class="block font-semibold text-gray-700 mb-2">Titre hero (fin)</label><input type="text" name="hero_title_suffix" value="{{ old('hero_title_suffix', $settings['hero_title_suffix'] ?? 'Your Priority') }}" class="w-full px-4 py-3 border border-gray-300 rounded-lg"></div>

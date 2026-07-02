@@ -171,7 +171,6 @@ class DatabaseSeeder extends Seeder
         Setting::set('seo_title', 'Maison Dorée | Miels, thés, parfums et produits bio');
         Setting::set('seo_description', 'Découvrez nos miels d’exception, thés originaux, parfums raffinés et produits bio sélectionnés avec soin.');
         Setting::set('footer_text', 'Miels, thés, parfums et produits bio sélectionnés avec soin et présentés avec élégance.');
-        Setting::set('facebook_url', null);
         Setting::set('instagram_url', null);
     }
 }
